@@ -935,8 +935,8 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
               {selectedPaymentMethod === 'google' && 'Secure payment with Google Pay'}
               {selectedPaymentMethod === 'swiss' && 'Secure Swiss payment processing'}
             </span>
-          </div>
-        </form>
+      </div>
+    </form>
       </div>
     </div>
   )
