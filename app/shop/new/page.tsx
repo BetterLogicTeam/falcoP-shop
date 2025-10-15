@@ -10,8 +10,8 @@ import CartButton from '../../../components/CartButton'
 const NewArrivalsPage = () => {
   const { t } = useClientTranslation()
   
-  // Get all products and sort by newest
-  const newProducts = products.sort((a, b) => new Date(b.createdAt || '').getTime() - new Date(a.createdAt || '').getTime())
+  // Get all products (showing first 12 as "new arrivals")
+  const newProducts = products.slice(0, 12)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
