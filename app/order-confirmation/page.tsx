@@ -20,7 +20,7 @@ export default function OrderConfirmationPage() {
 
   useEffect(() => {
     // Get order details from URL params or localStorage
-    const paymentIntent = searchParams.get('payment_intent')
+    const paymentIntent = searchParams?.get('payment_intent')
     const orderId = `ORD-${Date.now().toString().slice(-6)}`
     const estimatedDelivery = new Date()
     estimatedDelivery.setDate(estimatedDelivery.getDate() + 3)
