@@ -1,98 +1,150 @@
-# Falco P - Premium Sportswear Website
+# Falco P Sportswear E-commerce Website
 
-A modern, attractive website for Falco P, a premium sportswear brand inspired by the majestic falcon. Built with Next.js, TypeScript, and Tailwind CSS.
+A modern, responsive e-commerce website built with Next.js, featuring a complete admin panel, payment integration, and elegant UI design.
 
 ## Features
 
-- 🎨 Modern, responsive design inspired by Nike and RTFKT
-- ⚡ Lightning-fast performance with Next.js 14
-- 🎭 Smooth animations and interactions with Framer Motion
-- 📱 Mobile-first responsive design
-- 🎯 SEO optimized with proper meta tags
-- 🎨 Custom falcon-inspired design elements
-- 🛒 Product showcase with interactive features
-- 📧 Newsletter subscription
-- 💬 Customer testimonials carousel
-- 🌟 Premium UI components
+- 🛍️ **Complete E-commerce Functionality**
+  - Product catalog with categories and subcategories
+  - Shopping cart with persistent state
+  - Product selection modal with size/color options
+  - Responsive product grid layout
+
+- 💳 **Multiple Payment Methods**
+  - Stripe credit card processing
+  - Apple Pay integration
+  - Google Pay integration
+  - Swiss Pay simulation
+  - Elegant payment form with dark theme
+
+- 👨‍💼 **Admin Dashboard**
+  - Product management (CRUD operations)
+  - Customer management
+  - Order analytics
+  - Settings page
+  - Image upload functionality
+
+- 🎨 **Modern UI/UX**
+  - Dark theme with premium styling
+  - Responsive design for all devices
+  - Smooth animations and transitions
+  - Glass morphism effects
+  - Tailwind CSS styling
+
+- 🌐 **Internationalization**
+  - Multi-language support with i18next
+  - English and other language support
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 with App Router
-- **Language**: TypeScript
+- **Frontend**: Next.js 14, React, TypeScript
 - **Styling**: Tailwind CSS
-- **Animations**: Framer Motion
+- **State Management**: React Context API
+- **Payments**: Stripe, Apple Pay, Google Pay
 - **Icons**: Lucide React
-- **Fonts**: Inter & Poppins
+- **Notifications**: React Hot Toast
+- **Internationalization**: i18next, react-i18next
 
 ## Getting Started
 
-1. Install dependencies:
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+- Stripe account (for payment processing)
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/BetterLogicTeam/falcoP-shop.git
+cd falcoP-shop
+```
+
+2. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Run the development server:
+3. Set up environment variables:
+Create a `.env.local` file in the root directory with:
+```env
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret_here
+```
+
+4. Run the development server:
 ```bash
 npm run dev
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Project Structure
 
 ```
-├── app/                    # Next.js app directory
-│   ├── globals.css        # Global styles
-│   ├── layout.tsx         # Root layout
-│   └── page.tsx           # Homepage
-├── components/            # React components
-│   ├── Hero.tsx          # Hero section
-│   ├── About.tsx         # About section
-│   ├── Products.tsx      # Products showcase
-│   ├── Features.tsx      # Features section
-│   ├── Testimonials.tsx  # Customer testimonials
-│   ├── Newsletter.tsx    # Newsletter signup
-│   ├── Footer.tsx        # Footer
-│   ├── Navigation.tsx    # Navigation bar
-│   └── LoadingScreen.tsx # Loading screen
-├── public/               # Static assets
-│   ├── images/          # Product images
-│   ├── videos/          # Background videos
-│   └── logos/           # Brand logos
-└── styles/              # Additional styles
+├── app/                    # Next.js App Router
+│   ├── admin/              # Admin dashboard pages
+│   ├── api/                # API routes
+│   ├── checkout/           # Checkout page
+│   ├── shop/               # Shop pages
+│   └── globals.css         # Global styles
+├── components/              # Reusable components
+│   ├── admin/              # Admin-specific components
+│   ├── CartButton.tsx      # Cart button component
+│   ├── CartDrawer.tsx      # Shopping cart drawer
+│   ├── Navigation.tsx      # Main navigation
+│   └── PaymentForm.tsx    # Payment form
+├── contexts/               # React Context providers
+├── public/                 # Static assets
+└── tailwind.config.js      # Tailwind configuration
 ```
 
-## Brand Identity
+## Key Components
 
-Falco P is inspired by the majestic falcon, representing:
-- **Agility**: Quick, responsive design
-- **Precision**: Attention to detail
-- **Power**: Strong, impactful visuals
-- **Grace**: Smooth, elegant animations
+### Payment Integration
+- **Stripe**: Credit card processing with PCI compliance
+- **Apple Pay**: Native iOS payment integration
+- **Google Pay**: Android payment integration
+- **Swiss Pay**: Simulated Swiss payment system
 
-## Design Philosophy
+### Admin Panel
+- Product management with image upload
+- Customer data management
+- Order analytics and reporting
+- Settings configuration
 
-- **Aerodynamic Shapes**: Inspired by falcon's streamlined form
-- **Premium Materials**: High-quality visual elements
-- **Performance Focus**: Built for speed and efficiency
-- **Innovation**: Cutting-edge design patterns
+### Shopping Experience
+- Responsive product catalog
+- Advanced filtering and search
+- Shopping cart with persistent state
+- Elegant checkout process
 
-## Deployment
+## API Routes
 
-The website is optimized for deployment on Vercel:
-
-```bash
-npm run build
-npm run start
-```
+- `/api/create-payment-intent` - Stripe payment intent creation
+- `/api/swiss-payment` - Swiss Pay simulation
+- `/api/apple-payment` - Apple Pay simulation
+- `/api/google-payment` - Google Pay simulation
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Submit a pull request
+4. Test thoroughly
+5. Submit a pull request
 
 ## License
 
-© 2024 Falco P. All rights reserved.
+This project is licensed under the MIT License.
+
+## Support
+
+For support or questions, please open an issue in the GitHub repository.
+
+---
+
+Built with ❤️ for Falco P Sportswear
