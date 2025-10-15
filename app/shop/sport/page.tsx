@@ -12,7 +12,6 @@ const SportPage = () => {
   
   // Get sport-related products
   const sportProducts = products.filter(p => 
-    p.category === 'sport' || 
     p.name.toLowerCase().includes('sport') ||
     p.subcategory === 'sportswear'
   )

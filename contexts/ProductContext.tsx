@@ -6,16 +6,20 @@ import { products as initialProducts } from '../data/products'
 interface Product {
   id: string
   name: string
+  category: 'men' | 'women' | 'kids'
+  subcategory: 'sportswear' | 'shoes'
   type: string
-  category: string
-  subcategory: string
   price: number
   originalPrice?: number
-  description?: string
-  image: string
-  badge?: string
   rating: number
   reviews: number
+  image: string
+  images: string[]
+  badge?: string
+  colors: string[]
+  sizes: string[]
+  description: string
+  features: string[]
   inStock: boolean
 }
 

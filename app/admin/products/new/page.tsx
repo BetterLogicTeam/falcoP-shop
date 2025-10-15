@@ -111,16 +111,20 @@ const ProductForm = () => {
       const productData = {
         name: formData.name,
         type: formData.type,
-        category: formData.category,
-        subcategory: formData.subcategory,
+        category: formData.category as 'men' | 'women' | 'kids',
+        subcategory: formData.subcategory as 'sportswear' | 'shoes',
         price: parseFloat(formData.price),
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
         description: formData.description,
         image: formData.image || '/images/placeholder-product.jpg',
+        images: [formData.image || '/images/placeholder-product.jpg'],
         badge: formData.badge || undefined,
         rating: parseFloat(formData.rating),
         reviews: parseInt(formData.reviews),
-        inStock: formData.stock === 'In Stock'
+        inStock: formData.stock === 'In Stock',
+        colors: ['Black', 'White'], // Default colors
+        sizes: ['S', 'M', 'L'], // Default sizes
+        features: ['High Quality', 'Comfortable'] // Default features
       }
 
       // Add product using context

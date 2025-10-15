@@ -15,7 +15,7 @@ export default function Products() {
   const { addToCart } = useCart()
   const { products } = useProducts()
   const [activeCategory, setActiveCategory] = useState('all')
-  const [hoveredProduct, setHoveredProduct] = useState<number | null>(null)
+  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -174,7 +174,7 @@ export default function Products() {
                     <span className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
                       ${product.price}
                     </span>
-                    {product.originalPrice > product.price && (
+                    {product.originalPrice && product.originalPrice > product.price && (
                       <span className="text-gray-400 line-through text-sm sm:text-base">
                         ${product.originalPrice}
                       </span>

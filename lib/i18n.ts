@@ -74,7 +74,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
-    whitelist: supportedLanguages, // Only allow supported languages
+    supportedLngs: supportedLanguages, // Use supportedLngs instead of whitelist
     debug: false, // Set to true for debugging
     interpolation: {
       escapeValue: false, // React already safes from xss
@@ -84,7 +84,6 @@ i18n
       lookupLocalStorage: 'i18nextLng',
       caches: ['localStorage'],
       excludeCacheFor: ['cimode'],
-      checkWhitelist: true,
     },
     react: {
       useSuspense: false, // Important for SSR
