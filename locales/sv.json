@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "Hem",
+    "about": "Om Oss", 
+    "features": "Funktioner",
+    "nft_collection": "NFT Kollektion",
+    "contact": "Kontakt",
+    "shop": "Butik"
+  },
+  "hero": {
+    "badge": "PREMIUM SPORTKLÄDER",
+    "title_1": "SLÄPP LOSS",
+    "title_2": "DIN", 
+    "title_3": "INRE",
+    "title_4": "REBELL",
+    "subtitle": "Inspirerade av den majestätiska falken skapar vi premium sportkläder som ger atleter kraft att sväva bortom gränser med aerodynamisk precision och oöverträffad stil.",
+    "shop_collection": "Handla Kollektion",
+    "watch_story": "Se Berättelsen"
+  },
+  "about": {
+    "title": "OM FALCO P",
+    "subtitle": "Där Prestanda Möter Stil",
+    "description": "Född ur visionen att skapa sportkläder som förkroppsligar falkens grace, kraft och precision, representerar Falco P toppen av atletisk innovation.",
+    "mission": "Vårt Uppdrag",
+    "vision": "Vår Vision", 
+    "values": "Våra Värderingar"
+  },
+  "features": {
+    "title": "VARFÖR VÄLJA",
+    "subtitle": "Vi kombinerar aerodynamisk design, innovativa mekanismer och premiumkvalitet för att skapa sportkläder som inte bara möter förväntningar—de överträffar dem.",
+    "lightning_performance": "Blixtprestanda",
+    "lightning_desc": "Konstruerad med banbrytande teknik för maximal hastighet och smidighet, precis som falken.",
+    "durability": "Hållbarhet Garanterad",
+    "durability_desc": "Byggd för att stå emot de tuffaste förhållandena med premiummaterial och konstruktion.",
+    "eco_friendly": "Miljövänlig",
+    "eco_desc": "Engagerad för hållbarhet med återvunna material och miljömedveten produktion.",
+    "premium_quality": "Premiumkvalitet",
+    "quality_desc": "Varje produkt uppfyller de högsta standarderna för hantverk och uppmärksamhet på detaljer.",
+    "smart_integration": "Smart Integration",
+    "smart_desc": "Anslut till vår app för personliga träningsinsikter och prestandaspårning.",
+    "global_reach": "Global Räckvidd",
+    "global_desc": "Tillgänglig världsomfattande med snabb leverans och lokal kundtjänst i 50+ länder."
+  },
+  "products": {
+    "title": "UTVALDA PRODUKTER",
+    "subtitle": "Upptäck Vår Senaste Kollektion",
+    "view_all": "Visa Alla Produkter"
+  },
+  "newsletter": {
+    "title": "GÅ MED I FALCO P GEMENSKAPEN",
+    "subtitle": "Prenumerera för att få exklusiva uppdateringar, tidig tillgång till nya släpp och specialerbjudanden levererade till din inkorg.",
+    "email_placeholder": "Ange din e-postadress",
+    "subscribe": "Prenumerera Nu",
+    "success_message": "🚀 Välkommen till Falco P! Kolla din e-post för exklusivt innehåll.",
+    "error_message": "Något gick fel. Vänligen försök igen!"
+  },
+  "footer": {
+    "description": "Stärker atleter världsomfattande med premium sportkläder inspirerade av den majestätiska falken. Släpp loss din inre rebell med våra innovativa designer och kompromisslös kvalitet.",
+    "company": "Företag",
+    "products": "Produkter",
+    "support": "Support",
+    "legal": "Juridiskt",
+    "stay_updated": "Håll Dig Uppdaterad",
+    "newsletter_desc": "Få de senaste nyheterna, exklusiva erbjudanden och produktuppdateringar levererade till din inkorg.",
+    "subscribe": "Prenumerera",
+    "made_with_love": "Gjord med",
+    "in_sweden": "i Sverige",
+    "all_rights": "Alla rättigheter förbehållna."
+  },
+  "story": {
+    "title": "WING P BERÄTTELSE",
+    "quote": "\"Du köper inte bara en sko. Du köper en bit av en dröm.\"",
+    "intro": "VI PRESENTERAR FALCO P \"WING P\"",
+    "tagline": "Det här är inte bara skor; det är din kinetiska potential, olåst.",
+    "magic": "Men den sanna magin är under dina fötter.",
+    "this_can_be_you": "Det här kan vara du.",
+    "waiting_for_you": "Drömmen är inte längre bara Abduseburs. Den är här. Den är verklig. Den väntar på dig.",
+    "own_it": "Sluta röra dig genom världen. Börja äga den.",
+    "cta_line": "Få Dina Vingar. Släpp Loss Kraften.",
+    "available_now": "Falco P \"Wing P\" – Tillgänglig Nu.",
+    "collection_btn": "FALCO P Kollektion"
+  },
+  "falco_story": {
+    "title": "FALCO P BERÄTTELSE",
+    "quote": "\"Drömmen gick inte; den svävade.\"",
+    "sports_section": "FÖR VARJE ATLET, FÖR VARJE FLYG",
+    "wing_power": "Det här är Vingkraft.",
+    "unleash": "Släpp Loss Ditt Flyg. Omfamna Angreppet.",
+    "available_now": "Falco P Kollektionen – Tillgänglig Nu.",
+    "collection_btn": "FALCO P Kollektion"
+  },
+  "stories": {
+    "title": "VÅRA BERÄTTELSER",
+    "subtitle": "Upptäck inspirationen, visionen och hantverket bakom varje Falco P skapelse",
+    "read_story": "Läs Berättelse",
+    "explore_collection": "Redo att Uppleva Berättelserna?",
+    "explore_desc": "Utforska vår kompletta kollektion och hitta ditt perfekta par",
+    "shop_now": "Handla Nu"
+  },
+  "common": {
+    "loading": "Laddar...",
+    "back_to_home": "Tillbaka till Hem",
+    "back_to_stories": "Tillbaka till Berättelser",
+    "contact_us": "Kontakta Oss",
+    "learn_more": "Läs Mer"
+  }
+}

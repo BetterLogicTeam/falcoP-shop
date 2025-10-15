@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "about": "Acerca de", 
+    "features": "Características",
+    "nft_collection": "Colección NFT",
+    "contact": "Contacto",
+    "shop": "Tienda"
+  },
+  "hero": {
+    "badge": "ROPA DEPORTIVA PREMIUM",
+    "title_1": "LIBERA",
+    "title_2": "TU", 
+    "title_3": "REBELDE",
+    "title_4": "INTERIOR",
+    "subtitle": "Inspirados por el majestuoso halcón, creamos ropa deportiva premium que empodera a los atletas a volar más allá de los límites con precisión aerodinámica y estilo inigualable.",
+    "shop_collection": "Ver Colección",
+    "watch_story": "Ver Historia"
+  },
+  "about": {
+    "title": "ACERCA DE FALCO P",
+    "subtitle": "Donde el Rendimiento se Encuentra con el Estilo",
+    "description": "Nacido de la visión de crear ropa deportiva que encarne la gracia, poder y precisión del halcón, Falco P representa la cima de la innovación atlética.",
+    "mission": "Nuestra Misión",
+    "vision": "Nuestra Visión", 
+    "values": "Nuestros Valores"
+  },
+  "features": {
+    "title": "¿POR QUÉ ELEGIR",
+    "subtitle": "Combinamos diseño aerodinámico, mecanismos innovadores y calidad premium para crear ropa deportiva que no solo cumple expectativas—las supera.",
+    "lightning_performance": "Rendimiento Relámpago",
+    "lightning_desc": "Diseñado con tecnología de vanguardia para máxima velocidad y agilidad, como el halcón.",
+    "durability": "Durabilidad Garantizada",
+    "durability_desc": "Construido para resistir las condiciones más duras con materiales premium y construcción.",
+    "eco_friendly": "Eco-Amigable",
+    "eco_desc": "Comprometidos con la sostenibilidad con materiales reciclados y producción consciente del medio ambiente.",
+    "premium_quality": "Calidad Premium",
+    "quality_desc": "Cada producto cumple con los más altos estándares de artesanía y atención al detalle.",
+    "smart_integration": "Integración Inteligente",
+    "smart_desc": "Conéctate con nuestra app para insights de entrenamiento personalizados y seguimiento de rendimiento.",
+    "global_reach": "Alcance Global",
+    "global_desc": "Disponible mundialmente con envío rápido y soporte al cliente local en más de 50 países."
+  },
+  "products": {
+    "title": "PRODUCTOS DESTACADOS",
+    "subtitle": "Descubre Nuestra Última Colección",
+    "view_all": "Ver Todos los Productos"
+  },
+  "newsletter": {
+    "title": "ÚNETE A LA COMUNIDAD FALCO P",
+    "subtitle": "Suscríbete para obtener actualizaciones exclusivas, acceso temprano a nuevos lanzamientos y ofertas especiales entregadas a tu bandeja de entrada.",
+    "email_placeholder": "Ingresa tu dirección de correo",
+    "subscribe": "Suscribirse Ahora",
+    "success_message": "🚀 ¡Bienvenido a Falco P! Revisa tu correo para contenido exclusivo.",
+    "error_message": "Algo salió mal. ¡Por favor intenta de nuevo!"
+  },
+  "footer": {
+    "description": "Empoderando atletas mundialmente con ropa deportiva premium inspirada por el majestuoso halcón. Libera tu rebelde interior con nuestros diseños innovadores y calidad sin compromisos.",
+    "company": "Empresa",
+    "products": "Productos",
+    "support": "Soporte",
+    "legal": "Legal",
+    "stay_updated": "Mantente Actualizado",
+    "newsletter_desc": "Obtén las últimas noticias, ofertas exclusivas y actualizaciones de productos entregadas a tu bandeja de entrada.",
+    "subscribe": "Suscribirse",
+    "made_with_love": "Hecho con",
+    "in_sweden": "en Suecia",
+    "all_rights": "Todos los derechos reservados."
+  },
+  "story": {
+    "title": "HISTORIA WING P",
+    "quote": "\"No solo estás comprando un zapato. Estás comprando un pedazo de un sueño.\"",
+    "intro": "PRESENTANDO EL FALCO P \"WING P\"",
+    "tagline": "Esto no es solo calzado; es tu potencial cinético, desbloqueado.",
+    "magic": "Pero la verdadera magia está bajo tus pies.",
+    "this_can_be_you": "Este puedes ser tú.",
+    "waiting_for_you": "El sueño ya no es solo de Abdusebur. Está aquí. Es real. Te está esperando.",
+    "own_it": "Deja de moverte por el mundo. Empieza a dominarlo.",
+    "cta_line": "Obtén Tus Alas. Libera el Poder.",
+    "available_now": "El Falco P \"Wing P\" – Disponible Ahora.",
+    "collection_btn": "Colección FALCO P"
+  },
+  "falco_story": {
+    "title": "HISTORIA FALCO P",
+    "quote": "\"El sueño no caminó; se abalanzó.\"",
+    "sports_section": "PARA CADA ATLETA, PARA CADA VUELO",
+    "wing_power": "Esto es Poder del Ala.",
+    "unleash": "Libera Tu Vuelo. Abraza el Ataque.",
+    "available_now": "La Colección Falco P – Disponible Ahora.",
+    "collection_btn": "Colección FALCO P"
+  },
+  "stories": {
+    "title": "NUESTRAS HISTORIAS",
+    "subtitle": "Descubre la inspiración, visión y artesanía detrás de cada creación Falco P",
+    "read_story": "Leer Historia",
+    "explore_collection": "¿Listo para Experimentar las Historias?",
+    "explore_desc": "Explora nuestra colección completa y encuentra tu par perfecto",
+    "shop_now": "Comprar Ahora"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "back_to_home": "Volver al Inicio",
+    "back_to_stories": "Volver a Historias",
+    "contact_us": "Contáctanos",
+    "learn_more": "Aprende Más"
+  }
+}
