@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Package, ShoppingCart, Users, TrendingUp, Plus, Edit, Trash2 } from 'lucide-react'
+import { Package, ShoppingCart, Users, TrendingUp, Plus, Edit, Trash2, User } from 'lucide-react'
 import Link from 'next/link'
 import { products } from '../../data/products'
+import { useAuth } from '../../contexts/AuthContext'
 
 const AdminDashboard = () => {
+  const { user } = useAuth()
   const [stats, setStats] = useState({
     totalProducts: 0,
     totalOrders: 0,
@@ -29,8 +31,21 @@ const AdminDashboard = () => {
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-        <p className="text-gray-600">Welcome to your admin panel</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+            <p className="text-gray-600">Welcome back, {user?.name || 'Admin'}!</p>
+          </div>
+          <div className="flex items-center space-x-3 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div className="w-10 h-10 bg-falco-accent rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-black" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+              <p className="text-xs text-gray-500">{user?.email}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Stats Cards */}

@@ -9,15 +9,35 @@ import {
   BarChart3, 
   ShoppingCart,
   Menu,
-  X
+  X,
+  LogOut,
+  User
 } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useAuth } from '../contexts/AuthContext'
+import toast from 'react-hot-toast'
 
 const AdminSidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+  const { user, logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    toast.success('Logged out successfully', {
+      duration: 2000,
+      style: {
+        background: '#10B981',
+        color: '#fff',
+        fontSize: '14px',
+        fontWeight: '500',
+      },
+    })
+    router.push('/admin/login')
+  }
 
   const menuItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -99,7 +119,23 @@ const AdminSidebar = () => {
       </nav>
 
       {/* Footer */}
-      <div className="absolute bottom-4 left-4 right-4">
+      <div className="absolute bottom-4 left-4 right-4 space-y-2">
+        {/* User Info */}
+        {user && (
+          <div className="flex items-center space-x-3 px-3 py-2 bg-gray-100 rounded-lg">
+            <div className="w-8 h-8 bg-falco-accent rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-black" />
+            </div>
+            {!isCollapsed && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800 truncate">{user.name}</p>
+                <p className="text-xs text-gray-500 truncate">{user.email}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Back to Site */}
         <Link
           href="/"
           className="flex items-center space-x-3 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -107,6 +143,15 @@ const AdminSidebar = () => {
           <div className="w-5 h-5 bg-gray-400 rounded"></div>
           {!isCollapsed && <span className="font-medium">Back to Site</span>}
         </Link>
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center space-x-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+        >
+          <LogOut className="w-5 h-5" />
+          {!isCollapsed && <span className="font-medium">Logout</span>}
+        </button>
       </div>
     </div>
     </>
