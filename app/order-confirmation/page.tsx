@@ -1,12 +1,12 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CheckCircle, Package, Truck, Home, ShoppingBag, Clock, Mail, Phone } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
-export default function OrderConfirmationPage() {
+function OrderConfirmationContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [orderDetails, setOrderDetails] = useState<{
@@ -252,5 +252,20 @@ export default function OrderConfirmationPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function OrderConfirmationPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-falco-accent mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading order confirmation...</p>
+        </div>
+      </div>
+    }>
+      <OrderConfirmationContent />
+    </Suspense>
   )
 }
