@@ -9,7 +9,22 @@ import Image from 'next/image'
 export default function OrderConfirmationPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [orderDetails, setOrderDetails] = useState({
+  const [orderDetails, setOrderDetails] = useState<{
+    orderId: string
+    paymentIntent: string
+    total: number
+    items: Array<{
+      id: string
+      name: string
+      size: string
+      color: string
+      quantity: number
+      price: number
+      image: string
+    }>
+    estimatedDelivery: string
+    trackingNumber: string
+  }>({
     orderId: '',
     paymentIntent: '',
     total: 0,
