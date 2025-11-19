@@ -1,10 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
+import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, Lock, Mail, ArrowLeft, Shield } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail, ArrowLeft, Shield, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '../../../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
 export default function AdminLogin() {
@@ -12,7 +12,6 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const { login } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,8 +19,23 @@ export default function AdminLogin() {
     setIsLoading(true)
 
     try {
-      const success = await login(email, password)
-      if (success) {
+      const result = await signIn('admin-login', {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        toast.error(result.error, {
+          duration: 4000,
+          style: {
+            background: '#EF4444',
+            color: '#fff',
+            fontSize: '16px',
+            fontWeight: '600',
+          },
+        })
+      } else {
         toast.success('Login successful! Welcome to Admin Panel', {
           duration: 3000,
           style: {
@@ -32,16 +46,7 @@ export default function AdminLogin() {
           },
         })
         router.push('/admin')
-      } else {
-        toast.error('Invalid credentials. Please try again.', {
-          duration: 4000,
-          style: {
-            background: '#EF4444',
-            color: '#fff',
-            fontSize: '16px',
-            fontWeight: '600',
-          },
-        })
+        router.refresh()
       }
     } catch (error) {
       toast.error('Login failed. Please try again.', {
@@ -62,7 +67,7 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex items-center justify-center p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-falco-accent/5 via-transparent to-falco-gold/5"></div>
-      
+
       <div className="relative z-10 w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
@@ -93,7 +98,7 @@ export default function AdminLogin() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-falco-accent focus:border-transparent transition-all duration-300"
-                  placeholder="admin123@gmail.com"
+                  placeholder="admin@falcop.com"
                   required
                 />
               </div>
@@ -139,7 +144,7 @@ export default function AdminLogin() {
             >
               {isLoading ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                  <Loader2 className="w-5 h-5 animate-spin" />
                   <span>Signing In...</span>
                 </>
               ) : (
@@ -155,7 +160,7 @@ export default function AdminLogin() {
           <div className="mt-6 p-4 bg-blue-500/20 border border-blue-500/30 rounded-xl">
             <h3 className="text-blue-300 font-semibold mb-2">Demo Credentials:</h3>
             <div className="text-sm text-blue-200 space-y-1">
-              <p><strong>Email:</strong> admin123@gmail.com</p>
+              <p><strong>Email:</strong> admin@falcop.com</p>
               <p><strong>Password:</strong> admin123</p>
             </div>
           </div>

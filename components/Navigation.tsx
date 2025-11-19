@@ -1,20 +1,35 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Menu, X, ShoppingBag, User, Search, ChevronDown } from 'lucide-react'
+import { Menu, X, ShoppingBag, User, Search, ChevronDown, LogOut, Package, Settings } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useSession, signOut } from 'next-auth/react'
 import { useClientTranslation } from '../hooks/useClientTranslation'
 import { useCart } from '../contexts/CartContext'
 import LanguageSelector from './LanguageSelector'
 
 export default function Navigation() {
   const { t } = useClientTranslation()
+  const { data: session } = useSession()
   const { state, openCart } = useCart()
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
+  const [showUserMenu, setShowUserMenu] = useState(false)
   const closeTimer = useRef<number | null>(null)
+  const userMenuRef = useRef<HTMLDivElement>(null)
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setShowUserMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const openDropdown = (key: string) => {
     if (closeTimer.current) {
@@ -573,10 +588,74 @@ export default function Navigation() {
             <button className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full">
               <Search className="w-4 h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6" />
             </button>
-            <button className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full">
-              <User className="w-4 h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6" />
-            </button>
-            <button 
+
+            {/* User Menu */}
+            <div className="relative" ref={userMenuRef}>
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full"
+              >
+                <User className="w-4 h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6" />
+              </button>
+
+              {showUserMenu && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-black/95 backdrop-blur-xl border border-gray-800 rounded-lg shadow-xl overflow-hidden z-50">
+                  {session ? (
+                    <>
+                      <div className="px-4 py-3 border-b border-gray-800">
+                        <p className="text-sm font-medium text-white truncate">{session.user?.name}</p>
+                        <p className="text-xs text-gray-400 truncate">{session.user?.email}</p>
+                      </div>
+                      <Link
+                        href="/account"
+                        className="flex items-center px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <Settings className="w-4 h-4 mr-2" />
+                        My Account
+                      </Link>
+                      <Link
+                        href="/account/orders"
+                        className="flex items-center px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        <Package className="w-4 h-4 mr-2" />
+                        My Orders
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false)
+                          signOut({ redirect: false })
+                        }}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 border-t border-gray-800"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/auth/login"
+                        className="block px-4 py-3 text-sm text-white hover:bg-white/10 font-medium"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/auth/register"
+                        className="block px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/10 border-t border-gray-800"
+                        onClick={() => setShowUserMenu(false)}
+                      >
+                        Create Account
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <button
               onClick={openCart}
               className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full relative"
             >
@@ -759,14 +838,66 @@ export default function Navigation() {
               {/* Mobile Language Selector */}
               <LanguageSelector mobile className="mt-6" />
               
+              {/* Mobile User Section */}
+              <div className="border-t border-white/10 pt-4">
+                {session ? (
+                  <div className="space-y-2">
+                    <div className="px-2 py-2">
+                      <p className="text-sm font-medium text-white">{session.user?.name}</p>
+                      <p className="text-xs text-gray-400">{session.user?.email}</p>
+                    </div>
+                    <Link
+                      href="/account"
+                      className="flex items-center px-2 py-2 text-white/80 hover:text-falco-accent"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Settings className="w-5 h-5 mr-3" />
+                      My Account
+                    </Link>
+                    <Link
+                      href="/account/orders"
+                      className="flex items-center px-2 py-2 text-white/80 hover:text-falco-accent"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Package className="w-5 h-5 mr-3" />
+                      My Orders
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setIsOpen(false)
+                        signOut({ redirect: false })
+                      }}
+                      className="flex items-center w-full px-2 py-2 text-white/80 hover:text-falco-accent"
+                    >
+                      <LogOut className="w-5 h-5 mr-3" />
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Link
+                      href="/auth/login"
+                      className="block px-2 py-3 text-white font-medium hover:text-falco-accent"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      className="block px-2 py-3 text-gray-400 hover:text-falco-accent"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Create Account
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               <div className="flex items-center justify-center space-x-6 pt-6 border-t border-white/10">
                 <button className="p-3 text-white/80 hover:text-falco-accent transition-colors duration-300">
                   <Search className="w-5 h-5" />
                 </button>
-                <button className="p-3 text-white/80 hover:text-falco-accent transition-colors duration-300">
-                  <User className="w-5 h-5" />
-                </button>
-                <button 
+                <button
                   onClick={openCart}
                   className="p-3 text-white/80 hover:text-falco-accent transition-colors duration-300 relative"
                 >

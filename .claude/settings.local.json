@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx prisma:*)",
+      "Bash(npm install:*)",
+      "Bash(DATABASE_URL=\"postgresql://postgres.aachaovbtsadkdnopcom:6731467112@aws-1-eu-west-2.pooler.supabase.com:5432/postgres\" npx prisma db push:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run dev:*)",
+      "Bash(DATABASE_URL=\"postgresql://postgres.aachaovbtsadkdnopcom:6731467112@aws-1-eu-west-2.pooler.supabase.com:5432/postgres\" npx ts-node:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

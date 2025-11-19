@@ -833,20 +833,22 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
             {/* Google Pay Button */}
             {selectedPaymentMethod === 'google' && (
               <div className="space-y-3">
-                <div className="relative">
-                  <PaymentRequestButtonElement
-                    options={{
-                      paymentRequest,
-                      style: {
-                        paymentRequestButton: {
-                          type: 'default',
-                          theme: 'light',
-                          height: '56px',
+                {canMakePayment && paymentRequest && (
+                  <div className="relative">
+                    <PaymentRequestButtonElement
+                      options={{
+                        paymentRequest,
+                        style: {
+                          paymentRequestButton: {
+                            type: 'default',
+                            theme: 'light',
+                            height: '56px',
+                          },
                         },
-                      },
-                    }}
-                  />
-                </div>
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="text-center">
                   <button
                     type="submit"

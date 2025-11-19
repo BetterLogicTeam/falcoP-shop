@@ -1,11 +1,11 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
-import { products as initialProducts } from '../data/products'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 interface Product {
   id: string
   name: string
+  slug: string
   category: 'men' | 'women' | 'kids'
   subcategory: 'sportswear' | 'shoes'
   type: string
@@ -13,6 +13,7 @@ interface Product {
   originalPrice?: number
   rating: number
   reviews: number
+  reviewCount?: number
   image: string
   images: string[]
   badge?: string
@@ -25,65 +26,144 @@ interface Product {
 
 interface ProductContextType {
   products: Product[]
-  addProduct: (product: Omit<Product, 'id'>) => void
-  updateProduct: (id: string, product: Partial<Product>) => void
-  deleteProduct: (id: string) => void
+  isLoading: boolean
+  error: string | null
+  addProduct: (product: Omit<Product, 'id' | 'slug'>) => Promise<Product>
+  updateProduct: (id: string, product: Partial<Product>) => Promise<void>
+  deleteProduct: (id: string) => Promise<void>
   getProduct: (id: string) => Product | undefined
+  refreshProducts: () => Promise<void>
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined)
 
 export const ProductProvider = ({ children }: { children: React.ReactNode }) => {
-  const [products, setProducts] = useState<Product[]>(initialProducts)
+  const [products, setProducts] = useState<Product[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Load products from localStorage on mount
-  useEffect(() => {
-    const savedProducts = localStorage.getItem('falco-products')
-    if (savedProducts) {
-      try {
-        const parsedProducts = JSON.parse(savedProducts)
-        setProducts(parsedProducts)
-      } catch (error) {
-        console.error('Error loading products from localStorage:', error)
+  // Fetch products from API
+  const fetchProducts = useCallback(async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await fetch('/api/products?limit=1000')
+      if (!response.ok) {
+        throw new Error('Failed to fetch products')
       }
+      const data = await response.json()
+      // Map API response to match expected Product interface
+      const mappedProducts = data.products.map((p: any) => ({
+        ...p,
+        reviews: p.reviewCount || p.reviews || 0,
+      }))
+      setProducts(mappedProducts)
+    } catch (err) {
+      console.error('Error fetching products:', err)
+      setError(err instanceof Error ? err.message : 'Failed to fetch products')
+    } finally {
+      setIsLoading(false)
     }
   }, [])
 
-  // Save products to localStorage whenever products change
+  // Load products from API on mount
   useEffect(() => {
-    localStorage.setItem('falco-products', JSON.stringify(products))
-  }, [products])
+    fetchProducts()
+  }, [fetchProducts])
 
-  const addProduct = (productData: Omit<Product, 'id'>) => {
-    const newProduct: Product = {
-      ...productData,
-      id: `product_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const addProduct = async (productData: Omit<Product, 'id' | 'slug'>): Promise<Product> => {
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to add product')
+      }
+
+      const newProduct = await response.json()
+      const mappedProduct = {
+        ...newProduct,
+        reviews: newProduct.reviewCount || newProduct.reviews || 0,
+      }
+      setProducts(prev => [...prev, mappedProduct])
+      return mappedProduct
+    } catch (err) {
+      console.error('Error adding product:', err)
+      throw err
     }
-    setProducts(prev => [...prev, newProduct])
-    return newProduct
   }
 
-  const updateProduct = (id: string, productData: Partial<Product>) => {
-    setProducts(prev => prev.map(product => 
-      product.id === id ? { ...product, ...productData } : product
-    ))
+  const updateProduct = async (id: string, productData: Partial<Product>): Promise<void> => {
+    try {
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update product')
+      }
+
+      const updatedProduct = await response.json()
+      const mappedProduct = {
+        ...updatedProduct,
+        reviews: updatedProduct.reviewCount || updatedProduct.reviews || 0,
+      }
+      setProducts(prev => prev.map(product =>
+        product.id === id ? mappedProduct : product
+      ))
+    } catch (err) {
+      console.error('Error updating product:', err)
+      throw err
+    }
   }
 
-  const deleteProduct = (id: string) => {
-    setProducts(prev => prev.filter(product => product.id !== id))
+  const deleteProduct = async (id: string): Promise<void> => {
+    try {
+      const response = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to delete product')
+      }
+
+      setProducts(prev => prev.filter(product => product.id !== id))
+    } catch (err) {
+      console.error('Error deleting product:', err)
+      throw err
+    }
   }
 
-  const getProduct = (id: string) => {
-    return products.find(product => product.id === id)
+  const getProduct = (id: string): Product | undefined => {
+    return products.find(product => product.id === id || product.slug === id)
+  }
+
+  const refreshProducts = async (): Promise<void> => {
+    await fetchProducts()
   }
 
   return (
     <ProductContext.Provider value={{
       products,
+      isLoading,
+      error,
       addProduct,
       updateProduct,
       deleteProduct,
-      getProduct
+      getProduct,
+      refreshProducts
     }}>
       {children}
     </ProductContext.Provider>

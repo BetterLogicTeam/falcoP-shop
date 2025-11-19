@@ -1,15 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, Upload, X, Save } from 'lucide-react'
+import { ArrowLeft, Upload, X, Save, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useProducts } from '../../../../contexts/ProductContext'
 import toast from 'react-hot-toast'
 
 const ProductForm = () => {
   const router = useRouter()
-  const { addProduct } = useProducts()
   const [formData, setFormData] = useState({
     name: '',
     type: '',
@@ -27,6 +25,7 @@ const ProductForm = () => {
 
   const [imagePreview, setImagePreview] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
   const categories = [
     { value: 'men', label: 'Men' },
@@ -56,39 +55,63 @@ const ProductForm = () => {
     }))
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log('Image change triggered', e.target.files)
     const file = e.target.files?.[0]
     if (file) {
       console.log('File selected:', file.name, file.type, file.size)
-      
+
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file')
+        toast.error('Please select an image file')
         return
       }
-      
+
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
-        alert('File size must be less than 10MB')
+        toast.error('File size must be less than 10MB')
         return
       }
-      
+
+      // Show local preview immediately
       const reader = new FileReader()
       reader.onload = (e) => {
-        const result = e.target?.result as string
-        console.log('Image loaded successfully')
-        setImagePreview(result)
-        setFormData(prev => ({
-          ...prev,
-          image: result
-        }))
-      }
-      reader.onerror = () => {
-        console.error('Error reading file')
-        alert('Error reading file')
+        setImagePreview(e.target?.result as string)
       }
       reader.readAsDataURL(file)
+
+      // Upload to Cloudinary
+      setIsUploading(true)
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Failed to upload image')
+        }
+
+        const result = await response.json()
+        console.log('Image uploaded successfully:', result.url)
+
+        setFormData(prev => ({
+          ...prev,
+          image: result.url
+        }))
+
+        toast.success('Image uploaded successfully!')
+      } catch (error) {
+        console.error('Error uploading image:', error)
+        toast.error(error instanceof Error ? error.message : 'Failed to upload image')
+        setImagePreview('')
+      } finally {
+        setIsUploading(false)
+      }
     } else {
       console.log('No file selected')
     }
@@ -111,8 +134,8 @@ const ProductForm = () => {
       const productData = {
         name: formData.name,
         type: formData.type,
-        category: formData.category as 'men' | 'women' | 'kids',
-        subcategory: formData.subcategory as 'sportswear' | 'shoes',
+        category: formData.category,
+        subcategory: formData.subcategory,
         price: parseFloat(formData.price),
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
         description: formData.description,
@@ -127,13 +150,25 @@ const ProductForm = () => {
         features: ['High Quality', 'Comfortable'] // Default features
       }
 
-      // Add product using context
-      const newProduct = addProduct(productData)
-      
+      // Call API to create product
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to create product')
+      }
+
+      const newProduct = await response.json()
       console.log('Product added successfully:', newProduct)
-      
+
       // Show success toast
-      toast.success('🎉 Product added successfully!', {
+      toast.success('Product added successfully!', {
         duration: 4000,
         style: {
           background: '#10B981',
@@ -141,16 +176,15 @@ const ProductForm = () => {
           fontSize: '16px',
           fontWeight: '600',
         },
-        icon: '✅',
       })
-      
+
       // Redirect to products list after a short delay
       setTimeout(() => {
         router.push('/admin/products')
       }, 1500)
     } catch (error) {
       console.error('Error saving product:', error)
-      toast.error('❌ Error saving product. Please try again.', {
+      toast.error(error instanceof Error ? error.message : 'Error saving product. Please try again.', {
         duration: 4000,
         style: {
           background: '#EF4444',
@@ -319,23 +353,34 @@ const ProductForm = () => {
                   <img
                     src={imagePreview}
                     alt="Product preview"
-                    className="w-full h-48 object-cover rounded-lg"
+                    className={`w-full h-48 object-cover rounded-lg ${isUploading ? 'opacity-50' : ''}`}
                   />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  {isUploading && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="bg-black/70 rounded-lg px-4 py-2 flex items-center space-x-2">
+                        <Loader2 className="w-5 h-5 text-white animate-spin" />
+                        <span className="text-white text-sm">Uploading...</span>
+                      </div>
+                    </div>
+                  )}
+                  {!isUploading && (
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
                   <div className="absolute bottom-2 left-2 right-2">
-                    <label className="cursor-pointer bg-black/50 text-white px-3 py-1 rounded text-sm hover:bg-black/70 transition-colors">
+                    <label className={`cursor-pointer bg-black/50 text-white px-3 py-1 rounded text-sm hover:bg-black/70 transition-colors ${isUploading ? 'pointer-events-none opacity-50' : ''}`}>
                       Change Image
                       <input
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
                         className="hidden"
+                        disabled={isUploading}
                       />
                     </label>
                   </div>
@@ -442,11 +487,15 @@ const ProductForm = () => {
               <div className="flex space-x-3">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isUploading}
                   className="flex-1 flex items-center justify-center space-x-2 bg-falco-accent text-black px-4 py-2 rounded-lg hover:bg-falco-gold transition-colors disabled:opacity-50"
                 >
-                  <Save className="w-4 h-4" />
-                  <span>{isSubmitting ? 'Saving...' : 'Save Product'}</span>
+                  {isSubmitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  <span>{isSubmitting ? 'Saving...' : isUploading ? 'Uploading...' : 'Save Product'}</span>
                 </button>
                 <Link
                   href="/admin/products"

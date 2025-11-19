@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, Poppins } from 'next/font/google'
 import './globals.css'
+import SessionProvider from '../components/SessionProvider'
 import I18nProvider from '../components/I18nProvider'
 import { CartProvider } from '../contexts/CartContext'
 import { ProductProvider } from '../contexts/ProductContext'
@@ -81,24 +82,26 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body className={`${inter.className} antialiased`}>
-        <ProductProvider>
-          <I18nProvider>
-            <CartProvider>
-              {children}
-              <CartDrawer />
-              <Toaster 
-                position="top-right"
-                toastOptions={{
-                  duration: 3000,
-                  style: {
-                    background: '#363636',
-                    color: '#fff',
-                  },
-                }}
-              />
-            </CartProvider>
-          </I18nProvider>
-        </ProductProvider>
+        <SessionProvider>
+          <ProductProvider>
+            <I18nProvider>
+              <CartProvider>
+                {children}
+                <CartDrawer />
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 3000,
+                    style: {
+                      background: '#363636',
+                      color: '#fff',
+                    },
+                  }}
+                />
+              </CartProvider>
+            </I18nProvider>
+          </ProductProvider>
+        </SessionProvider>
       </body>
     </html>
   )

@@ -1,0 +1,259 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==================== ADMIN ====================
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Will be hashed with bcrypt
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ==================== CUSTOMER ====================
+model Customer {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String?   // Optional for guest checkout
+  firstName     String
+  lastName      String
+  phone         String?
+  avatar        String?
+  status        String    @default("active") // active, inactive, vip
+  loyaltyPoints Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  addresses     Address[]
+  orders        Order[]
+  reviews       Review[]
+  wishlist      WishlistItem[]
+}
+
+// ==================== ADDRESS ====================
+model Address {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  firstName  String
+  lastName   String
+  company    String?
+  address1   String
+  address2   String?
+  city       String
+  state      String?
+  postalCode String
+  country    String
+  phone      String?
+  isDefault  Boolean  @default(false)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Orders shipped to this address
+  orders     Order[]
+}
+
+// ==================== PRODUCT ====================
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  category      String   // men, women, kids
+  subcategory   String   // sportswear, shoes
+  type          String   // Sports Bras, Running Shoes, etc.
+  price         Float
+  originalPrice Float?
+  rating        Float    @default(0)
+  reviewCount   Int      @default(0)
+
+  // Images
+  image         String   // Main image URL
+  images        String[] // Additional image URLs
+
+  // Product details
+  badge         String?  // Best Seller, New, Pro Choice, etc.
+  colors        String[] // Available colors
+  sizes         String[] // Available sizes
+  description   String
+  features      String[] // Feature list
+
+  // Inventory
+  inStock       Boolean  @default(true)
+  stockQuantity Int      @default(0)
+  lowStockAlert Int      @default(5)
+  sku           String?  @unique
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  orderItems    OrderItem[]
+  reviews       Review[]
+  wishlistItems WishlistItem[]
+}
+
+// ==================== ORDER ====================
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique // ORD-XXXXX format
+
+  // Customer info (can be guest or registered)
+  customerId      String?
+  customer        Customer?   @relation(fields: [customerId], references: [id])
+
+  // Guest checkout info
+  email           String
+  firstName       String
+  lastName        String
+  phone           String?
+
+  // Shipping address
+  shippingAddressId String?
+  shippingAddress   Address?  @relation(fields: [shippingAddressId], references: [id])
+
+  // Or inline address for guests
+  shippingLine1   String?
+  shippingLine2   String?
+  shippingCity    String?
+  shippingState   String?
+  shippingPostal  String?
+  shippingCountry String?
+
+  // Order details
+  status          String      @default("pending") // pending, processing, shipped, delivered, cancelled
+  paymentStatus   String      @default("pending") // pending, paid, failed, refunded
+  paymentMethod   String?     // stripe, apple_pay, google_pay, etc.
+  paymentIntentId String?     // Stripe payment intent ID
+
+  // Amounts
+  subtotal        Float
+  shippingCost    Float       @default(0)
+  tax             Float       @default(0)
+  discount        Float       @default(0)
+  total           Float
+
+  // Shipping & tracking
+  shippingMethod  String?
+  trackingNumber  String?
+  estimatedDelivery DateTime?
+
+  // Discount code
+  couponId        String?
+  coupon          Coupon?     @relation(fields: [couponId], references: [id])
+
+  // Notes
+  customerNotes   String?
+  adminNotes      String?
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  items           OrderItem[]
+}
+
+// ==================== ORDER ITEM ====================
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  name      String  // Snapshot of product name
+  price     Float   // Snapshot of price at time of order
+  quantity  Int
+  size      String?
+  color     String?
+  image     String? // Snapshot of product image
+
+  createdAt DateTime @default(now())
+}
+
+// ==================== REVIEW ====================
+model Review {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  rating     Int      // 1-5
+  title      String?
+  comment    String
+  isVerified Boolean  @default(false) // Verified purchase
+  isApproved Boolean  @default(false) // Admin approved
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ==================== WISHLIST ====================
+model WishlistItem {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime @default(now())
+
+  @@unique([customerId, productId])
+}
+
+// ==================== COUPON ====================
+model Coupon {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  description     String?
+
+  discountType    String    // percentage, fixed
+  discountValue   Float
+
+  minOrderAmount  Float?
+  maxDiscount     Float?    // Cap for percentage discounts
+
+  usageLimit      Int?      // Total usage limit
+  usageCount      Int       @default(0)
+  usagePerCustomer Int      @default(1)
+
+  startDate       DateTime?
+  endDate         DateTime?
+  isActive        Boolean   @default(true)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  orders          Order[]
+}
+
+// ==================== NEWSLETTER ====================
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

@@ -42,10 +42,46 @@ export default function CheckoutPage() {
     }))
   }
 
-  const handlePaymentSuccess = (paymentIntent: any) => {
-    // Clear cart and redirect to success page
-    clearCart()
-    router.push(`/order-confirmation?payment_intent=${paymentIntent.id}`)
+  const handlePaymentSuccess = async (paymentIntent: any) => {
+    try {
+      // Create order in database
+      const orderItems = state.items.map(item => ({
+        productId: item.product.id,
+        name: item.product.name,
+        image: item.product.image,
+        price: item.product.price,
+        quantity: item.quantity,
+        size: item.selectedSize || null,
+        color: item.selectedColor || null
+      }))
+
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerInfo: formData,
+          items: orderItems,
+          totalAmount: state.totalPrice,
+          paymentIntentId: paymentIntent.id
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        console.error('Failed to create order:', data.error)
+        toast.error('Order created but failed to save. Please contact support.')
+      }
+
+      // Clear cart and redirect to success page
+      clearCart()
+      router.push(`/order-confirmation?order=${data.order?.orderNumber || ''}&payment_intent=${paymentIntent.id}`)
+    } catch (error) {
+      console.error('Error creating order:', error)
+      // Still redirect even if order save fails
+      clearCart()
+      router.push(`/order-confirmation?payment_intent=${paymentIntent.id}`)
+    }
   }
 
   const handlePaymentError = (error: string) => {

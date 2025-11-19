@@ -56,16 +56,6 @@ function cartReducer(state: CartState, action: CartAction): CartState {
             ? { ...item, quantity: item.quantity + quantity }
             : item
         )
-        toast.success(`${product.name} quantity updated!`, {
-          id: `cart-update-${product.id}`,
-          duration: 2000,
-          style: {
-            background: '#10B981',
-            color: '#fff',
-            fontSize: '14px',
-            fontWeight: '500',
-          },
-        })
       } else {
         // Add new item
         const newItem: CartItem = {
@@ -76,16 +66,6 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           selectedColor: color,
         }
         newItems = [...state.items, newItem]
-        toast.success(`${product.name} added to cart!`, {
-          id: `cart-add-${product.id}`,
-          duration: 2000,
-          style: {
-            background: '#10B981',
-            color: '#fff',
-            fontSize: '14px',
-            fontWeight: '500',
-          },
-        })
       }
 
       const totalItems = newItems.reduce((sum, item) => sum + item.quantity, 0)
@@ -211,6 +191,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = (product: Product, quantity = 1, size?: string, color?: string) => {
     dispatch({ type: 'ADD_TO_CART', payload: { product, quantity, size, color } })
+    toast.success(`${product.name} added to cart!`, {
+      id: `cart-add-${product.id}`,
+      duration: 2000,
+      style: {
+        background: '#10B981',
+        color: '#fff',
+        fontSize: '14px',
+        fontWeight: '500',
+      },
+    })
   }
 
   const removeFromCart = (id: string) => {

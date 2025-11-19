@@ -1,15 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { ArrowLeft, Upload, X, Save } from 'lucide-react'
+import { useState, useEffect, use } from 'react'
+import { ArrowLeft, Upload, X, Save, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useProducts } from '../../../../../contexts/ProductContext'
 import toast from 'react-hot-toast'
 
-const ProductEditForm = ({ params }: { params: { id: string } }) => {
+const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter()
-  const { getProduct, updateProduct } = useProducts()
+  const resolvedParams = use(params)
+  const productId = resolvedParams.id
   const [formData, setFormData] = useState({
     name: '',
     type: '',
@@ -28,6 +28,7 @@ const ProductEditForm = ({ params }: { params: { id: string } }) => {
   const [imagePreview, setImagePreview] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isUploading, setIsUploading] = useState(false)
 
   const categories = [
     { value: 'men', label: 'Men' },
@@ -50,27 +51,41 @@ const ProductEditForm = ({ params }: { params: { id: string } }) => {
   ]
 
   useEffect(() => {
-    // Find the product to edit using context
-    const product = getProduct(params.id)
-    if (product) {
-      setFormData({
-        name: product.name,
-        type: product.type,
-        category: product.category,
-        subcategory: product.subcategory,
-        price: product.price.toString(),
-        originalPrice: product.originalPrice?.toString() || '',
-        description: product.description || '',
-        image: product.image,
-        badge: product.badge || '',
-        rating: product.rating.toString(),
-        reviews: product.reviews.toString(),
-        stock: product.inStock ? 'In Stock' : 'Out of Stock'
-      })
-      setImagePreview(product.image)
+    // Fetch product from API
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`/api/products/${productId}`)
+        if (!response.ok) {
+          throw new Error('Product not found')
+        }
+        const product = await response.json()
+
+        setFormData({
+          name: product.name,
+          type: product.type,
+          category: product.category,
+          subcategory: product.subcategory,
+          price: product.price.toString(),
+          originalPrice: product.originalPrice?.toString() || '',
+          description: product.description || '',
+          image: product.image,
+          badge: product.badge || '',
+          rating: product.rating.toString(),
+          reviews: (product.reviewCount || product.reviews || 0).toString(),
+          stock: product.inStock ? 'In Stock' : 'Out of Stock'
+        })
+        setImagePreview(product.image)
+      } catch (error) {
+        console.error('Error fetching product:', error)
+        toast.error('Failed to load product')
+        router.push('/admin/products')
+      } finally {
+        setIsLoading(false)
+      }
     }
-    setIsLoading(false)
-  }, [params.id, getProduct])
+
+    fetchProduct()
+  }, [productId, router])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -80,19 +95,60 @@ const ProductEditForm = ({ params }: { params: { id: string } }) => {
     }))
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select an image file')
+        return
+      }
+
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('File size must be less than 10MB')
+        return
+      }
+
+      // Show local preview immediately
       const reader = new FileReader()
       reader.onload = (e) => {
-        const result = e.target?.result as string
-        setImagePreview(result)
-        setFormData(prev => ({
-          ...prev,
-          image: result
-        }))
+        setImagePreview(e.target?.result as string)
       }
       reader.readAsDataURL(file)
+
+      // Upload to Cloudinary
+      setIsUploading(true)
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.error || 'Failed to upload image')
+        }
+
+        const result = await response.json()
+        console.log('Image uploaded successfully:', result.url)
+
+        setFormData(prev => ({
+          ...prev,
+          image: result.url
+        }))
+
+        toast.success('Image uploaded successfully!')
+      } catch (error) {
+        console.error('Error uploading image:', error)
+        toast.error(error instanceof Error ? error.message : 'Failed to upload image')
+        setImagePreview('')
+      } finally {
+        setIsUploading(false)
+      }
     }
   }
 
@@ -113,8 +169,8 @@ const ProductEditForm = ({ params }: { params: { id: string } }) => {
       const updatedProductData = {
         name: formData.name,
         type: formData.type,
-        category: formData.category as 'men' | 'women' | 'kids',
-        subcategory: formData.subcategory as 'sportswear' | 'shoes',
+        category: formData.category,
+        subcategory: formData.subcategory,
         price: parseFloat(formData.price),
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
         description: formData.description,
@@ -129,13 +185,25 @@ const ProductEditForm = ({ params }: { params: { id: string } }) => {
         features: ['High Quality', 'Comfortable'] // Default features
       }
 
-      // Update product using context
-      updateProduct(params.id, updatedProductData)
-      
-      console.log('Product updated successfully:', updatedProductData)
-      
+      // Update product via API
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedProductData),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to update product')
+      }
+
+      const updatedProduct = await response.json()
+      console.log('Product updated successfully:', updatedProduct)
+
       // Show success toast
-      toast.success('🎉 Product updated successfully!', {
+      toast.success('Product updated successfully!', {
         duration: 4000,
         style: {
           background: '#10B981',
@@ -143,16 +211,15 @@ const ProductEditForm = ({ params }: { params: { id: string } }) => {
           fontSize: '16px',
           fontWeight: '600',
         },
-        icon: '✅',
       })
-      
+
       // Redirect to products list after a short delay
       setTimeout(() => {
         router.push('/admin/products')
       }, 1500)
     } catch (error) {
       console.error('Error updating product:', error)
-      toast.error('❌ Error updating product. Please try again.', {
+      toast.error(error instanceof Error ? error.message : 'Error updating product. Please try again.', {
         duration: 4000,
         style: {
           background: '#EF4444',
@@ -342,15 +409,37 @@ const ProductEditForm = ({ params }: { params: { id: string } }) => {
                   <img
                     src={imagePreview}
                     alt="Product preview"
-                    className="w-full h-48 object-cover rounded-lg"
+                    className={`w-full h-48 object-cover rounded-lg ${isUploading ? 'opacity-50' : ''}`}
                   />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  {isUploading && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="bg-black/70 rounded-lg px-4 py-2 flex items-center space-x-2">
+                        <Loader2 className="w-5 h-5 text-white animate-spin" />
+                        <span className="text-white text-sm">Uploading...</span>
+                      </div>
+                    </div>
+                  )}
+                  {!isUploading && (
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                  <div className="absolute bottom-2 left-2 right-2">
+                    <label className={`cursor-pointer bg-black/50 text-white px-3 py-1 rounded text-sm hover:bg-black/70 transition-colors ${isUploading ? 'pointer-events-none opacity-50' : ''}`}>
+                      Change Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                        disabled={isUploading}
+                      />
+                    </label>
+                  </div>
                 </div>
               ) : (
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
@@ -445,11 +534,15 @@ const ProductEditForm = ({ params }: { params: { id: string } }) => {
               <div className="flex space-x-3">
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isUploading}
                   className="flex-1 flex items-center justify-center space-x-2 bg-falco-accent text-black px-4 py-2 rounded-lg hover:bg-falco-gold transition-colors disabled:opacity-50"
                 >
-                  <Save className="w-4 h-4" />
-                  <span>{isSubmitting ? 'Updating...' : 'Update Product'}</span>
+                  {isSubmitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  <span>{isSubmitting ? 'Updating...' : isUploading ? 'Uploading...' : 'Update Product'}</span>
                 </button>
                 <Link
                   href="/admin/products"

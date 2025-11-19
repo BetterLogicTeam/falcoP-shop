@@ -1,20 +1,54 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Search, Edit, Trash2, Eye, Filter, Package } from 'lucide-react'
+import { Plus, Search, Edit, Trash2, Eye, Filter, Package, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useProducts } from '../../../contexts/ProductContext'
 import toast from 'react-hot-toast'
 
+interface Product {
+  id: string
+  name: string
+  category: string
+  subcategory: string
+  type: string
+  price: number
+  originalPrice?: number
+  image: string
+  inStock: boolean
+}
+
 const ProductManagement = () => {
-  const { products, deleteProduct } = useProducts()
+  const [products, setProducts] = useState<Product[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [filteredProducts, setFilteredProducts] = useState(products)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isDeleting, setIsDeleting] = useState<string | null>(null)
 
   const categories = ['all', 'men', 'women', 'kids']
-  const subcategories = ['all', 'sportswear', 'shoes']
 
+  // Fetch products from API
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch('/api/products?limit=1000')
+      if (!response.ok) throw new Error('Failed to fetch products')
+      const data = await response.json()
+      setProducts(data.products)
+      setFilteredProducts(data.products)
+    } catch (error) {
+      console.error('Error fetching products:', error)
+      toast.error('Failed to load products')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Filter products
   useEffect(() => {
     let filtered = products
 
@@ -32,12 +66,26 @@ const ProductManagement = () => {
     }
 
     setFilteredProducts(filtered)
-  }, [searchTerm, selectedCategory])
+  }, [searchTerm, selectedCategory, products])
 
-  const handleDelete = (productId: string) => {
-    if (confirm('Are you sure you want to delete this product?')) {
-      deleteProduct(productId)
-      toast.success('🗑️ Product deleted successfully!', {
+  const handleDelete = async (productId: string) => {
+    if (!confirm('Are you sure you want to delete this product?')) return
+
+    try {
+      setIsDeleting(productId)
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to delete product')
+      }
+
+      // Remove from local state
+      setProducts(prev => prev.filter(p => p.id !== productId))
+
+      toast.success('Product deleted successfully!', {
         duration: 3000,
         style: {
           background: '#10B981',
@@ -46,7 +94,23 @@ const ProductManagement = () => {
           fontWeight: '600',
         },
       })
+    } catch (error) {
+      console.error('Error deleting product:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to delete product')
+    } finally {
+      setIsDeleting(null)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto text-gray-400" />
+          <p className="mt-2 text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -193,10 +257,15 @@ const ProductManagement = () => {
                       </Link>
                       <button
                         onClick={() => handleDelete(product.id)}
-                        className="text-red-600 hover:text-red-800"
+                        disabled={isDeleting === product.id}
+                        className="text-red-600 hover:text-red-800 disabled:opacity-50"
                         title="Delete Product"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        {isDeleting === product.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
                       </button>
                     </div>
                   </td>
