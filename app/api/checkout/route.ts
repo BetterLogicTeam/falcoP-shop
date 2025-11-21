@@ -12,6 +12,10 @@ export async function POST(request: NextRequest) {
       customerId
     } = body
 
+    console.log('=== API CHECKOUT DEBUG ===')
+    console.log('Received items count:', items?.length)
+    console.log('Received items:', JSON.stringify(items, null, 2))
+
     // Validate required fields
     if (!customerInfo || !items || items.length === 0) {
       return NextResponse.json(
@@ -69,6 +73,9 @@ export async function POST(request: NextRequest) {
         items: true
       }
     })
+
+    console.log('Order created with', order.items.length, 'items')
+    console.log('Order items:', JSON.stringify(order.items, null, 2))
 
     return NextResponse.json({
       success: true,

@@ -26,6 +26,13 @@ export async function GET(request: NextRequest) {
       }
     })
 
+    console.log('=== FETCHED ORDERS DEBUG ===')
+    console.log('Total orders:', orders.length)
+    orders.forEach((order, index) => {
+      console.log(`Order ${index + 1}:`, order.orderNumber, '- Items:', order.items.length)
+      console.log('Items:', JSON.stringify(order.items, null, 2))
+    })
+
     return NextResponse.json({ orders })
   } catch (error) {
     console.error('Error fetching customer orders:', error)

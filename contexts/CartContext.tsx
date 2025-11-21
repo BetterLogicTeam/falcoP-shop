@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useReducer, useEffect } from 'react'
+import React, { createContext, useContext, useReducer, useEffect, useState } from 'react'
 import { Product } from '../data/products'
 import toast from 'react-hot-toast'
 
@@ -170,6 +170,7 @@ const CartContext = createContext<{
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState)
+  const [isInitialized, setIsInitialized] = useState(false)
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -177,17 +178,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (savedCart) {
       try {
         const cartItems = JSON.parse(savedCart)
-        dispatch({ type: 'LOAD_CART', payload: cartItems })
+        if (cartItems && cartItems.length > 0) {
+          dispatch({ type: 'LOAD_CART', payload: cartItems })
+        }
       } catch (error) {
         console.error('Error loading cart from localStorage:', error)
       }
     }
+    setIsInitialized(true)
   }, [])
 
-  // Save cart to localStorage whenever it changes
+  // Save cart to localStorage whenever it changes (but not on initial mount)
   useEffect(() => {
-    localStorage.setItem('falco-cart', JSON.stringify(state.items))
-  }, [state.items])
+    if (isInitialized) {
+      localStorage.setItem('falco-cart', JSON.stringify(state.items))
+    }
+  }, [state.items, isInitialized])
 
   const addToCart = (product: Product, quantity = 1, size?: string, color?: string) => {
     dispatch({ type: 'ADD_TO_CART', payload: { product, quantity, size, color } })

@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ShoppingCart, Heart, Eye, Star, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
+import toast from 'react-hot-toast'
 import { useClientTranslation } from '../hooks/useClientTranslation'
 import { useCart } from '../contexts/CartContext'
 import { useProducts } from '../contexts/ProductContext'
@@ -14,10 +16,86 @@ export default function Products() {
   const { t } = useClientTranslation()
   const { addToCart } = useCart()
   const { products } = useProducts()
+  const { data: session } = useSession()
   const [activeCategory, setActiveCategory] = useState('all')
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [wishlistItems, setWishlistItems] = useState<Set<string>>(new Set())
+  const [togglingWishlist, setTogglingWishlist] = useState<string | null>(null)
+
+  // Fetch wishlist on mount
+  useEffect(() => {
+    if (session) {
+      fetchWishlist()
+    }
+  }, [session])
+
+  const fetchWishlist = async () => {
+    try {
+      const response = await fetch('/api/wishlist')
+      if (response.ok) {
+        const data = await response.json()
+        const productIds = new Set(data.wishlist.map((item: any) => item.productId))
+        setWishlistItems(productIds)
+      }
+    } catch (error) {
+      console.error('Error fetching wishlist:', error)
+    }
+  }
+
+  const toggleWishlist = async (product: Product, e: React.MouseEvent) => {
+    e.stopPropagation()
+
+    if (!session) {
+      toast.error('Please sign in to add items to wishlist')
+      return
+    }
+
+    setTogglingWishlist(product.id)
+
+    try {
+      const isInWishlist = wishlistItems.has(product.id)
+
+      if (isInWishlist) {
+        // Remove from wishlist
+        const response = await fetch(`/api/wishlist?productId=${product.id}`, {
+          method: 'DELETE'
+        })
+
+        if (response.ok) {
+          const newWishlist = new Set(wishlistItems)
+          newWishlist.delete(product.id)
+          setWishlistItems(newWishlist)
+          toast.success('Removed from wishlist')
+        } else {
+          toast.error('Failed to remove from wishlist')
+        }
+      } else {
+        // Add to wishlist
+        const response = await fetch('/api/wishlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: product.id })
+        })
+
+        if (response.ok) {
+          const newWishlist = new Set(wishlistItems)
+          newWishlist.add(product.id)
+          setWishlistItems(newWishlist)
+          toast.success('Added to wishlist')
+        } else {
+          const data = await response.json()
+          toast.error(data.error || 'Failed to add to wishlist')
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling wishlist:', error)
+      toast.error('Something went wrong')
+    } finally {
+      setTogglingWishlist(null)
+    }
+  }
 
   const categories = [
     { id: 'all', label: t('products.all_products', 'All Products') },
@@ -101,15 +179,19 @@ export default function Products() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className={`absolute top-3 right-3 sm:top-4 sm:right-4 flex flex-col space-y-1 sm:space-y-2 transition-all duration-300 ${
-                  hoveredProduct === product.id ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
-                }`}>
-                  <button className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors duration-300">
-                    <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex flex-col space-y-1 sm:space-y-2 transition-all duration-300 opacity-100">
+                  <button
+                    onClick={(e) => toggleWishlist(product, e)}
+                    disabled={togglingWishlist === product.id}
+                    className={`w-8 h-8 sm:w-10 sm:h-10 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors duration-300 ${
+                      wishlistItems.has(product.id) ? 'bg-red-500 text-white' : 'bg-white/20 text-white'
+                    }`}
+                  >
+                    <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${wishlistItems.has(product.id) ? 'fill-current' : ''}`} />
                   </button>
-                  <button className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors duration-300">
+                  <Link href={`/shop/${product.slug}`} className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors duration-300">
                     <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                  </button>
+                  </Link>
                 </div>
 
                 {/* Quick Add Button */}

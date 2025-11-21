@@ -10,8 +10,8 @@ import Footer from '@/components/Footer'
 
 interface OrderItem {
   id: string
-  productName: string
-  productImage: string
+  name: string
+  image: string
   quantity: number
   price: number
   size?: string
@@ -220,12 +220,12 @@ export default function CustomerOrdersPage() {
                           {order.items.map((item) => (
                             <div key={item.id} className="flex items-center space-x-4">
                               <img
-                                src={item.productImage}
-                                alt={item.productName}
+                                src={item.image}
+                                alt={item.name}
                                 className="w-16 h-16 object-cover rounded-lg"
                               />
                               <div className="flex-1">
-                                <p className="font-medium text-gray-900">{item.productName}</p>
+                                <p className="font-medium text-gray-900">{item.name}</p>
                                 <p className="text-sm text-gray-600">
                                   Qty: {item.quantity}
                                   {item.size && ` | Size: ${item.size}`}

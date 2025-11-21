@@ -28,11 +28,7 @@ const ShopMainPage = () => {
       icon: Users,
       count: menProducts,
       description: t('shop.men_desc', 'High-performance gear for the modern athlete'),
-      color: 'from-blue-600 to-blue-800',
-      subcategories: [
-        { name: t('shop.sportswear', 'Sportswear'), count: products.filter(p => p.category === 'men' && p.subcategory === 'sportswear').length },
-        { name: t('shop.shoes', 'Shoes'), count: products.filter(p => p.category === 'men' && p.subcategory === 'shoes').length }
-      ]
+      color: 'from-blue-600 to-blue-800'
     },
     {
       name: t('shop.women', 'Women'),
@@ -40,11 +36,7 @@ const ShopMainPage = () => {
       icon: Star,
       count: womenProducts,
       description: t('shop.women_desc', 'Empowering athletic wear for strong women'),
-      color: 'from-pink-600 to-purple-800',
-      subcategories: [
-        { name: t('shop.sportswear', 'Sportswear'), count: products.filter(p => p.category === 'women' && p.subcategory === 'sportswear').length },
-        { name: t('shop.shoes', 'Shoes'), count: products.filter(p => p.category === 'women' && p.subcategory === 'shoes').length }
-      ]
+      color: 'from-pink-600 to-purple-800'
     },
     {
       name: t('shop.kids', 'Kids'),
@@ -52,11 +44,7 @@ const ShopMainPage = () => {
       icon: Baby,
       count: kidsProducts,
       description: t('shop.kids_desc', 'Fun and functional gear for active kids'),
-      color: 'from-green-600 to-teal-800',
-      subcategories: [
-        { name: t('shop.sportswear', 'Sportswear'), count: products.filter(p => p.category === 'kids' && p.subcategory === 'sportswear').length },
-        { name: t('shop.shoes', 'Shoes'), count: products.filter(p => p.category === 'kids' && p.subcategory === 'shoes').length }
-      ]
+      color: 'from-green-600 to-teal-800'
     }
   ]
 
@@ -155,15 +143,6 @@ const ShopMainPage = () => {
                   </div>
                   <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-falco-accent transition-colors duration-300">{category.name}</h3>
                   <p className="text-gray-300 mb-6 leading-relaxed">{category.description}</p>
-                  
-                  <div className="space-y-3 mb-6">
-                    {category.subcategories.map((sub) => (
-                      <div key={sub.name} className="flex justify-between items-center text-sm bg-white/5 rounded-lg px-3 py-2 backdrop-blur-sm">
-                        <span className="text-gray-300 font-medium">{sub.name}</span>
-                        <span className="text-falco-accent font-bold">{sub.count} items</span>
-                      </div>
-                    ))}
-                  </div>
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center text-falco-accent font-semibold group-hover:text-white transition-colors duration-300">

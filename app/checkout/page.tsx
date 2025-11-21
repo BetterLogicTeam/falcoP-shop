@@ -55,6 +55,11 @@ export default function CheckoutPage() {
         color: item.selectedColor || null
       }))
 
+      console.log('=== CHECKOUT DEBUG ===')
+      console.log('Cart items:', state.items.length)
+      console.log('Order items to send:', orderItems)
+      console.log('Total price:', state.totalPrice)
+
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

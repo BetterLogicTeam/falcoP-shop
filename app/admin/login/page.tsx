@@ -45,8 +45,8 @@ export default function AdminLogin() {
             fontWeight: '600',
           },
         })
-        router.push('/admin')
-        router.refresh()
+        // Use window.location for full page reload to ensure session is updated
+        window.location.href = '/admin'
       }
     } catch (error) {
       toast.error('Login failed. Please try again.', {
