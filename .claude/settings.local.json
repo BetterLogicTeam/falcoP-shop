@@ -11,7 +11,10 @@
       "Bash(curl:*)",
       "Bash(taskkill:*)",
       "Bash(node scripts/check-order.js:*)",
-      "Bash(node scripts/check-all-orders.js:*)"
+      "Bash(node scripts/check-all-orders.js:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ],
     "deny": [],
     "ask": []
