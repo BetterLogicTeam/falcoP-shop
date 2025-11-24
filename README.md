@@ -14,7 +14,7 @@ A modern, responsive e-commerce website built with Next.js, featuring a complete
   - Stripe credit card processing
   - Apple Pay integration
   - Google Pay integration
-  - Swiss Pay simulation
+  - Swish (Swedish mobile payment)
   - Elegant payment form with dark theme
 
 - 👨‍💼 **Admin Dashboard**
@@ -108,7 +108,7 @@ npm run dev
 - **Stripe**: Credit card processing with PCI compliance
 - **Apple Pay**: Native iOS payment integration
 - **Google Pay**: Android payment integration
-- **Swiss Pay**: Simulated Swiss payment system
+- **Swish**: Swedish mobile payment integration
 
 ### Admin Panel
 - Product management with image upload
@@ -125,7 +125,7 @@ npm run dev
 ## API Routes
 
 - `/api/create-payment-intent` - Stripe payment intent creation
-- `/api/swiss-payment` - Swiss Pay simulation
+- `/api/swiss-payment` - Swish payment processing
 - `/api/apple-payment` - Apple Pay simulation
 - `/api/google-payment` - Google Pay simulation
 

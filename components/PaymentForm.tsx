@@ -233,52 +233,52 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
     setIsProcessing(true)
     try {
       // Show processing message
-      toast.loading('Processing Swiss payment...', { duration: 2000 })
+      toast.loading('Processing Swish payment...', { duration: 2000 })
 
       const response = await fetch('/api/swiss-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: Math.round(totalAmount * 100 * 0.9), // Convert to CHF
-          currency: 'CHF',
+          amount: Math.round(totalAmount * 100 * 10.5), // Convert to SEK
+          currency: 'SEK',
           customerInfo,
-          paymentMethod: 'swiss_pay',
+          paymentMethod: 'swish',
         }),
       })
 
-      if (!response.ok) { 
+      if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.message || 'Swiss Pay payment failed') 
+        throw new Error(errorData.message || 'Swish payment failed')
       }
-      
+
       const result = await response.json()
 
       if (result.success) {
-        // Show success with Swiss details
-        toast.success(`Swiss payment successful! Transaction: ${result.data.transactionId}`, {
+        // Show success with Swish details
+        toast.success(`Swish payment successful! Transaction: ${result.data.transactionId}`, {
           duration: 5000,
           style: {
-            background: '#10B981',
+            background: '#78BE20',
             color: '#fff',
             fontSize: '16px',
             fontWeight: '600',
           },
         })
-        
+
         // Log the transaction details
-        console.log('Swiss Payment Details:', result.data)
-        
-        onSuccess({ 
-          id: result.data.transactionId, 
-          method: 'swiss_pay',
-          swissData: result.data
+        console.log('Swish Payment Details:', result.data)
+
+        onSuccess({
+          id: result.data.transactionId,
+          method: 'swish',
+          swishData: result.data
         })
       } else {
-        throw new Error(result.error || 'Swiss Pay payment failed')
+        throw new Error(result.error || 'Swish payment failed')
       }
     } catch (error: any) {
-      onError(error.message || 'Swiss Pay payment failed')
-      toast.error(`Swiss payment failed: ${error.message}`, {
+      onError(error.message || 'Swish payment failed')
+      toast.error(`Swish payment failed: ${error.message}`, {
         duration: 4000,
         style: {
           background: '#EF4444',
@@ -588,10 +588,10 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
             </div>
           </label>
 
-          {/* Swiss Pay */}
+          {/* Swish */}
           <label className={`group relative flex flex-col p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-            selectedPaymentMethod === 'swiss' 
-              ? 'border-falco-accent bg-gradient-to-br from-falco-accent/20 to-falco-accent/10 shadow-lg ring-2 ring-falco-accent/30' 
+            selectedPaymentMethod === 'swiss'
+              ? 'border-falco-accent bg-gradient-to-br from-falco-accent/20 to-falco-accent/10 shadow-lg ring-2 ring-falco-accent/30'
               : 'border-white/20 hover:border-white/40 hover:shadow-md bg-white/5'
             }`}>
             <input
@@ -602,7 +602,7 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
               onChange={(e) => setSelectedPaymentMethod(e.target.value as 'swiss')}
               className="sr-only"
             />
-            
+
             {/* Selection indicator */}
             {selectedPaymentMethod === 'swiss' && (
               <div className="absolute top-3 right-3">
@@ -611,27 +611,27 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
                 </div>
               </div>
             )}
-            
+
             <div className="flex items-center mb-4">
               <div className={`p-3 rounded-lg mr-4 transition-colors ${
-                selectedPaymentMethod === 'swiss' ? 'bg-red-600' : 'bg-white/10 group-hover:bg-white/20'
+                selectedPaymentMethod === 'swiss' ? 'bg-[#78BE20]' : 'bg-white/10 group-hover:bg-white/20'
               }`}>
-                <Globe className={`w-6 h-6 ${selectedPaymentMethod === 'swiss' ? 'text-white' : 'text-white'}`} />
+                <Smartphone className={`w-6 h-6 ${selectedPaymentMethod === 'swiss' ? 'text-white' : 'text-white'}`} />
               </div>
               <div>
-                <div className="font-semibold text-white">Swiss Pay</div>
-                <div className="text-sm text-gray-300">Local payment methods</div>
+                <div className="font-semibold text-white">Swish</div>
+                <div className="text-sm text-gray-300">Swedish mobile payment</div>
               </div>
             </div>
-            
-            <div className="flex space-x-2 mb-3">
-              <div className="w-12 h-6 bg-red-600 rounded text-white text-xs flex items-center justify-center font-bold">CH</div>
-              <div className="w-12 h-6 bg-blue-600 rounded text-white text-xs flex items-center justify-center font-bold">PF</div>
-              <div className="w-12 h-6 bg-green-600 rounded text-white text-xs flex items-center justify-center font-bold">TW</div>
+
+            <div className="flex items-center space-x-2 mb-3">
+              <div className="w-16 h-8 bg-[#78BE20] rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">Swish</span>
+              </div>
             </div>
-            
+
             <div className="text-xs text-gray-400">
-              PostFinance, TWINT & Swiss cards
+              Pay instantly with your phone
             </div>
           </label>
         </div>
@@ -721,66 +721,43 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
             </div>
           )}
 
-          {/* Swiss Pay Info */}
+          {/* Swish Info */}
           {selectedPaymentMethod === 'swiss' && (
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <Globe className="w-5 h-5 text-gray-600" />
-                <h4 className="text-lg font-semibold text-gray-900">Swiss Payment Methods</h4>
+                <Smartphone className="w-5 h-5 text-[#78BE20]" />
+                <h4 className="text-lg font-semibold text-white">Swish Payment</h4>
               </div>
-              
-              {/* Swiss Payment Options */}
-              <div className="bg-gradient-to-br from-red-50 to-white border-2 border-red-200 rounded-xl p-6">
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  {/* PostFinance */}
-                  <div className="text-center">
-                    <button className="w-16 h-16 bg-red-600 hover:bg-red-700 rounded-xl flex items-center justify-center mx-auto mb-2 transition-colors shadow-lg">
-                      <span className="text-white font-bold text-lg">PF</span>
-                    </button>
-                    <p className="text-sm font-semibold text-gray-900">PostFinance</p>
-                    <p className="text-xs text-gray-600">Bank Transfer</p>
+
+              {/* Swish Payment Section */}
+              <div className="bg-gradient-to-br from-[#78BE20]/20 to-[#78BE20]/5 border-2 border-[#78BE20]/30 rounded-xl p-6">
+                <div className="text-center mb-6">
+                  <div className="w-20 h-20 bg-[#78BE20] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <span className="text-white font-bold text-2xl">Swish</span>
                   </div>
-                  
-                  {/* TWINT */}
-                  <div className="text-center">
-                    <button className="w-16 h-16 bg-green-600 hover:bg-green-700 rounded-xl flex items-center justify-center mx-auto mb-2 transition-colors shadow-lg">
-                      <span className="text-white font-bold text-lg">TW</span>
-                    </button>
-                    <p className="text-sm font-semibold text-gray-900">TWINT</p>
-                    <p className="text-xs text-gray-600">Mobile Payment</p>
-                  </div>
-                  
-                  {/* Swiss Cards */}
-                  <div className="text-center">
-                    <button className="w-16 h-16 bg-blue-600 hover:bg-blue-700 rounded-xl flex items-center justify-center mx-auto mb-2 transition-colors shadow-lg">
-                      <span className="text-white font-bold text-lg">CH</span>
-                    </button>
-                    <p className="text-sm font-semibold text-gray-900">Swiss Cards</p>
-                    <p className="text-xs text-gray-600">Credit/Debit</p>
-                  </div>
+                  <p className="text-white font-medium">Pay with Swish</p>
+                  <p className="text-sm text-gray-400">Fast & secure Swedish mobile payment</p>
                 </div>
-                
-                <div className="bg-white rounded-lg p-4 border border-gray-200">
+
+                <div className="bg-white/10 rounded-lg p-4 border border-white/20">
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-semibold text-gray-900">Payment Amount</span>
-                    <span className="text-lg font-bold text-red-600">CHF {(totalAmount * 0.9).toFixed(2)}</span>
+                    <span className="text-sm font-semibold text-white">Payment Amount</span>
+                    <span className="text-lg font-bold text-[#78BE20]">SEK {(totalAmount * 10.5).toFixed(2)}</span>
                   </div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-gray-600">Exchange Rate</span>
-                    <span className="text-sm text-gray-900">1 USD = 0.90 CHF</span>
+                    <span className="text-sm text-gray-400">Exchange Rate</span>
+                    <span className="text-sm text-white">1 USD = 10.50 SEK</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Processing Fee</span>
-                    <span className="text-sm text-green-600">Free</span>
+                    <span className="text-sm text-gray-400">Processing Fee</span>
+                    <span className="text-sm text-[#78BE20]">Free</span>
                   </div>
                 </div>
-                
+
                 <div className="mt-4 text-center">
-                  <p className="text-xs text-gray-500 mb-2">🔒 Secure Swiss payment processing</p>
-                  <div className="flex justify-center space-x-2">
-                    <div className="w-6 h-4 bg-red-600 rounded text-white text-xs flex items-center justify-center font-bold">CH</div>
-                    <div className="w-6 h-4 bg-blue-600 rounded text-white text-xs flex items-center justify-center font-bold">PF</div>
-                    <div className="w-6 h-4 bg-green-600 rounded text-white text-xs flex items-center justify-center font-bold">TW</div>
+                  <p className="text-xs text-gray-400 mb-2">Open Swish app to complete payment</p>
+                  <div className="flex justify-center">
+                    <div className="w-12 h-8 bg-[#78BE20] rounded text-white text-xs flex items-center justify-center font-bold">Swish</div>
                   </div>
                 </div>
               </div>
@@ -899,32 +876,27 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
               </button>
             )}
 
-            {/* Swiss Pay Button */}
+            {/* Swish Button */}
             {selectedPaymentMethod === 'swiss' && (
               <button
                 type="submit"
                 disabled={isProcessing}
-                className="w-full bg-gradient-to-r from-red-600 via-red-500 to-red-700 text-white py-4 rounded-xl font-semibold hover:from-red-700 hover:via-red-600 hover:to-red-800 transition-all duration-300 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none"
+                className="w-full bg-gradient-to-r from-[#78BE20] via-[#6BAD1C] to-[#5E9C18] text-white py-4 rounded-xl font-semibold hover:from-[#6BAD1C] hover:via-[#5E9C18] hover:to-[#518B14] transition-all duration-300 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none"
               >
                 {isProcessing ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Processing Swiss Payment...</span>
+                    <span>Processing Swish Payment...</span>
                   </>
                 ) : (
                   <>
-                    <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                      <span className="text-red-600 font-bold text-sm">CH</span>
+                    <div className="w-8 h-6 bg-white rounded flex items-center justify-center">
+                      <span className="text-[#78BE20] font-bold text-xs">Swish</span>
                     </div>
-                    <span>Pay CHF {(totalAmount * 0.9).toFixed(2)}</span>
-                    <div className="flex space-x-1">
-                      <div className="w-6 h-4 bg-white rounded text-red-600 text-xs flex items-center justify-center font-bold">CH</div>
-                      <div className="w-6 h-4 bg-white rounded text-blue-600 text-xs flex items-center justify-center font-bold">PF</div>
-                      <div className="w-6 h-4 bg-white rounded text-green-600 text-xs flex items-center justify-center font-bold">TW</div>
-                    </div>
-          </>
-        )}
-      </button>
+                    <span>Pay SEK {(totalAmount * 10.5).toFixed(2)}</span>
+                  </>
+                )}
+              </button>
             )}
           </div>
 
@@ -935,7 +907,7 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
               {selectedPaymentMethod === 'card' && 'Secure payment powered by Stripe'}
               {selectedPaymentMethod === 'apple' && 'Secure payment with Apple Pay'}
               {selectedPaymentMethod === 'google' && 'Secure payment with Google Pay'}
-              {selectedPaymentMethod === 'swiss' && 'Secure Swiss payment processing'}
+              {selectedPaymentMethod === 'swiss' && 'Secure payment with Swish'}
             </span>
       </div>
     </form>
