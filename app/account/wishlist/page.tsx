@@ -92,7 +92,7 @@ export default function WishlistPage() {
       price: product.price,
       originalPrice: product.originalPrice,
       image: product.image,
-      category: product.category,
+      category: product.category as 'men' | 'women' | 'kids',
       subcategory: '',
       type: '',
       inStock: product.inStock,
