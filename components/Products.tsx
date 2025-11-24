@@ -36,7 +36,7 @@ export default function Products() {
       const response = await fetch('/api/wishlist')
       if (response.ok) {
         const data = await response.json()
-        const productIds = new Set(data.wishlist.map((item: any) => item.productId))
+        const productIds = new Set<string>(data.wishlist.map((item: { productId: string }) => item.productId))
         setWishlistItems(productIds)
       }
     } catch (error) {

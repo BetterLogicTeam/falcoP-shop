@@ -164,13 +164,13 @@ export async function DELETE(
     }
 
     // Check if product is in any wishlists
-    const wishlistCount = await prisma.wishlist.count({
+    const wishlistCount = await prisma.wishlistItem.count({
       where: { productId: id },
     })
 
     // Delete wishlist items first if any
     if (wishlistCount > 0) {
-      await prisma.wishlist.deleteMany({
+      await prisma.wishlistItem.deleteMany({
         where: { productId: id },
       })
     }
