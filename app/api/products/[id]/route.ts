@@ -149,6 +149,32 @@ export async function DELETE(
       )
     }
 
+    // Check if product is referenced in any orders
+    const orderItemsCount = await prisma.orderItem.count({
+      where: { productId: id },
+    })
+
+    if (orderItemsCount > 0) {
+      return NextResponse.json(
+        {
+          error: `Cannot delete this product because it's referenced in ${orderItemsCount} order(s). You can mark it as out of stock instead.`
+        },
+        { status: 400 }
+      )
+    }
+
+    // Check if product is in any wishlists
+    const wishlistCount = await prisma.wishlist.count({
+      where: { productId: id },
+    })
+
+    // Delete wishlist items first if any
+    if (wishlistCount > 0) {
+      await prisma.wishlist.deleteMany({
+        where: { productId: id },
+      })
+    }
+
     // Delete product
     await prisma.product.delete({
       where: { id },

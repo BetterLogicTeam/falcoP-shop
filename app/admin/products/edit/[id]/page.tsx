@@ -1,15 +1,15 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowLeft, Upload, X, Save, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
+const ProductEditForm = () => {
   const router = useRouter()
-  const resolvedParams = use(params)
-  const productId = resolvedParams.id
+  const params = useParams()
+  const productId = params.id as string
   const [formData, setFormData] = useState({
     name: '',
     type: '',
@@ -289,7 +289,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                     placeholder="Enter product name"
                   />
                 </div>
@@ -303,7 +303,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                     value={formData.type}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                     placeholder="e.g., Running Shoes, Hoodie"
                   />
                 </div>
@@ -316,7 +316,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                     value={formData.category}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                   >
                     {categories.map(cat => (
                       <option key={cat.value} value={cat.value}>
@@ -334,7 +334,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                     value={formData.subcategory}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                   >
                     {subcategories.map(sub => (
                       <option key={sub.value} value={sub.value}>
@@ -362,7 +362,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                     required
                     step="0.01"
                     min="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                     placeholder="0.00"
                   />
                 </div>
@@ -377,7 +377,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                     onChange={handleInputChange}
                     step="0.01"
                     min="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                     placeholder="0.00 (for sale prices)"
                   />
                 </div>
@@ -392,7 +392,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                 value={formData.description}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                 placeholder="Enter product description..."
               />
             </div>
@@ -476,7 +476,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                     name="badge"
                     value={formData.badge}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                   >
                     {badges.map(badge => (
                       <option key={badge.value} value={badge.value}>
@@ -497,7 +497,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                     step="0.1"
                     min="0"
                     max="5"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                   />
                 </div>
                 <div>
@@ -510,7 +510,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                     value={formData.reviews}
                     onChange={handleInputChange}
                     min="0"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                   />
                 </div>
                 <div>
@@ -522,7 +522,7 @@ const ProductEditForm = ({ params }: { params: Promise<{ id: string }> }) => {
                     name="stock"
                     value={formData.stock}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                     placeholder="e.g., In Stock, Out of Stock"
                   />
                 </div>

@@ -316,23 +316,23 @@ export default function Navigation() {
       {/* Additional background layer to prevent text bleeding */}
       <div className="absolute inset-0 bg-black/20"></div>
       <div className="container-custom relative z-10">
-        <div className="flex items-center justify-between h-16 sm:h-18 md:h-20">
+        <div className="flex items-center justify-between h-14 sm:h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 sm:space-x-4 group relative">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl overflow-hidden group-hover:scale-105 transition-transform duration-300 shadow-lg">
+          <Link href="/" className="flex items-center space-x-2 group relative">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg overflow-hidden group-hover:scale-105 transition-transform duration-300 shadow-lg">
               <Image
                 src="/images/falcop.jpg"
                 alt="Falco P Logo"
-                width={56}
-                height={56}
+                width={48}
+                height={48}
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="flex flex-col bg-black/50 px-2 py-1 sm:px-3 sm:py-2 rounded-lg backdrop-blur-sm">
-              <span className="text-lg sm:text-xl md:text-2xl font-black text-white tracking-tight leading-none relative z-10">
+            <div className="flex flex-col">
+              <span className="text-base sm:text-lg md:text-xl font-black text-white tracking-tight leading-none">
                 FALCO P
               </span>
-              <span className="text-xs text-gray-400 font-medium tracking-wider relative z-10 hidden sm:block">
+              <span className="text-[10px] sm:text-xs text-gray-400 font-medium tracking-wider hidden sm:block">
                 PREMIUM SPORTSWEAR
               </span>
             </div>
@@ -668,247 +668,110 @@ export default function Navigation() {
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-white hover:text-falco-accent transition-colors duration-300"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile Action Buttons */}
+          <div className="flex lg:hidden items-center space-x-1">
+            <button
+              onClick={openCart}
+              className="p-2 text-white hover:text-falco-accent transition-colors duration-300 relative"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {state.totalItems > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-falco-accent text-black text-[10px] rounded-full flex items-center justify-center font-bold">
+                  {state.totalItems}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 text-white hover:text-falco-accent transition-colors duration-300"
+            >
+              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - Clean & Simple */}
         {isOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-falco-primary/95 backdrop-blur-md border-t border-white/10 mobile-padding max-h-[80vh] overflow-y-auto">
-            <div className="py-6 space-y-4">
-              {navItems.map((item) => (
-                <div key={item.name}>
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-black border-t border-gray-800 shadow-2xl">
+            <div className="py-3 px-4">
+              {/* Main Nav Links */}
+              <div className="space-y-0.5">
+                {navItems.map((item) => (
                   <Link
+                    key={item.name}
                     href={item.href}
-                    className="block text-white/80 hover:text-falco-accent transition-colors duration-300 font-medium py-3 px-2"
+                    className="block text-white hover:text-falco-accent transition-colors font-medium py-2.5 px-3 rounded-lg hover:bg-gray-900"
                     onClick={() => setIsOpen(false)}
                   >
                     {item.name}
                   </Link>
-                  {item.name === 'New' && (
-                    <div className="pl-4 pb-2">
-                      {Object.entries(newMenu).map(([section, links]) => (
-                        <div key={section} className="mb-3">
-                          <h4 className="text-gray-300 text-sm font-semibold mb-1">{section}</h4>
-                          <div className="grid grid-cols-2 gap-2">
-                            {links.map((link) => (
-                              <Link key={link.label} href={link.href} className="text-gray-400 hover:text-falco-accent text-xs"
-                                onClick={() => setIsOpen(false)}>
-                                {link.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {item.name === 'Men' && (
-                    <div className="pl-4 pb-2">
-                      {Object.entries(menMenu).map(([section, links]) => (
-                        <div key={section} className="mb-3">
-                          <h4 className="text-gray-300 text-sm font-semibold mb-1">{section}</h4>
-                          <div className="grid grid-cols-2 gap-2">
-                            {links.map((link) => (
-                              <Link key={link.label} href={link.href} className="text-gray-400 hover:text-falco-accent text-xs"
-                                onClick={() => setIsOpen(false)}>
-                                {link.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {item.name === 'Women' && (
-                    <div className="pl-4 pb-2">
-                      {Object.entries(womenMenu).map(([section, links]) => (
-                        <div key={section} className="mb-3">
-                          <h4 className="text-gray-300 text-sm font-semibold mb-1">{section}</h4>
-                          <div className="grid grid-cols-2 gap-2">
-                            {links.map((link) => (
-                              <Link key={link.label} href={link.href} className="text-gray-400 hover:text-falco-accent text-xs"
-                                onClick={() => setIsOpen(false)}>
-                                {link.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {item.name === 'Kids' && (
-                    <div className="pl-4 pb-2">
-                      {Object.entries(kidsMenu).map(([section, links]) => (
-                        <div key={section} className="mb-3">
-                          <h4 className="text-gray-300 text-sm font-semibold mb-1">{section}</h4>
-                          <div className="grid grid-cols-2 gap-2">
-                            {links.map((link) => (
-                              <Link key={link.label} href={link.href} className="text-gray-400 hover:text-falco-accent text-xs"
-                                onClick={() => setIsOpen(false)}>
-                                {link.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {item.name === 'Sport' && (
-                    <div className="pl-4 pb-2">
-                      {Object.entries(sportMenu).map(([section, links]) => (
-                        <div key={section} className="mb-3">
-                          <h4 className="text-gray-300 text-sm font-semibold mb-1">{section}</h4>
-                          <div className="grid grid-cols-2 gap-2">
-                            {links.map((link) => (
-                              <Link key={link.label} href={link.href} className="text-gray-400 hover:text-falco-accent text-xs"
-                                onClick={() => setIsOpen(false)}>
-                                {link.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {item.name === 'Sportswear' && (
-                    <div className="pl-4 pb-2">
-                      {Object.entries(sportswearMenu).map(([section, links]) => (
-                        <div key={section} className="mb-3">
-                          <h4 className="text-gray-300 text-sm font-semibold mb-1">{section}</h4>
-                          <div className="grid grid-cols-2 gap-2">
-                            {links.map((link) => (
-                              <Link key={link.label} href={link.href} className="text-gray-400 hover:text-falco-accent text-xs"
-                                onClick={() => setIsOpen(false)}>
-                                {link.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              
-              {/* Mobile Shop Section */}
-              <div className="border-t border-white/10 pt-4">
-                <div className="flex items-center justify-between mb-4 px-2">
-                  <h3 className="text-falco-accent font-bold text-lg">Shop</h3>
-                  <Link 
-                    href="/shop"
-                    className="bg-falco-accent text-black px-4 py-2 rounded-full text-sm font-bold hover:bg-falco-gold transition-colors duration-300"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Browse All
-                  </Link>
-                </div>
-                {Object.entries(shopCategories).map(([category, subcategories]) => (
-                  <div key={category} className="mb-6">
-                    <h4 className="text-white font-semibold text-base mb-3 px-2 border-l-2 border-falco-accent pl-3">
-                      {category}
-                    </h4>
-                    {Object.entries(subcategories).map(([subcat, items]) => (
-                      <div key={subcat} className="mb-4 px-4">
-                        <h5 className="text-gray-300 font-medium text-sm mb-2">
-                          {subcat}
-                        </h5>
-                        <div className="grid grid-cols-2 gap-2">
-                          {items.map((item) => (
-                            <Link
-                              key={item}
-                              href={`/shop/${category.toLowerCase()}/${subcat.toLowerCase()}/${item.toLowerCase().replace(/\s+/g, '-')}`}
-                              className="text-gray-400 hover:text-falco-accent transition-colors duration-300 text-xs py-1"
-                              onClick={() => setIsOpen(false)}
-                            >
-                              {item}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 ))}
-              </div>
-              
-              {/* Mobile Language Selector */}
-              <LanguageSelector mobile className="mt-6" />
-              
-              {/* Mobile User Section */}
-              <div className="border-t border-white/10 pt-4">
-                {session ? (
-                  <div className="space-y-2">
-                    <div className="px-2 py-2">
-                      <p className="text-sm font-medium text-white">{session.user?.name}</p>
-                      <p className="text-xs text-gray-400">{session.user?.email}</p>
-                    </div>
-                    <Link
-                      href="/account"
-                      className="flex items-center px-2 py-2 text-white/80 hover:text-falco-accent"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Settings className="w-5 h-5 mr-3" />
-                      My Account
-                    </Link>
-                    <Link
-                      href="/account/orders"
-                      className="flex items-center px-2 py-2 text-white/80 hover:text-falco-accent"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      <Package className="w-5 h-5 mr-3" />
-                      My Orders
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setIsOpen(false)
-                        signOut({ redirect: false })
-                      }}
-                      className="flex items-center w-full px-2 py-2 text-white/80 hover:text-falco-accent"
-                    >
-                      <LogOut className="w-5 h-5 mr-3" />
-                      Sign Out
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    <Link
-                      href="/auth/login"
-                      className="block px-2 py-3 text-white font-medium hover:text-falco-accent"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      href="/auth/register"
-                      className="block px-2 py-3 text-gray-400 hover:text-falco-accent"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      Create Account
-                    </Link>
-                  </div>
-                )}
+                <Link
+                  href="/shop"
+                  className="block text-falco-accent font-bold py-2.5 px-3 rounded-lg hover:bg-gray-900"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Shop All
+                </Link>
               </div>
 
-              <div className="flex items-center justify-center space-x-6 pt-6 border-t border-white/10">
-                <button className="p-3 text-white/80 hover:text-falco-accent transition-colors duration-300">
-                  <Search className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={openCart}
-                  className="p-3 text-white/80 hover:text-falco-accent transition-colors duration-300 relative"
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  {state.totalItems > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-falco-accent text-falco-primary text-xs rounded-full flex items-center justify-center font-bold">
-                      {state.totalItems}
-                    </span>
-                  )}
-                </button>
-              </div>
+              {/* Divider */}
+              <div className="border-t border-gray-800 my-3"></div>
+
+              {/* User Section */}
+              {session ? (
+                <div className="space-y-0.5">
+                  <div className="px-3 py-2">
+                    <p className="text-sm font-medium text-white">{session.user?.name}</p>
+                    <p className="text-xs text-gray-400">{session.user?.email}</p>
+                  </div>
+                  <Link
+                    href="/account"
+                    className="flex items-center px-3 py-2.5 text-white hover:text-falco-accent hover:bg-gray-900 rounded-lg"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Settings className="w-4 h-4 mr-3" />
+                    My Account
+                  </Link>
+                  <Link
+                    href="/account/orders"
+                    className="flex items-center px-3 py-2.5 text-white hover:text-falco-accent hover:bg-gray-900 rounded-lg"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Package className="w-4 h-4 mr-3" />
+                    My Orders
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setIsOpen(false)
+                      signOut({ redirect: false })
+                    }}
+                    className="flex items-center w-full px-3 py-2.5 text-white hover:text-falco-accent hover:bg-gray-900 rounded-lg"
+                  >
+                    <LogOut className="w-4 h-4 mr-3" />
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-0.5">
+                  <Link
+                    href="/auth/login"
+                    className="flex items-center px-3 py-2.5 text-white font-medium hover:text-falco-accent hover:bg-gray-900 rounded-lg"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <User className="w-4 h-4 mr-3" />
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    className="flex items-center px-3 py-2.5 text-gray-400 hover:text-falco-accent hover:bg-gray-900 rounded-lg"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <User className="w-4 h-4 mr-3" />
+                    Create Account
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         )}

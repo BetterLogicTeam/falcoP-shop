@@ -1,20 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx prisma:*)",
-      "Bash(npm install:*)",
-      "Bash(DATABASE_URL=\"postgresql://postgres.aachaovbtsadkdnopcom:6731467112@aws-1-eu-west-2.pooler.supabase.com:5432/postgres\" npx prisma db push:*)",
-      "Bash(npx ts-node:*)",
-      "Bash(npx tsc:*)",
-      "Bash(npm run dev:*)",
-      "Bash(DATABASE_URL=\"postgresql://postgres.aachaovbtsadkdnopcom:6731467112@aws-1-eu-west-2.pooler.supabase.com:5432/postgres\" npx ts-node:*)",
-      "Bash(curl:*)",
-      "Bash(taskkill:*)",
-      "Bash(node scripts/check-order.js:*)",
-      "Bash(node scripts/check-all-orders.js:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(git push)"
+      "Bash(DATABASE_URL=postgresql://postgres.aachaovbtsadkdnopcom:6731467112@aws-1-eu-west-2.pooler.supabase.com:5432/postgres npx prisma db pull:*)",
+      "Bash(node -e:*)"
     ],
     "deny": [],
     "ask": []

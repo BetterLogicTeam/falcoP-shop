@@ -1,64 +1,66 @@
 'use client'
 
-import { useState } from 'react'
-import { TrendingUp, TrendingDown, DollarSign, ShoppingBag, Users, Eye, Star, Calendar, BarChart3, PieChart, Activity } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { TrendingUp, TrendingDown, DollarSign, ShoppingBag, Users, Star, BarChart3, PieChart, Activity, Loader2, RefreshCw } from 'lucide-react'
+
+interface AnalyticsData {
+  overview: {
+    totalRevenue: number
+    totalOrders: number
+    totalCustomers: number
+    conversionRate: number
+    revenueGrowth: number
+    ordersGrowth: number
+    customersGrowth: number
+    conversionGrowth: number
+  }
+  revenueData: Array<{ month: string; revenue: number; orders: number }>
+  topProducts: Array<{ name: string; sales: number; revenue: number; growth: number }>
+  customerSegments: Array<{ segment: string; count: number; percentage: number; revenue: number }>
+  recentActivity: Array<{ type: string; message: string; time: string; amount: number | null }>
+  orderStatuses: {
+    pending: number
+    processing: number
+    shipped: number
+    delivered: number
+    cancelled: number
+  }
+}
 
 const AnalyticsDashboard = () => {
   const [timeRange, setTimeRange] = useState('30d')
+  const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
 
-  // Impressive dummy analytics data
-  const analyticsData = {
-    overview: {
-      totalRevenue: 45678,
-      totalOrders: 1247,
-      totalCustomers: 892,
-      conversionRate: 3.2,
-      revenueGrowth: 12.5,
-      ordersGrowth: 8.3,
-      customersGrowth: 15.7,
-      conversionGrowth: -0.5
-    },
-    revenueData: [
-      { month: 'Jan', revenue: 12000, orders: 145 },
-      { month: 'Feb', revenue: 15000, orders: 178 },
-      { month: 'Mar', revenue: 18000, orders: 201 },
-      { month: 'Apr', revenue: 22000, orders: 234 },
-      { month: 'May', revenue: 25000, orders: 267 },
-      { month: 'Jun', revenue: 28000, orders: 298 },
-      { month: 'Jul', revenue: 32000, orders: 334 },
-      { month: 'Aug', revenue: 35000, orders: 367 },
-      { month: 'Sep', revenue: 38000, orders: 401 },
-      { month: 'Oct', revenue: 42000, orders: 445 },
-      { month: 'Nov', revenue: 45000, orders: 478 },
-      { month: 'Dec', revenue: 45678, orders: 1247 }
-    ],
-    topProducts: [
-      { name: 'WING P Pro', sales: 234, revenue: 70032, growth: 15.2 },
-      { name: 'Falco Training Tee', sales: 189, revenue: 9261, growth: 8.7 },
-      { name: 'WING P Basketball Elite', sales: 156, revenue: 54444, growth: 22.1 },
-      { name: 'Falco Compression Shorts', sales: 145, revenue: 5655, growth: 12.3 },
-      { name: 'Falco Running Jacket', sales: 123, revenue: 15867, growth: 6.8 }
-    ],
-    customerSegments: [
-      { segment: 'New Customers', count: 234, percentage: 26.2, revenue: 12567 },
-      { segment: 'Returning Customers', count: 445, percentage: 49.9, revenue: 28934 },
-      { segment: 'VIP Customers', count: 213, percentage: 23.9, revenue: 4177 }
-    ],
-    trafficSources: [
-      { source: 'Direct', visitors: 4567, percentage: 35.2, conversion: 4.1 },
-      { source: 'Google Search', visitors: 3234, percentage: 24.9, conversion: 3.8 },
-      { source: 'Social Media', visitors: 2890, percentage: 22.3, conversion: 2.9 },
-      { source: 'Email Marketing', visitors: 1876, percentage: 14.5, conversion: 5.2 },
-      { source: 'Referrals', visitors: 423, percentage: 3.1, conversion: 3.5 }
-    ],
-    recentActivity: [
-      { type: 'order', message: 'New order #ORD-2024-001 from Alex Johnson', time: '2 minutes ago', amount: 647 },
-      { type: 'customer', message: 'New customer Sarah Williams registered', time: '15 minutes ago', amount: null },
-      { type: 'product', message: 'Product "WING P Pro" stock updated', time: '1 hour ago', amount: null },
-      { type: 'order', message: 'Order #ORD-2024-002 shipped to Mike Chen', time: '2 hours ago', amount: 349 },
-      { type: 'review', message: '5-star review received for Falco Training Tee', time: '3 hours ago', amount: null }
-    ]
+  const fetchAnalytics = async (showLoader = true) => {
+    if (showLoader) setLoading(true)
+    else setRefreshing(true)
+
+    try {
+      const response = await fetch(`/api/analytics?timeRange=${timeRange}`)
+      const data = await response.json()
+      setAnalyticsData(data)
+    } catch (error) {
+      console.error('Error fetching analytics:', error)
+    } finally {
+      setLoading(false)
+      setRefreshing(false)
+    }
   }
+
+  useEffect(() => {
+    fetchAnalytics(true)
+  }, [timeRange])
+
+  useEffect(() => {
+    // Auto-refresh every 60 seconds
+    const interval = setInterval(() => {
+      fetchAnalytics(false)
+    }, 60000)
+
+    return () => clearInterval(interval)
+  }, [])
 
   const StatCard = ({ title, value, growth, icon: Icon, color }: any) => (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -75,7 +77,7 @@ const AnalyticsDashboard = () => {
             <span className={`text-sm font-medium ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {growth >= 0 ? '+' : ''}{growth}%
             </span>
-            <span className="text-sm text-gray-500 ml-1">vs last month</span>
+            <span className="text-sm text-gray-500 ml-1">vs last period</span>
           </div>
         </div>
         <div className={`p-3 rounded-full ${color}`}>
@@ -85,18 +87,57 @@ const AnalyticsDashboard = () => {
     </div>
   )
 
-  const ChartBar = ({ height, label, value }: any) => (
-    <div className="flex flex-col items-center">
-      <div className="w-full bg-gray-200 rounded-full h-32 flex items-end">
-        <div 
-          className="bg-falco-accent rounded-t-full w-full transition-all duration-500"
-          style={{ height: `${height}%` }}
-        />
+  const ChartBar = ({ height, label, value, isHighest }: any) => (
+    <div className="flex flex-col items-center flex-1 group cursor-pointer">
+      <div className="relative w-full">
+        {/* Tooltip on hover */}
+        <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+          ${value.toLocaleString()}
+        </div>
+        <div className="w-full bg-gray-100 rounded-lg h-40 flex items-end overflow-hidden">
+          <div
+            className={`w-full transition-all duration-700 ease-out rounded-t-lg ${
+              isHighest
+                ? 'bg-gradient-to-t from-green-600 to-green-400'
+                : 'bg-gradient-to-t from-blue-600 to-blue-400'
+            } group-hover:from-falco-accent group-hover:to-yellow-400`}
+            style={{ height: `${Math.max(height, 8)}%` }}
+          />
+        </div>
       </div>
-      <p className="text-xs text-gray-600 mt-2">{label}</p>
-      <p className="text-xs font-medium text-gray-900">${value.toLocaleString()}</p>
+      <p className="text-xs font-medium text-gray-600 mt-3">{label}</p>
+      <p className={`text-sm font-bold ${isHighest ? 'text-green-600' : 'text-gray-900'}`}>
+        ${value.toLocaleString()}
+      </p>
     </div>
   )
+
+  if (loading) {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-falco-accent mx-auto mb-4" />
+          <p className="text-gray-600">Loading analytics...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!analyticsData) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-gray-600">Failed to load analytics data</p>
+        <button
+          onClick={() => fetchAnalytics(true)}
+          className="mt-4 px-4 py-2 bg-falco-accent text-black rounded-lg hover:bg-falco-gold"
+        >
+          Retry
+        </button>
+      </div>
+    )
+  }
+
+  const maxRevenue = Math.max(...analyticsData.revenueData.map(d => d.revenue), 1)
 
   return (
     <div className="p-8">
@@ -108,6 +149,14 @@ const AnalyticsDashboard = () => {
             <p className="text-gray-600">Track your business performance and growth</p>
           </div>
           <div className="flex gap-2">
+            <button
+              onClick={() => fetchAnalytics(false)}
+              disabled={refreshing}
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700"
+            >
+              <RefreshCw className={`w-4 h-4 text-gray-600 ${refreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
@@ -146,9 +195,11 @@ const AnalyticsDashboard = () => {
           color="bg-purple-500"
         />
         <StatCard
-          title="Conversion Rate"
-          value={`${analyticsData.overview.conversionRate}%`}
-          growth={analyticsData.overview.conversionGrowth}
+          title="Avg Order Value"
+          value={`$${analyticsData.overview.totalOrders > 0
+            ? Math.round(analyticsData.overview.totalRevenue / analyticsData.overview.totalOrders)
+            : 0}`}
+          growth={0}
           icon={TrendingUp}
           color="bg-orange-500"
         />
@@ -157,21 +208,42 @@ const AnalyticsDashboard = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Revenue Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Revenue Trend</h3>
-            <BarChart3 className="w-5 h-5 text-gray-400" />
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Revenue Trend</h3>
+              <p className="text-sm text-gray-500">Last 6 months performance</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-600 to-blue-400"></div>
+                <span className="text-xs text-gray-500">Revenue</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-600 to-green-400"></div>
+                <span className="text-xs text-gray-500">Highest</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-end justify-between h-64 space-x-2">
-            {analyticsData.revenueData.slice(-6).map((data, index) => (
-              <ChartBar
-                key={index}
-                height={(data.revenue / Math.max(...analyticsData.revenueData.map(d => d.revenue))) * 100}
-                label={data.month}
-                value={data.revenue}
-              />
-            ))}
-          </div>
+          {analyticsData.revenueData.length > 0 ? (
+            <div className="flex items-end justify-between gap-3 pt-4">
+              {analyticsData.revenueData.map((data, index) => (
+                <ChartBar
+                  key={index}
+                  height={(data.revenue / maxRevenue) * 100}
+                  label={data.month}
+                  value={data.revenue}
+                  isHighest={data.revenue === maxRevenue && data.revenue > 0}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="h-64 flex flex-col items-center justify-center text-gray-400">
+              <BarChart3 className="w-12 h-12 mb-3" />
+              <p>No revenue data available</p>
+              <p className="text-sm">Place orders to see trends</p>
+            </div>
+          )}
         </div>
 
         {/* Customer Segments */}
@@ -180,26 +252,32 @@ const AnalyticsDashboard = () => {
             <h3 className="text-lg font-semibold text-gray-900">Customer Segments</h3>
             <PieChart className="w-5 h-5 text-gray-400" />
           </div>
-          <div className="space-y-4">
-            {analyticsData.customerSegments.map((segment, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className={`w-4 h-4 rounded-full mr-3 ${
-                    index === 0 ? 'bg-blue-500' : index === 1 ? 'bg-green-500' : 'bg-purple-500'
-                  }`} />
-                  <span className="text-sm font-medium text-gray-900">{segment.segment}</span>
+          {analyticsData.customerSegments.length > 0 ? (
+            <div className="space-y-4">
+              {analyticsData.customerSegments.map((segment, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className={`w-4 h-4 rounded-full mr-3 ${
+                      index === 0 ? 'bg-blue-500' : index === 1 ? 'bg-green-500' : 'bg-purple-500'
+                    }`} />
+                    <span className="text-sm font-medium text-gray-900">{segment.segment}</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-gray-900">{segment.count} customers</p>
+                    <p className="text-xs text-gray-500">{segment.percentage}% | ${segment.revenue.toLocaleString()}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">{segment.count} customers</p>
-                  <p className="text-xs text-gray-500">{segment.percentage}%</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="h-48 flex items-center justify-center text-gray-500">
+              No customer data available
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Top Products and Traffic Sources */}
+      {/* Top Products and Order Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Top Products */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
@@ -210,53 +288,67 @@ const AnalyticsDashboard = () => {
             </div>
           </div>
           <div className="p-6">
-            <div className="space-y-4">
-              {analyticsData.topProducts.map((product, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 bg-falco-accent rounded-full flex items-center justify-center text-black font-bold text-sm mr-3">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{product.name}</p>
-                      <p className="text-sm text-gray-500">{product.sales} sales</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-medium text-gray-900">${product.revenue.toLocaleString()}</p>
+            {analyticsData.topProducts.length > 0 ? (
+              <div className="space-y-4">
+                {analyticsData.topProducts.map((product, index) => (
+                  <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
-                      <span className="text-xs text-green-600">+{product.growth}%</span>
+                      <div className="w-8 h-8 bg-falco-accent rounded-full flex items-center justify-center text-black font-bold text-sm mr-3">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900 truncate max-w-[180px]">{product.name}</p>
+                        <p className="text-sm text-gray-500">{product.sales} sales</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium text-gray-900">${product.revenue.toLocaleString()}</p>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-48 flex items-center justify-center text-gray-500">
+                No product sales data yet
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Traffic Sources */}
+        {/* Order Status Breakdown */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Traffic Sources</h3>
-              <Eye className="w-5 h-5 text-gray-400" />
+              <h3 className="text-lg font-semibold text-gray-900">Order Status</h3>
+              <ShoppingBag className="w-5 h-5 text-gray-400" />
             </div>
           </div>
           <div className="p-6">
             <div className="space-y-4">
-              {analyticsData.trafficSources.map((source, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900">{source.source}</p>
-                    <p className="text-sm text-gray-500">{source.visitors.toLocaleString()} visitors</p>
+              {[
+                { label: 'Pending', count: analyticsData.orderStatuses.pending, color: 'bg-orange-500' },
+                { label: 'Processing', count: analyticsData.orderStatuses.processing, color: 'bg-yellow-500' },
+                { label: 'Shipped', count: analyticsData.orderStatuses.shipped, color: 'bg-blue-500' },
+                { label: 'Delivered', count: analyticsData.orderStatuses.delivered, color: 'bg-green-500' },
+                { label: 'Cancelled', count: analyticsData.orderStatuses.cancelled, color: 'bg-red-500' }
+              ].map((status, index) => {
+                const total = analyticsData.overview.totalOrders || 1
+                const percentage = (status.count / total) * 100
+                return (
+                  <div key={index}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium text-gray-700">{status.label}</span>
+                      <span className="text-sm text-gray-900">{status.count} orders</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className={`${status.color} h-2 rounded-full transition-all duration-500`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">{source.percentage}%</p>
-                    <p className="text-xs text-gray-500">{source.conversion}% conversion</p>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
         </div>
@@ -271,29 +363,35 @@ const AnalyticsDashboard = () => {
           </div>
         </div>
         <div className="p-6">
-          <div className="space-y-4">
-            {analyticsData.recentActivity.map((activity, index) => (
-              <div key={index} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                <div className="flex items-center">
-                  <div className={`w-2 h-2 rounded-full mr-3 ${
-                    activity.type === 'order' ? 'bg-green-500' :
-                    activity.type === 'customer' ? 'bg-blue-500' :
-                    activity.type === 'product' ? 'bg-purple-500' :
-                    'bg-yellow-500'
-                  }`} />
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{activity.message}</p>
-                    <p className="text-xs text-gray-500">{activity.time}</p>
+          {analyticsData.recentActivity.length > 0 ? (
+            <div className="space-y-4">
+              {analyticsData.recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                  <div className="flex items-center">
+                    <div className={`w-2 h-2 rounded-full mr-3 ${
+                      activity.type === 'order' ? 'bg-green-500' :
+                      activity.type === 'customer' ? 'bg-blue-500' :
+                      activity.type === 'product' ? 'bg-purple-500' :
+                      'bg-yellow-500'
+                    }`} />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{activity.message}</p>
+                      <p className="text-xs text-gray-500">{activity.time}</p>
+                    </div>
                   </div>
+                  {activity.amount && (
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-900">${activity.amount.toFixed(2)}</p>
+                    </div>
+                  )}
                 </div>
-                {activity.amount && (
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">${activity.amount}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="h-32 flex items-center justify-center text-gray-500">
+              No recent activity
+            </div>
+          )}
         </div>
       </div>
     </div>

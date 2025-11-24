@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
@@ -12,9 +14,28 @@ export async function POST(request: NextRequest) {
       customerId
     } = body
 
+    // Get logged-in user session
+    const session = await getServerSession(authOptions)
+
+    // If user is logged in, use their account email for order tracking
+    // The checkout form email is used for shipping/notifications
+    const orderEmail = session?.user?.email || customerInfo.email
+
+    // Get customer ID if logged in
+    let resolvedCustomerId = customerId || null
+    if (session?.user?.email && !resolvedCustomerId) {
+      const customer = await prisma.customer.findUnique({
+        where: { email: session.user.email }
+      })
+      if (customer) {
+        resolvedCustomerId = customer.id
+      }
+    }
+
     console.log('=== API CHECKOUT DEBUG ===')
+    console.log('Session email:', session?.user?.email)
+    console.log('Order linked to email:', orderEmail)
     console.log('Received items count:', items?.length)
-    console.log('Received items:', JSON.stringify(items, null, 2))
 
     // Validate required fields
     if (!customerInfo || !items || items.length === 0) {
@@ -36,11 +57,12 @@ export async function POST(request: NextRequest) {
     const total = subtotal + shippingCost + tax
 
     // Create order with items
+    // Link order to logged-in user's email so it shows in their orders page
     const order = await prisma.order.create({
       data: {
         orderNumber,
-        customerId: customerId || null,
-        email: customerInfo.email,
+        customerId: resolvedCustomerId,
+        email: orderEmail,
         firstName: customerInfo.firstName,
         lastName: customerInfo.lastName,
         phone: customerInfo.phone || null,

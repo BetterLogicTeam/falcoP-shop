@@ -1,15 +1,16 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext } from 'react'
+import { useSession, signOut } from 'next-auth/react'
 
 interface User {
   email: string
   name: string
+  type?: string
 }
 
 interface AuthContextType {
   user: User | null
-  login: (email: string, password: string) => Promise<boolean>
   logout: () => void
   isLoading: boolean
 }
@@ -17,46 +18,24 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { data: session, status } = useSession()
+  const isLoading = status === 'loading'
 
-  useEffect(() => {
-    // Check if user is logged in on mount
-    const savedUser = localStorage.getItem('admin_user')
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser))
-      } catch (error) {
-        localStorage.removeItem('admin_user')
+  // Check if user is admin type
+  const user = session?.user && (session.user as any).type === 'admin'
+    ? {
+        email: session.user.email || '',
+        name: session.user.name || '',
+        type: 'admin'
       }
-    }
-    setIsLoading(false)
-  }, [])
-
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // Check credentials
-    if (email === 'admin123@gmail.com' && password === 'admin123') {
-      const userData = {
-        email: 'admin123@gmail.com',
-        name: 'Admin User'
-      }
-      setUser(userData)
-      localStorage.setItem('admin_user', JSON.stringify(userData))
-      return true
-    }
-    return false
-  }
+    : null
 
   const logout = () => {
-    setUser(null)
-    localStorage.removeItem('admin_user')
+    signOut({ callbackUrl: '/admin/login' })
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   )

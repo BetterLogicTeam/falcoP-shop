@@ -102,12 +102,19 @@ export default function CustomerOrdersPage() {
 
     if (session) {
       fetchOrders()
+
+      // Auto-refresh every 15 seconds for real-time status updates
+      const interval = setInterval(() => {
+        fetchOrders()
+      }, 15000)
+
+      return () => clearInterval(interval)
     }
   }, [session])
 
   if (sessionStatus === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 text-gray-900">
         <Navigation />
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
@@ -129,10 +136,10 @@ export default function CustomerOrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       <Navigation />
 
-      <div className="max-w-4xl mx-auto px-4 py-12">
+      <div className="max-w-4xl mx-auto px-4 pt-10 pb-12 sm:pt-16 mt-8 sm:mt-10">
         {/* Header */}
         <div className="mb-8">
           <Link

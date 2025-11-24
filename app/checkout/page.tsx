@@ -16,6 +16,7 @@ export default function CheckoutPage() {
   const { state, clearCart } = useCart()
   const { t } = useClientTranslation()
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -28,11 +29,17 @@ export default function CheckoutPage() {
     phone: '',
   })
 
+  // Wait for client-side hydration before checking cart
   useEffect(() => {
-    if (state.items.length === 0) {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    // Only redirect after hydration is complete and cart is confirmed empty
+    if (isMounted && state.items.length === 0) {
       router.push('/shop')
     }
-  }, [state.items.length, router])
+  }, [isMounted, state.items.length, router])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
