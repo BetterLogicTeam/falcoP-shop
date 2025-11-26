@@ -231,6 +231,7 @@ export default function AdminOrdersPage() {
                 <tr>
                   <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Order</th>
                   <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Customer</th>
+                  <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Shipping Address</th>
                   <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Items</th>
                   <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Total</th>
                   <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
@@ -254,6 +255,20 @@ export default function AdminOrdersPage() {
                         <div className="text-sm text-gray-900">{order.email}</div>
                         <div className="text-xs text-gray-500">
                           {order.firstName} {order.lastName}
+                        </div>
+                      </td>
+                      <td className="hidden xl:table-cell px-6 py-4">
+                        <div className="text-sm text-gray-900 max-w-[200px]">
+                          {order.shippingLine1 ? (
+                            <>
+                              <div className="truncate">{order.shippingLine1}</div>
+                              <div className="text-xs text-gray-500">
+                                {order.shippingCity}, {order.shippingState} {order.shippingPostal}
+                              </div>
+                            </>
+                          ) : (
+                            <span className="text-gray-400 italic">No address</span>
+                          )}
                         </div>
                       </td>
                       <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">

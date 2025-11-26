@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { ShoppingCart, Heart, Eye, Star, Filter, Grid, List } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { products, getProductsByCategory, getProductsBySubcategory, getProductsByType } from '../data/products'
 import { useCart } from '../contexts/CartContext'
+import { useProducts } from '../contexts/ProductContext'
 import ProductSelectionModal from './ProductSelectionModal'
 import { Product } from '../data/products'
 
@@ -17,6 +17,7 @@ interface ProductCatalogProps {
 
 export default function ProductCatalog({ category, subcategory, type }: ProductCatalogProps) {
   const { addToCart } = useCart()
+  const { products } = useProducts()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [sortBy, setSortBy] = useState('featured')
   const [priceRange, setPriceRange] = useState([0, 200])
@@ -27,10 +28,10 @@ export default function ProductCatalog({ category, subcategory, type }: ProductC
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Filter products based on props
-  let filteredProducts = products
-  if (category) filteredProducts = getProductsByCategory(category)
-  if (subcategory) filteredProducts = getProductsBySubcategory(subcategory)
-  if (type) filteredProducts = getProductsByType(type)
+  let filteredProducts = [...products]
+  if (category) filteredProducts = filteredProducts.filter(p => p.category === category)
+  if (subcategory) filteredProducts = filteredProducts.filter(p => p.subcategory === subcategory)
+  if (type) filteredProducts = filteredProducts.filter(p => p.type === type)
 
   // Apply additional filters
   filteredProducts = filteredProducts.filter(product => {

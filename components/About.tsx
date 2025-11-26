@@ -10,20 +10,9 @@ export default function About() {
   const [activeTab, setActiveTab] = useState('mission')
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   
-  // Shoe images array (11.jpg to 23.jpg)
+  // Single image
   const shoeImages = [
-    '/images/11.jpg',
-    '/images/12.jpg', 
-    '/images/13.jpg',
-    '/images/14.jpg',
-    '/images/15.jpg',
-    '/images/16.jpg',
-    '/images/17.jpg',
-    '/images/19.jpg',
-    '/images/20.jpg',
-    '/images/21.jpg',
-    '/images/22.jpg',
-    '/images/23.jpg'
+    '/images/20.jpg'
   ]
 
   // Fast cycling effect for shoe images

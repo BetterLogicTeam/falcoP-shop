@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, CreditCard, Lock, Check } from 'lucide-react'
+import { ArrowLeft, CreditCard, Lock, Check, LogIn } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { useCart } from '../../contexts/CartContext'
 import { useClientTranslation } from '../../hooks/useClientTranslation'
 import StripeElementsProvider from '../../components/StripeElementsProvider'
@@ -13,6 +14,7 @@ import toast from 'react-hot-toast'
 
 export default function CheckoutPage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const { state, clearCart } = useCart()
   const { t } = useClientTranslation()
   const [isProcessing, setIsProcessing] = useState(false)
@@ -33,6 +35,13 @@ export default function CheckoutPage() {
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  // Pre-fill email from session
+  useEffect(() => {
+    if (session?.user?.email && !formData.email) {
+      setFormData(prev => ({ ...prev, email: session.user?.email || '' }))
+    }
+  }, [session, formData.email])
 
   useEffect(() => {
     // Only redirect after hydration is complete and cart is confirmed empty
@@ -98,6 +107,52 @@ export default function CheckoutPage() {
 
   const handlePaymentError = (error: string) => {
     console.error('Payment error:', error)
+  }
+
+  // Show loading while checking authentication status
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-falco-primary flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-black"></div>
+        <div className="relative z-10 text-center">
+          <div className="w-16 h-16 border-4 border-falco-accent border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-gray-300">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Require authentication to checkout
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-falco-primary flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-black"></div>
+        <div className="relative z-10 text-center max-w-md mx-auto px-4">
+          <div className="w-20 h-20 bg-gradient-to-br from-falco-accent to-falco-gold rounded-full flex items-center justify-center mx-auto mb-6">
+            <LogIn className="w-10 h-10 text-black" />
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-4">Sign In Required</h1>
+          <p className="text-gray-300 mb-8">Please sign in to your account to complete your purchase. This helps us track your orders and provide better support.</p>
+          <div className="space-y-4">
+            <Link
+              href="/auth/login?callbackUrl=/checkout"
+              className="block w-full bg-gradient-to-r from-falco-accent to-falco-gold text-black px-8 py-4 rounded-xl font-bold hover:from-falco-gold hover:to-falco-accent transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/auth/register?callbackUrl=/checkout"
+              className="block w-full bg-white/10 text-white px-8 py-4 rounded-xl font-bold border border-white/20 hover:bg-white/20 transition-all duration-300"
+            >
+              Create Account
+            </Link>
+            <Link href="/shop" className="block text-gray-400 hover:text-white transition-colors mt-4">
+              ← Continue Shopping
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (state.items.length === 0) {

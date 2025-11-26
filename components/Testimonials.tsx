@@ -17,7 +17,7 @@ export default function Testimonials() {
       sport: 'Track & Field',
       rating: 5,
       text: 'Falco P has completely transformed my performance. The aerodynamic design and premium materials give me that extra edge I need to compete at the highest level.',
-      image: '/images/17.jpg',
+      image: '/images/20.jpg',
       verified: true
     },
     {
@@ -27,7 +27,7 @@ export default function Testimonials() {
       sport: 'CrossFit',
       rating: 5,
       text: 'The quality is unmatched. I\'ve been using Falco P gear for over a year now, and it still looks and performs like new. Worth every penny!',
-      image: '/images/19.jpg',
+      image: '/images/20.jpg',
       verified: true
     },
     {
@@ -47,7 +47,7 @@ export default function Testimonials() {
       sport: 'Long Distance',
       rating: 5,
       text: 'I\'ve run 3 marathons in my Falco P shoes. The cushioning and support are perfect for long distances. My feet never felt better!',
-      image: '/images/21.jpg',
+      image: '/images/20.jpg',
       verified: true
     },
     {
@@ -57,7 +57,7 @@ export default function Testimonials() {
       sport: 'Professional Team',
       rating: 5,
       text: 'The cleats are amazing. Great traction, comfortable fit, and they look fantastic. My teammates are all asking where I got them.',
-      image: '/images/22.jpg',
+      image: '/images/20.jpg',
       verified: true
     }
   ]
