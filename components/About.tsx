@@ -1,30 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Target, Eye, Zap, Award, Users, Globe } from 'lucide-react'
-import Image from 'next/image'
 import { useClientTranslation } from '../hooks/useClientTranslation'
 
 export default function About() {
   const { t } = useClientTranslation()
   const [activeTab, setActiveTab] = useState('mission')
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  
-  // Single image
-  const shoeImages = [
-    '/images/20.jpg'
-  ]
-
-  // Fast cycling effect for shoe images
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
-        (prevIndex + 1) % shoeImages.length
-      )
-    }, 200) // Very fast cycling - 200ms per image
-
-    return () => clearInterval(interval)
-  }, [shoeImages.length])
 
   const tabs = [
     { id: 'mission', label: t('about.mission', 'Mission'), icon: Target },
@@ -129,78 +111,43 @@ export default function About() {
             </div>
           </div>
 
-          {/* Elegant Fast Cycling Shoe Slideshow */}
+          {/* Video Section */}
           <div className="relative group px-4 sm:px-6 lg:px-0">
             {/* Main Container with Enhanced Styling */}
             <div className="relative z-10 overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl border-2 border-white/10 bg-gradient-to-br from-gray-900/50 to-black/80 backdrop-blur-sm">
-              {/* Shoe Images Container */}
+              {/* Video Container */}
               <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-[500px] bg-gradient-to-br from-gray-800 to-black rounded-2xl sm:rounded-3xl overflow-hidden">
-                <Image
-                  key={currentImageIndex}
-                  src={shoeImages[currentImageIndex]}
-                  alt={`Falco P Shoe ${currentImageIndex + 1}`}
-                  width={600}
-                  height={500}
-                  className="w-full h-full object-cover transition-all duration-200 group-hover:scale-105"
-                />
-                
+                <video
+                  autoPlay
+                  loop
+                  playsInline
+                  controls
+                  className="w-full h-full object-cover"
+                >
+                  <source src="/videos/falcop.mp4" type="video/mp4" />
+                </video>
+
                 {/* Elegant Gradient Overlays */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-r from-falco-accent/10 via-transparent to-falco-gold/10"></div>
-                
-                {/* Animated Border Effect */}
-                <div className="absolute inset-0 rounded-3xl border-2 border-falco-accent/30 animate-pulse"></div>
-                
-                {/* Enhanced Counter with Glass Effect */}
-                <div className="absolute top-3 right-3 sm:top-6 sm:right-6 bg-black/60 backdrop-blur-xl rounded-xl sm:rounded-2xl px-2 py-1 sm:px-4 sm:py-2 border border-white/20">
-                  <span className="text-white text-xs sm:text-sm font-bold tracking-wider">
-                    {currentImageIndex + 1} / {shoeImages.length}
-                  </span>
-                </div>
-                
+
                 {/* Brand Badge */}
                 <div className="absolute top-3 left-3 sm:top-6 sm:left-6 bg-gradient-to-r from-falco-accent to-falco-gold rounded-lg sm:rounded-xl px-2 py-1 sm:px-4 sm:py-2">
                   <span className="text-falco-primary text-xs sm:text-sm font-black tracking-wider">
                     WING P
                   </span>
                 </div>
-                
-                {/* Progress Bar */}
-                <div className="absolute bottom-3 left-3 right-3 sm:bottom-6 sm:left-6 sm:right-6">
-                  <div className="w-full h-0.5 sm:h-1 bg-white/20 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-falco-accent to-falco-gold rounded-full transition-all duration-200"
-                      style={{ width: `${((currentImageIndex + 1) / shoeImages.length) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
               </div>
-              
+
               {/* Enhanced Decorative Elements */}
               <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-falco-accent/30 to-transparent rounded-full animate-pulse blur-sm"></div>
               <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-gradient-to-br from-falco-gold/30 to-transparent rounded-full animate-pulse blur-sm" style={{ animationDelay: '1s' }}></div>
-              
-              {/* Floating Particles */}
-              <div className="absolute inset-0 pointer-events-none">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute w-2 h-2 bg-falco-accent/60 rounded-full animate-bounce"
-                    style={{
-                      left: `${20 + (i * 10)}%`,
-                      top: `${30 + (i * 8)}%`,
-                      animationDelay: `${i * 0.5}s`,
-                      animationDuration: '3s'
-                    }}
-                  ></div>
-                ))}
-              </div>
             </div>
-            
+
             {/* Enhanced Background Elements */}
             <div className="absolute inset-0 bg-gradient-to-br from-falco-accent/20 to-falco-gold/20 rounded-3xl transform rotate-2 blur-sm"></div>
             <div className="absolute inset-0 bg-gradient-to-tl from-falco-gold/10 to-falco-accent/10 rounded-3xl transform -rotate-1 blur-sm"></div>
-            
+
             {/* Glow Effect */}
             <div className="absolute inset-0 rounded-3xl shadow-[0_0_50px_rgba(34,211,238,0.3)] group-hover:shadow-[0_0_80px_rgba(34,211,238,0.5)] transition-all duration-500"></div>
           </div>

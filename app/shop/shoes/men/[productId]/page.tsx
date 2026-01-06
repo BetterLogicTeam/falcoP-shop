@@ -263,21 +263,21 @@ const ProductDetailPage = () => {
                   <Truck className="w-6 h-6 text-falco-accent" />
                   <div>
                     <p className="text-white font-semibold">Free Shipping</p>
-                    <p className="text-gray-400 text-sm">On orders over $75</p>
+                    <p className="text-gray-400 text-sm">On orders over $1900</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Shield className="w-6 h-6 text-falco-accent" />
                   <div>
                     <p className="text-white font-semibold">Warranty</p>
-                    <p className="text-gray-400 text-sm">2 year guarantee</p>
+                    <p className="text-gray-400 text-sm">1 year guarantee</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <RotateCcw className="w-6 h-6 text-falco-accent" />
                   <div>
                     <p className="text-white font-semibold">Easy Returns</p>
-                    <p className="text-gray-400 text-sm">30 day return policy</p>
+                    <p className="text-gray-400 text-sm">14 day return policy</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
