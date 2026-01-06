@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(DATABASE_URL=postgresql://postgres.aachaovbtsadkdnopcom:6731467112@aws-1-eu-west-2.pooler.supabase.com:5432/postgres npx prisma db pull:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(npm run build:*)",
+      "Bash(nul)",
+      "Bash(npx next build)",
+      "Bash(dir:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npx vercel:*)"
     ],
     "deny": [],
     "ask": []

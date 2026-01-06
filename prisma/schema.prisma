@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,44 +8,37 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// ==================== ADMIN ====================
 model Admin {
   id        String   @id @default(cuid())
   email     String   @unique
-  password  String   // Will be hashed with bcrypt
+  password  String
   name      String
   role      String   @default("admin")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// ==================== CUSTOMER ====================
 model Customer {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  password      String?   // Optional for guest checkout
+  id            String         @id @default(cuid())
+  email         String         @unique
+  password      String?
   firstName     String
   lastName      String
   phone         String?
   avatar        String?
-  status        String    @default("active") // active, inactive, vip
-  loyaltyPoints Int       @default(0)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Relations
+  status        String         @default("active")
+  loyaltyPoints Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   addresses     Address[]
   orders        Order[]
   reviews       Review[]
   wishlist      WishlistItem[]
 }
 
-// ==================== ADDRESS ====================
 model Address {
   id         String   @id @default(cuid())
   customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-
   firstName  String
   lastName   String
   company    String?
@@ -60,197 +50,141 @@ model Address {
   country    String
   phone      String?
   isDefault  Boolean  @default(false)
-
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
-  // Orders shipped to this address
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   orders     Order[]
 }
 
-// ==================== PRODUCT ====================
 model Product {
-  id            String   @id @default(cuid())
-  name          String
-  slug          String   @unique
-  category      String   // men, women, kids
-  subcategory   String   // sportswear, shoes
-  type          String   // Sports Bras, Running Shoes, etc.
-  price         Float
-  originalPrice Float?
-  rating        Float    @default(0)
-  reviewCount   Int      @default(0)
-
-  // Images
-  image         String   // Main image URL
-  images        String[] // Additional image URLs
-
-  // Product details
-  badge         String?  // Best Seller, New, Pro Choice, etc.
-  colors        String[] // Available colors
-  sizes         String[] // Available sizes
-  description   String
-  features      String[] // Feature list
-
-  // Inventory
-  inStock       Boolean  @default(true)
-  stockQuantity Int      @default(0)
-  lowStockAlert Int      @default(5)
-  sku           String?  @unique
-
-  // SEO
+  id              String         @id @default(cuid())
+  name            String
+  slug            String         @unique
+  category        String
+  subcategory     String
+  type            String
+  price           Float
+  originalPrice   Float?
+  rating          Float          @default(0)
+  reviewCount     Int            @default(0)
+  image           String
+  images          String[]
+  badge           String?
+  colors          String[]
+  sizes           String[]
+  description     String
+  features        String[]
+  inStock         Boolean        @default(true)
+  stockQuantity   Int            @default(0)
+  lowStockAlert   Int            @default(5)
+  sku             String?        @unique
   metaTitle       String?
   metaDescription String?
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // Relations
-  orderItems    OrderItem[]
-  reviews       Review[]
-  wishlistItems WishlistItem[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  orderItems      OrderItem[]
+  reviews         Review[]
+  wishlistItems   WishlistItem[]
 }
 
-// ==================== ORDER ====================
 model Order {
-  id              String      @id @default(cuid())
-  orderNumber     String      @unique // ORD-XXXXX format
-
-  // Customer info (can be guest or registered)
-  customerId      String?
-  customer        Customer?   @relation(fields: [customerId], references: [id])
-
-  // Guest checkout info
-  email           String
-  firstName       String
-  lastName        String
-  phone           String?
-
-  // Shipping address
+  id                String      @id @default(cuid())
+  orderNumber       String      @unique
+  customerId        String?
+  email             String
+  firstName         String
+  lastName          String
+  phone             String?
   shippingAddressId String?
-  shippingAddress   Address?  @relation(fields: [shippingAddressId], references: [id])
-
-  // Or inline address for guests
-  shippingLine1   String?
-  shippingLine2   String?
-  shippingCity    String?
-  shippingState   String?
-  shippingPostal  String?
-  shippingCountry String?
-
-  // Order details
-  status          String      @default("pending") // pending, processing, shipped, delivered, cancelled
-  paymentStatus   String      @default("pending") // pending, paid, failed, refunded
-  paymentMethod   String?     // stripe, apple_pay, google_pay, etc.
-  paymentIntentId String?     // Stripe payment intent ID
-
-  // Amounts
-  subtotal        Float
-  shippingCost    Float       @default(0)
-  tax             Float       @default(0)
-  discount        Float       @default(0)
-  total           Float
-
-  // Shipping & tracking
-  shippingMethod  String?
-  trackingNumber  String?
+  shippingLine1     String?
+  shippingLine2     String?
+  shippingCity      String?
+  shippingState     String?
+  shippingPostal    String?
+  shippingCountry   String?
+  status            String      @default("pending")
+  paymentStatus     String      @default("pending")
+  paymentMethod     String?
+  paymentIntentId   String?
+  subtotal          Float
+  shippingCost      Float       @default(0)
+  tax               Float       @default(0)
+  discount          Float       @default(0)
+  total             Float
+  shippingMethod    String?
+  trackingNumber    String?
   estimatedDelivery DateTime?
-
-  // Discount code
-  couponId        String?
-  coupon          Coupon?     @relation(fields: [couponId], references: [id])
-
-  // Notes
-  customerNotes   String?
-  adminNotes      String?
-
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-
-  // Relations
-  items           OrderItem[]
+  couponId          String?
+  customerNotes     String?
+  adminNotes        String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  coupon            Coupon?     @relation(fields: [couponId], references: [id])
+  customer          Customer?   @relation(fields: [customerId], references: [id])
+  shippingAddress   Address?    @relation(fields: [shippingAddressId], references: [id])
+  items             OrderItem[]
 }
 
-// ==================== ORDER ITEM ====================
 model OrderItem {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
   productId String
-  product   Product @relation(fields: [productId], references: [id])
-
-  name      String  // Snapshot of product name
-  price     Float   // Snapshot of price at time of order
+  name      String
+  price     Float
   quantity  Int
   size      String?
   color     String?
-  image     String? // Snapshot of product image
-
+  image     String?
   createdAt DateTime @default(now())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
 }
 
-// ==================== REVIEW ====================
 model Review {
   id         String   @id @default(cuid())
   productId  String
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-
   customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-
-  rating     Int      // 1-5
+  rating     Int
   title      String?
   comment    String
-  isVerified Boolean  @default(false) // Verified purchase
-  isApproved Boolean  @default(false) // Admin approved
-
+  isVerified Boolean  @default(false)
+  isApproved Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
-// ==================== WISHLIST ====================
 model WishlistItem {
   id         String   @id @default(cuid())
   customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-
   productId  String
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-
   createdAt  DateTime @default(now())
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([customerId, productId])
 }
 
-// ==================== COUPON ====================
 model Coupon {
-  id              String    @id @default(cuid())
-  code            String    @unique
-  description     String?
-
-  discountType    String    // percentage, fixed
-  discountValue   Float
-
-  minOrderAmount  Float?
-  maxDiscount     Float?    // Cap for percentage discounts
-
-  usageLimit      Int?      // Total usage limit
-  usageCount      Int       @default(0)
-  usagePerCustomer Int      @default(1)
-
-  startDate       DateTime?
-  endDate         DateTime?
-  isActive        Boolean   @default(true)
-
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  // Relations
-  orders          Order[]
+  id               String    @id @default(cuid())
+  code             String    @unique
+  description      String?
+  discountType     String
+  discountValue    Float
+  minOrderAmount   Float?
+  maxDiscount      Float?
+  usageLimit       Int?
+  usageCount       Int       @default(0)
+  usagePerCustomer Int       @default(1)
+  startDate        DateTime?
+  endDate          DateTime?
+  isActive         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  orders           Order[]
 }
 
-// ==================== NEWSLETTER ====================
 model NewsletterSubscriber {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -258,12 +192,11 @@ model NewsletterSubscriber {
   createdAt DateTime @default(now())
 }
 
-// ==================== SETTINGS ====================
 model Setting {
   id        String   @id @default(cuid())
   key       String   @unique
-  value     String   @db.Text
-  category  String   // general, appearance, email, notifications, security, payments, backup
+  value     String
+  category  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
