@@ -9,7 +9,7 @@ import toast from 'react-hot-toast'
 const ProductEditForm = () => {
   const router = useRouter()
   const params = useParams()
-  const productId = params.id as string
+  const productId = params?.id as string
   const [formData, setFormData] = useState({
     name: '',
     type: '',

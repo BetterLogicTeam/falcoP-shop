@@ -7,7 +7,7 @@ import { AlertCircle, ArrowLeft, Loader2 } from 'lucide-react'
 
 function AuthErrorContent() {
   const searchParams = useSearchParams()
-  const error = searchParams.get('error')
+  const error = searchParams?.get('error')
 
   const errorMessages: Record<string, string> = {
     Configuration: 'There is a problem with the server configuration.',

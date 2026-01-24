@@ -12,7 +12,7 @@ function LoginForm() {
   const searchParams = useSearchParams()
 
   // Validate callbackUrl to prevent open redirect attacks
-  const rawCallbackUrl = searchParams.get('callbackUrl') || '/'
+  const rawCallbackUrl = searchParams?.get('callbackUrl') || '/'
   const callbackUrl = rawCallbackUrl.startsWith('/') && !rawCallbackUrl.startsWith('//')
     ? rawCallbackUrl
     : '/'

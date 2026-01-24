@@ -11,7 +11,7 @@ import CartButton from '../../../../../components/CartButton'
 
 const ProductDetailPage = () => {
   const params = useParams()
-  const productId = params.productId as string
+  const productId = params?.productId as string
   const { products, isLoading } = useProducts()
   const { addToCart } = useCart()
   const [selectedSize, setSelectedSize] = useState('')
