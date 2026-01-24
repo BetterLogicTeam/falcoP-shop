@@ -447,7 +447,7 @@ export default function CheckoutPage() {
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                   <Check className="w-4 h-4 text-white" />
                 </div>
-                <span>30-day return policy</span>
+                <span>14-day return policy</span>
               </div>
               <div className="flex items-center space-x-3 text-sm text-gray-300">
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">

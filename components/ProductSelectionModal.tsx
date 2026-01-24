@@ -28,10 +28,11 @@ export default function ProductSelectionModal({ product, isOpen, onClose }: Prod
       return
     }
 
-    if (product.colors.length > 0 && !selectedColor) {
-      toast.error('Please select a color')
-      return
-    }
+    // Color selection hidden - only White available
+    // if (product.colors.length > 0 && !selectedColor) {
+    //   toast.error('Please select a color')
+    //   return
+    // }
 
     addToCart(product, quantity, selectedSize || undefined, selectedColor || undefined)
     onClose()
@@ -144,8 +145,8 @@ export default function ProductSelectionModal({ product, isOpen, onClose }: Prod
               </div>
             )}
 
-            {/* Color Selection */}
-            {product.colors.length > 0 && (
+            {/* Color Selection - Hidden, only White available */}
+            {/* {product.colors.length > 0 && (
               <div>
                 <h4 className="text-sm font-semibold text-gray-900 mb-3">Color</h4>
                 <div className="grid grid-cols-4 gap-3">
@@ -171,7 +172,7 @@ export default function ProductSelectionModal({ product, isOpen, onClose }: Prod
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Quantity Selection */}
             <div>

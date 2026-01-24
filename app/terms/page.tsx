@@ -46,7 +46,7 @@ export default function TermsAndConditions() {
               </p>
 
               <p className="text-lg mb-8">
-                These Terms and Conditions ("Terms") govern your access to and use of the FALCO P website (falcop.com), related applications (e.g., a member app), and any services provided by FALCO P AB ("FALCO P," "we," "us," or "our"), including your purchase of products through our platforms. Please read these Terms carefully before using our services.
+                These Terms and Conditions ("Terms") govern your access to and use of the FALCO P website (falcop.com), related applications (e.g., a member app), and any services provided by FALCO P ("FALCO P," "we," "us," or "our"), including your purchase of products through our platforms. Please read these Terms carefully before using our services.
               </p>
 
               <p className="text-lg mb-8">
@@ -55,9 +55,9 @@ export default function TermsAndConditions() {
 
               <h3 className="text-xl font-bold text-falco-accent mb-4">1. Company Information</h3>
               <div className="mb-8">
-                <p>FALCO P AB</p>
+                <p>FALCO P</p>
                 <p>vårfrugatan 2</p>
-                <p>20000222-6173</p>
+                <p>Organisationsnummer: 200011024494</p>
                 <p>Email: falcoswoop@gmail.com</p>
               </div>
 
@@ -130,7 +130,7 @@ export default function TermsAndConditions() {
               <div className="mb-8">
                 <p>For questions about these Terms, please contact us at:</p>
                 <p className="mt-4">
-                  FALCO P AB<br />
+                  FALCO P<br />
                   vårfrugatan 2<br />
                   Email: falcoswoop@gmail.com
                 </p>

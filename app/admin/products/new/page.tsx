@@ -145,7 +145,7 @@ const ProductForm = () => {
         rating: parseFloat(formData.rating),
         reviews: parseInt(formData.reviews),
         inStock: formData.stock === 'In Stock',
-        colors: ['Black', 'White'], // Default colors
+        colors: ['White'], // Default colors
         sizes: ['S', 'M', 'L'], // Default sizes
         features: ['High Quality', 'Comfortable'] // Default features
       }

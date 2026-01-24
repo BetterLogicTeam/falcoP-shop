@@ -219,8 +219,8 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                 </div>
               )}
 
-              {/* Color Selection */}
-              {product.colors.length > 0 && (
+              {/* Color Selection - Hidden, only White available */}
+              {/* {product.colors.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Color</h3>
                   <div className="flex flex-wrap gap-3">
@@ -239,7 +239,7 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Quantity */}
               <div>
@@ -284,7 +284,7 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                   <Truck className="w-6 h-6 text-falco-accent" />
                   <div>
                     <p className="text-white font-semibold">Free Shipping</p>
-                    <p className="text-gray-400 text-sm">On orders over $1900</p>
+                    <p className="text-gray-400 text-sm">On orders over $1800</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">

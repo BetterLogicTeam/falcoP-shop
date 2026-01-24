@@ -213,9 +213,9 @@ export default function CookiePolicy() {
               <div className="mb-8">
                 <p className="mb-4">If you have any questions about our use of cookies, please contact us at:</p>
                 <div className="bg-gray-800/50 rounded-lg p-4">
-                  <p><span className="text-falco-gold font-semibold">FALCO P AB</span></p>
+                  <p><span className="text-falco-gold font-semibold">FALCO P</span></p>
                   <p>vårfrugatan 2</p>
-                  <p>Organisationsnummer: 20000222-6173</p>
+                  <p>Organisationsnummer: 200011024494</p>
                   <p><span className="text-falco-gold font-semibold">Email:</span> privacy@falcop.com</p>
                 </div>
               </div>

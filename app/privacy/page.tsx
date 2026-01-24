@@ -46,7 +46,7 @@ export default function PrivacyPolicy() {
               </p>
 
               <p className="text-lg mb-8">
-                At FALCO P AB ("FALCO P," "we," "us," or "our"), we are committed to protecting your privacy and your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website falcop.com, use our mobile application, or make a purchase from us.
+                At FALCO P ("FALCO P," "we," "us," or "our"), we are committed to protecting your privacy and your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website falcop.com, use our mobile application, or make a purchase from us.
               </p>
 
               <p className="text-lg mb-8">
@@ -57,9 +57,9 @@ export default function PrivacyPolicy() {
               <div className="mb-8">
                 <p>The data controller responsible for your personal data is:</p>
                 <div className="mt-4 bg-gray-800/50 rounded-lg p-4">
-                  <p>FALCO P AB</p>
+                  <p>FALCO P</p>
                   <p>vårfrugatan 2</p>
-                  <p>Organisationsnummer: 20000222-6173</p>
+                  <p>Organisationsnummer: 200011024494</p>
                   <p>Email: privacy@falcop.com</p>
                 </div>
               </div>
@@ -191,7 +191,7 @@ export default function PrivacyPolicy() {
                 <p className="mb-4">For any questions regarding this Privacy Policy or your personal data, please contact our Data Protection team at:</p>
                 <div className="bg-gray-800/50 rounded-lg p-4">
                   <p><span className="text-falco-gold font-semibold">Email:</span> privacy@falcop.com</p>
-                  <p><span className="text-falco-gold font-semibold">Post:</span> FALCO P AB, Attn: Data Protection, vårfrugatan 2</p>
+                  <p><span className="text-falco-gold font-semibold">Post:</span> FALCO P, Attn: Data Protection, vårfrugatan 2</p>
                 </div>
               </div>
 

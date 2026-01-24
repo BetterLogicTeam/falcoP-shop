@@ -116,9 +116,10 @@ const ProductDetailPage = () => {
               {product.sizes.length > 0 && (
                 <div><h3 className="text-lg font-semibold text-white mb-3">Size</h3><div className="flex flex-wrap gap-3">{product.sizes.map((size) => <button key={size} onClick={() => setSelectedSize(size)} className={`px-4 py-2 rounded-lg border transition-colors duration-300 ${selectedSize === size ? 'border-falco-accent bg-falco-accent text-black' : 'border-gray-600 text-white hover:border-falco-accent'}`}>{size}</button>)}</div></div>
               )}
-              {product.colors.length > 0 && (
+              {/* Color Selection - Hidden, only White available */}
+              {/* {product.colors.length > 0 && (
                 <div><h3 className="text-lg font-semibold text-white mb-3">Color</h3><div className="flex flex-wrap gap-3">{product.colors.map((color) => <button key={color} onClick={() => setSelectedColor(color)} className={`px-4 py-2 rounded-lg border transition-colors duration-300 ${selectedColor === color ? 'border-falco-accent bg-falco-accent text-black' : 'border-gray-600 text-white hover:border-falco-accent'}`}>{color}</button>)}</div></div>
-              )}
+              )} */}
 
               <div><h3 className="text-lg font-semibold text-white mb-3">Quantity</h3><div className="flex items-center space-x-4"><button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 rounded-lg border border-gray-600 text-white hover:border-falco-accent transition-colors duration-300 flex items-center justify-center">-</button><span className="text-white font-semibold text-lg w-8 text-center">{quantity}</span><button onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 rounded-lg border border-gray-600 text-white hover:border-falco-accent transition-colors duration-300 flex items-center justify-center">+</button></div></div>
 
@@ -129,7 +130,7 @@ const ProductDetailPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-8 border-t border-gray-800">
-                <div className="flex items-center space-x-3"><Truck className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Free Shipping</p><p className="text-gray-400 text-sm">On orders over $1900</p></div></div>
+                <div className="flex items-center space-x-3"><Truck className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Free Shipping</p><p className="text-gray-400 text-sm">On orders over $1800</p></div></div>
                 <div className="flex items-center space-x-3"><Shield className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Warranty</p><p className="text-gray-400 text-sm">1 year guarantee</p></div></div>
                 <div className="flex items-center space-x-3"><RotateCcw className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Easy Returns</p><p className="text-gray-400 text-sm">14 day return policy</p></div></div>
                 <div className="flex items-center space-x-3"><Award className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Premium Quality</p><p className="text-gray-400 text-sm">Certified materials</p></div></div>

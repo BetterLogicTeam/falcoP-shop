@@ -156,8 +156,8 @@ export default function ProductCatalog({ category, subcategory, type }: ProductC
                 />
               </div>
 
-              {/* Colors */}
-              {allColors.length > 0 && (
+              {/* Colors - Hidden, only White available */}
+              {/* {allColors.length > 0 && (
                 <div className="mb-6">
                   <h4 className="text-white font-semibold mb-3">Colors</h4>
                   <div className="flex flex-wrap gap-2">
@@ -176,7 +176,7 @@ export default function ProductCatalog({ category, subcategory, type }: ProductC
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Sizes */}
               {allSizes.length > 0 && (
@@ -304,8 +304,8 @@ export default function ProductCatalog({ category, subcategory, type }: ProductC
                       </span>
                     </div>
 
-                    {/* Colors */}
-                    <div className="flex items-center space-x-2 mb-4">
+                    {/* Colors - Hidden, only White available */}
+                    {/* <div className="flex items-center space-x-2 mb-4">
                       <span className="text-white/60 text-sm">Colors:</span>
                       <div className="flex space-x-1">
                         {product.colors.slice(0, 4).map((color, index) => (
@@ -320,7 +320,7 @@ export default function ProductCatalog({ category, subcategory, type }: ProductC
                           <span className="text-white/60 text-xs">+{product.colors.length - 4}</span>
                         )}
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* Price */}
                     <div className="flex items-center justify-between">

@@ -236,8 +236,8 @@ export default function Products() {
                   </span>
                 </div>
 
-                {/* Colors */}
-                <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+                {/* Colors - Hidden, only White available */}
+                {/* <div className="flex items-center space-x-2 mb-3 sm:mb-4">
                   <span className="text-white/60 text-xs sm:text-sm">Colors:</span>
                   <div className="flex space-x-1">
                     {product.colors.map((color, index) => (
@@ -248,7 +248,7 @@ export default function Products() {
                       />
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 {/* Price */}
                 <div className="flex items-center justify-between">
