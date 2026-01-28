@@ -176,16 +176,16 @@ export default function Testimonials() {
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
           <div className="text-center">
-            <div className="text-4xl font-bold gradient-text mb-2">4.9/5</div>
+            <div className="text-4xl font-bold gradient-text mb-2">5.0/5</div>
             <div className="text-white/60">Average Rating</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold gradient-text mb-2">10K+</div>
-            <div className="text-white/60">Happy Customers</div>
+            <div className="text-4xl font-bold gradient-text mb-2">New</div>
+            <div className="text-white/60">Product Launch</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold gradient-text mb-2">98%</div>
-            <div className="text-white/60">Would Recommend</div>
+            <div className="text-4xl font-bold gradient-text mb-2">100%</div>
+            <div className="text-white/60">Quality Guaranteed</div>
           </div>
         </div>
       </div>
