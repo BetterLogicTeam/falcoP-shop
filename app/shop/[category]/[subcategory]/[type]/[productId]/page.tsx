@@ -284,7 +284,7 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                   <Truck className="w-6 h-6 text-falco-accent" />
                   <div>
                     <p className="text-white font-semibold">Free Shipping</p>
-                    <p className="text-gray-400 text-sm">On orders over $1800</p>
+                    <p className="text-gray-400 text-sm">On orders $1800 and over</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">

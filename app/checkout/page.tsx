@@ -441,7 +441,7 @@ export default function CheckoutPage() {
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                   <Check className="w-4 h-4 text-white" />
                 </div>
-                <span>Free shipping on all orders</span>
+                <span>Free shipping on orders $1800 and over</span>
               </div>
               <div className="flex items-center space-x-3 text-sm text-gray-300">
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">

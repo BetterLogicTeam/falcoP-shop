@@ -97,14 +97,15 @@ const ProductDetailPage = () => {
               <div>
                 {product.badge && <span className="inline-block bg-falco-accent text-black px-3 py-1 rounded-full text-sm font-bold mb-4">{product.badge}</span>}
                 <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{product.name}</h1>
-                <div className="flex items-center space-x-4 mb-4">
+                {/* Rating - Hidden for launch */}
+                {/* <div className="flex items-center space-x-4 mb-4">
                   <div className="flex items-center space-x-1">
                     {[...Array(5)].map((_, i) => <Star key={i} className={`w-5 h-5 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-400'}`} />)}
                     <span className="text-white ml-2">{product.rating}</span>
                   </div>
                   <span className="text-gray-400">({product.reviews} reviews)</span>
-                </div>
-                <div className="flex items-center space-x-4">
+                </div> */}
+                <div className="flex items-center space-x-4 mb-4">
                   <span className="text-3xl font-bold text-falco-accent">${product.price}</span>
                   {product.originalPrice && product.originalPrice > product.price && <span className="text-xl text-gray-500 line-through">${product.originalPrice}</span>}
                 </div>
@@ -130,7 +131,7 @@ const ProductDetailPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-8 border-t border-gray-800">
-                <div className="flex items-center space-x-3"><Truck className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Free Shipping</p><p className="text-gray-400 text-sm">On orders over $1800</p></div></div>
+                <div className="flex items-center space-x-3"><Truck className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Free Shipping</p><p className="text-gray-400 text-sm">On orders $1800 and over</p></div></div>
                 <div className="flex items-center space-x-3"><Shield className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Warranty</p><p className="text-gray-400 text-sm">1 year guarantee</p></div></div>
                 <div className="flex items-center space-x-3"><RotateCcw className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Easy Returns</p><p className="text-gray-400 text-sm">14 day return policy</p></div></div>
                 <div className="flex items-center space-x-3"><Award className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Premium Quality</p><p className="text-gray-400 text-sm">Certified materials</p></div></div>

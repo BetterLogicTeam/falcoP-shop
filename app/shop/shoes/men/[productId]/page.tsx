@@ -144,7 +144,8 @@ const ProductDetailPage = () => {
                   </span>
                 )}
                 <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{product.name}</h1>
-                <div className="flex items-center space-x-4 mb-4">
+                {/* Rating - Hidden for launch */}
+                {/* <div className="flex items-center space-x-4 mb-4">
                   <div className="flex items-center space-x-1">
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -155,8 +156,8 @@ const ProductDetailPage = () => {
                     <span className="text-white ml-2">{product.rating}</span>
                   </div>
                   <span className="text-gray-400">({product.reviews} reviews)</span>
-                </div>
-                <div className="flex items-center space-x-4">
+                </div> */}
+                <div className="flex items-center space-x-4 mb-4">
                   <span className="text-3xl font-bold text-falco-accent">${product.price}</span>
                   {product.originalPrice && product.originalPrice > product.price && (
                     <span className="text-xl text-gray-500 line-through">${product.originalPrice}</span>
@@ -264,7 +265,7 @@ const ProductDetailPage = () => {
                   <Truck className="w-6 h-6 text-falco-accent" />
                   <div>
                     <p className="text-white font-semibold">Free Shipping</p>
-                    <p className="text-gray-400 text-sm">On orders over $1800</p>
+                    <p className="text-gray-400 text-sm">On orders $1800 and over</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">

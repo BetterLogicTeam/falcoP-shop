@@ -217,8 +217,8 @@ export default function Products() {
                   {product.description}
                 </p>
 
-                {/* Rating */}
-                <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+                {/* Rating - Hidden for launch */}
+                {/* <div className="flex items-center space-x-2 mb-3 sm:mb-4">
                   <div className="flex items-center space-x-1">
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -234,7 +234,7 @@ export default function Products() {
                   <span className="text-white/60 text-xs sm:text-sm">
                     {product.rating} ({product.reviews} reviews)
                   </span>
-                </div>
+                </div> */}
 
                 {/* Colors - Hidden, only White available */}
                 {/* <div className="flex items-center space-x-2 mb-3 sm:mb-4">
