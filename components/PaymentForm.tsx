@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useStripe, useElements, CardElement, PaymentRequestButtonElement } from '@stripe/react-stripe-js'
 import { CreditCard, Lock, Smartphone, Globe, Shield, CheckCircle, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { formatPrice, sekToOre } from '../lib/currency'
 
 interface PaymentFormProps {
   totalAmount: number
@@ -25,11 +26,11 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
   useEffect(() => {
     if (stripe) {
       const pr = stripe.paymentRequest({
-        country: 'US',
-        currency: 'usd',
+        country: 'SE',
+        currency: 'sek',
         total: {
-          label: 'Falco P Order',
-          amount: Math.round(totalAmount * 100),
+          label: 'Falco Peak Order',
+          amount: sekToOre(totalAmount),
         },
         requestPayerName: true,
         requestPayerEmail: true,
@@ -61,8 +62,8 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              amount: Math.round(totalAmount * 100),
-              currency: 'usd',
+              amount: sekToOre(totalAmount),
+              currency: 'sek',
               customerInfo,
               payment_method_id: ev.paymentMethod.id,
             }),
@@ -113,8 +114,8 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: Math.round(totalAmount * 100),
-          currency: 'USD',
+          amount: sekToOre(totalAmount),
+          currency: 'SEK',
           customerInfo,
           paymentMethod: 'google_pay',
         }),
@@ -176,8 +177,8 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: Math.round(totalAmount * 100),
-          currency: 'USD',
+          amount: sekToOre(totalAmount),
+          currency: 'SEK',
           customerInfo,
           paymentMethod: 'apple_pay',
         }),
@@ -239,7 +240,7 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: Math.round(totalAmount * 100 * 10.5), // Convert to SEK
+          amount: sekToOre(totalAmount),
           currency: 'SEK',
           customerInfo,
           paymentMethod: 'swish',
@@ -332,8 +333,8 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: Math.round(totalAmount * 100), // Convert to cents
-          currency: 'usd',
+          amount: sekToOre(totalAmount),
+          currency: 'sek',
           customerInfo,
         }),
       })
@@ -742,11 +743,7 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
                 <div className="bg-white/10 rounded-lg p-4 border border-white/20">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-sm font-semibold text-white">Payment Amount</span>
-                    <span className="text-lg font-bold text-[#78BE20]">SEK {(totalAmount * 10.5).toFixed(2)}</span>
-                  </div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm text-gray-400">Exchange Rate</span>
-                    <span className="text-sm text-white">1 USD = 10.50 SEK</span>
+                    <span className="text-lg font-bold text-[#78BE20]">{formatPrice(totalAmount)}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-400">Processing Fee</span>
@@ -865,7 +862,7 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
         ) : (
           <>
                     <CreditCard className="w-6 h-6" />
-            <span>Pay ${totalAmount.toFixed(2)}</span>
+            <span>Pay {formatPrice(totalAmount)}</span>
                     <div className="flex space-x-1">
                       <div className="w-6 h-4 bg-white rounded text-blue-600 text-xs flex items-center justify-center font-bold">V</div>
                       <div className="w-6 h-4 bg-white rounded text-red-600 text-xs flex items-center justify-center font-bold">M</div>
@@ -893,7 +890,7 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
                     <div className="w-8 h-6 bg-white rounded flex items-center justify-center">
                       <span className="text-[#78BE20] font-bold text-xs">Swish</span>
                     </div>
-                    <span>Pay SEK {(totalAmount * 10.5).toFixed(2)}</span>
+                    <span>Pay {formatPrice(totalAmount)}</span>
                   </>
                 )}
               </button>

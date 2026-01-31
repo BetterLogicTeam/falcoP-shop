@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { User, Package, Heart, MapPin, LogOut, Loader2, Settings, ChevronRight, RefreshCw, ShoppingBag, Clock, CheckCircle, Truck } from 'lucide-react'
 import Link from 'next/link'
+import { formatPrice } from '@/lib/currency'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import toast from 'react-hot-toast'
@@ -337,7 +338,7 @@ export default function AccountPage() {
                             {order.status}
                           </span>
                         </div>
-                        <p className="font-bold text-gray-900">${order.total.toFixed(2)}</p>
+                        <p className="font-bold text-gray-900">{formatPrice(order.total)}</p>
                         <ChevronRight className="w-5 h-5 text-gray-400 hidden sm:block" />
                       </div>
                     </div>

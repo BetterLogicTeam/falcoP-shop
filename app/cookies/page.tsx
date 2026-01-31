@@ -17,7 +17,7 @@ export default function CookiePolicy() {
               <ArrowLeft className="w-5 h-5" />
               <span className="font-semibold">Back to Home</span>
             </Link>
-            <div className="text-falco-accent font-bold text-xl">FALCO P</div>
+            <div className="text-falco-accent font-bold text-xl">FALCO PEAK</div>
           </div>
         </div>
       </nav>
@@ -38,7 +38,7 @@ export default function CookiePolicy() {
             <div className="prose prose-lg prose-invert max-w-none text-gray-300 leading-relaxed">
               
               <h2 className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-falco-accent to-falco-gold mb-6">
-                FALCO P – Cookie Policy
+                FALCO PEAK – Cookie Policy
               </h2>
               
               <p className="text-falco-accent italic mb-8">
@@ -46,7 +46,7 @@ export default function CookiePolicy() {
               </p>
 
               <p className="text-lg mb-8">
-                This Cookie Policy explains how <span className="text-falco-accent font-semibold">FALCO P</span> ("we," "us," or "our") uses cookies and similar tracking technologies on our website falcop.com and related services (collectively, the "Service"). This policy should be read alongside our <Link href="/privacy" className="text-falco-accent hover:text-falco-gold transition-colors">Privacy Policy</Link>.
+                This Cookie Policy explains how <span className="text-falco-accent font-semibold">FALCO PEAK</span> ("we," "us," or "our") uses cookies and similar tracking technologies on our website falcop.com and related services (collectively, the "Service"). This policy should be read alongside our <Link href="/privacy" className="text-falco-accent hover:text-falco-gold transition-colors">Privacy Policy</Link>.
               </p>
 
               <p className="text-lg mb-8">
@@ -120,13 +120,13 @@ export default function CookiePolicy() {
                   <tbody className="text-sm">
                     <tr>
                       <td className="border border-gray-600 p-3 font-mono">session_id</td>
-                      <td className="border border-gray-600 p-3">FALCO P</td>
+                      <td className="border border-gray-600 p-3">FALCO PEAK</td>
                       <td className="border border-gray-600 p-3">Strictly necessary. Used to keep your session active as you navigate the site.</td>
                       <td className="border border-gray-600 p-3">Session</td>
                     </tr>
                     <tr className="bg-gray-800/30">
                       <td className="border border-gray-600 p-3 font-mono">cart_id</td>
-                      <td className="border border-gray-600 p-3">FALCO P</td>
+                      <td className="border border-gray-600 p-3">FALCO PEAK</td>
                       <td className="border border-gray-600 p-3">Strictly necessary. Remembers the items in your shopping cart.</td>
                       <td className="border border-gray-600 p-3">1 day</td>
                     </tr>
@@ -213,7 +213,7 @@ export default function CookiePolicy() {
               <div className="mb-8">
                 <p className="mb-4">If you have any questions about our use of cookies, please contact us at:</p>
                 <div className="bg-gray-800/50 rounded-lg p-4">
-                  <p><span className="text-falco-gold font-semibold">FALCO P</span></p>
+                  <p><span className="text-falco-gold font-semibold">FALCO PEAK</span></p>
                   <p>vårfrugatan 2</p>
                   <p>Organisationsnummer: 200011024494</p>
                   <p><span className="text-falco-gold font-semibold">Email:</span> privacy@falcop.com</p>
@@ -245,7 +245,7 @@ export default function CookiePolicy() {
                   href="/shop" 
                   className="inline-flex items-center space-x-2 bg-gray-700 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-600 hover:scale-105 transition-all duration-300"
                 >
-                  <span>Shop FALCO P Collection</span>
+                  <span>Shop FALCO PEAK Collection</span>
                 </Link>
               </div>
             </div>

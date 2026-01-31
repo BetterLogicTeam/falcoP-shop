@@ -6,6 +6,7 @@ import { ArrowLeft, Star, Clock, TrendingUp } from 'lucide-react'
 import { useClientTranslation } from '../../../hooks/useClientTranslation'
 import { products } from '../../../data/products'
 import CartButton from '../../../components/CartButton'
+import { formatPrice } from '@/lib/currency'
 
 const NewArrivalsPage = () => {
   const { t } = useClientTranslation()
@@ -84,7 +85,7 @@ const NewArrivalsPage = () => {
                 <h3 className="text-white font-semibold mb-2 line-clamp-2">{product.name}</h3>
                 <p className="text-gray-400 text-sm mb-3 line-clamp-2">{product.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-falco-accent font-bold text-lg">${product.price}</span>
+                  <span className="text-falco-accent font-bold text-lg">{formatPrice(product.price)}</span>
                   <div className="flex items-center space-x-1">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
                     <span className="text-gray-400 text-sm">{product.rating}</span>

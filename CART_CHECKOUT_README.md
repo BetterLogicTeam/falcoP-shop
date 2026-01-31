@@ -1,6 +1,6 @@
 # Cart and Checkout Implementation
 
-This document explains the cart and checkout functionality implemented for the Falco P website.
+This document explains the cart and checkout functionality implemented for the Falco Peak website.
 
 ## Features Implemented
 

@@ -49,9 +49,9 @@ export default function Footer() {
           hour: '2-digit',
           minute: '2-digit'
         }),
-        source: 'Falco P Website - Footer Subscription',
+        source: 'Falco Peak Website - Footer Subscription',
         message: `New subscriber from footer section interested in:
-🎯 Falco P NFT Collections & New Drops
+🎯 Falco Peak NFT Collections & New Drops
 🚀 Exclusive Early Access to Limited Edition Releases  
 🎪 Community Events & Discord Announcements
 📖 Behind-the-Scenes Content & Brand Stories
@@ -60,7 +60,7 @@ export default function Footer() {
 🦅 Wing P Story Updates & Brand Evolution
 ⚡ Live Mint Events & Community Competitions
 
-Subscriber joined from the footer section on ${typeof window !== 'undefined' ? window.location.href : 'Falco P Website'}`
+Subscriber joined from the footer section on ${typeof window !== 'undefined' ? window.location.href : 'Falco Peak Website'}`
       }
 
       // Send email using EmailJS
@@ -73,7 +73,7 @@ Subscriber joined from the footer section on ${typeof window !== 'undefined' ? w
 
       if (response.status === 200) {
         setStatus('success')
-        setMessage('🚀 Subscribed! Welcome to Falco P!')
+        setMessage('🚀 Subscribed! Welcome to Falco Peak!')
         setEmail('')
         
         // Auto-hide success message after 5 seconds
@@ -139,14 +139,14 @@ Subscriber joined from the footer section on ${typeof window !== 'undefined' ? w
               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden">
                 <Image
                   src="/images/falcop.jpg"
-                  alt="Falco P Logo"
+                  alt="Falco Peak Logo"
                   width={40}
                   height={40}
                   className="w-full h-full object-cover"
                 />
               </div>
               <span className="text-xl sm:text-2xl font-display font-bold gradient-text">
-                FALCO P
+                FALCO PEAK
               </span>
             </div>
             <p className="text-white/70 mb-4 sm:mb-6 leading-relaxed text-sm sm:text-base">
@@ -313,7 +313,7 @@ Subscriber joined from the footer section on ${typeof window !== 'undefined' ? w
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 px-4 sm:px-6 lg:px-0">
             <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 lg:space-x-6">
               <p className="text-white/60 text-xs sm:text-sm">
-                © 2024 Falco P. All rights reserved.
+                © 2024 Falco Peak. All rights reserved.
               </p>
               <div className="flex flex-wrap justify-center sm:justify-start space-x-4 sm:space-x-6">
                 {footerLinks.legal.map((link) => (

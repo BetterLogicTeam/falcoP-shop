@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { formatPrice } from '@/lib/currency'
 import { useClientTranslation } from '../../../../../hooks/useClientTranslation'
 import { products } from '../../../../../data/products'
 import { ArrowLeft, ShoppingBag, Star, Filter, Grid, List } from 'lucide-react'
@@ -151,9 +152,9 @@ const TypePage = ({ params }: TypePageProps) => {
                     <span className="text-gray-300 text-sm">{product.rating}</span>
                   </div>
                   <div className="text-right">
-                    <div className="text-falco-accent font-bold group-hover:text-white transition-colors duration-300">${product.price}</div>
+                    <div className="text-falco-accent font-bold group-hover:text-white transition-colors duration-300">{formatPrice(product.price)}</div>
                     {product.originalPrice && product.originalPrice > product.price && (
-                      <div className="text-gray-500 text-sm line-through">${product.originalPrice}</div>
+                      <div className="text-gray-500 text-sm line-through">{formatPrice(product.originalPrice)}</div>
                     )}
                   </div>
                 </div>

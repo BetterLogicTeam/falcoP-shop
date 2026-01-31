@@ -9,6 +9,7 @@ import { ArrowLeft, Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw,
 import { useCart } from '../../../../../../contexts/CartContext'
 import toast from 'react-hot-toast'
 import CartButton from '../../../../../../components/CartButton'
+import { formatPrice, FREE_SHIPPING_THRESHOLD_SEK } from '@/lib/currency'
 
 interface ProductDetailPageProps {
   params: {
@@ -92,7 +93,7 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
               <span className="font-semibold">Back to {params.category.charAt(0).toUpperCase() + params.category.slice(1)}</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <div className="text-falco-accent font-bold text-xl">FALCO P</div>
+              <div className="text-falco-accent font-bold text-xl">FALCO PEAK</div>
               <CartButton />
             </div>
           </div>
@@ -171,9 +172,9 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                   <span className="text-gray-400">({product.reviews} reviews)</span>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <span className="text-3xl font-bold text-falco-accent">${product.price}</span>
+                  <span className="text-3xl font-bold text-falco-accent">{formatPrice(product.price)}</span>
                   {product.originalPrice && product.originalPrice > product.price && (
-                    <span className="text-xl text-gray-500 line-through">${product.originalPrice}</span>
+                    <span className="text-xl text-gray-500 line-through">{formatPrice(product.originalPrice)}</span>
                   )}
                 </div>
               </div>
@@ -284,7 +285,7 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                   <Truck className="w-6 h-6 text-falco-accent" />
                   <div>
                     <p className="text-white font-semibold">Free Shipping</p>
-                    <p className="text-gray-400 text-sm">On orders $1800 and over</p>
+                    <p className="text-gray-400 text-sm">On orders over {formatPrice(FREE_SHIPPING_THRESHOLD_SEK)}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -349,9 +350,9 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                           <span className="text-gray-300 text-sm">{relatedProduct.rating}</span>
                         </div>
                         <div className="text-right">
-                          <div className="text-falco-accent font-bold group-hover:text-white transition-colors duration-300">${relatedProduct.price}</div>
+                          <div className="text-falco-accent font-bold group-hover:text-white transition-colors duration-300">{formatPrice(relatedProduct.price)}</div>
                           {relatedProduct.originalPrice && relatedProduct.originalPrice > relatedProduct.price && (
-                            <div className="text-gray-500 text-sm line-through">${relatedProduct.originalPrice}</div>
+                            <div className="text-gray-500 text-sm line-through">{formatPrice(relatedProduct.originalPrice)}</div>
                           )}
                         </div>
                       </div>

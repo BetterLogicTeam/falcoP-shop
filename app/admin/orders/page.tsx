@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Package, Search, Truck, CheckCircle, Clock, XCircle, Loader2, RefreshCw, DollarSign, Eye, X } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { formatPrice } from '../../lib/currency'
 
 interface OrderItem {
   id: string
@@ -181,7 +182,7 @@ export default function AdminOrdersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">${totalRevenue.toFixed(0)}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatPrice(totalRevenue)}</p>
             </div>
             <DollarSign className="w-8 h-8 text-green-600" />
           </div>
@@ -359,7 +360,7 @@ export default function AdminOrdersPage() {
                         <span className="text-gray-500"> x{item.quantity}</span>
                         {item.size && <span className="text-gray-500"> ({item.size})</span>}
                       </div>
-                      <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                      <span className="font-medium">{formatPrice(item.price * item.quantity)}</span>
                     </div>
                   ))}
                 </div>
@@ -369,15 +370,15 @@ export default function AdminOrdersPage() {
               <div className="border-t pt-4">
                 <div className="flex justify-between text-sm mb-1">
                   <span>Subtotal</span>
-                  <span>${selectedOrder.subtotal?.toFixed(2)}</span>
+                  <span>{formatPrice(selectedOrder.subtotal ?? 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm mb-1">
                   <span>Tax</span>
-                  <span>${selectedOrder.tax?.toFixed(2)}</span>
+                  <span>{formatPrice(selectedOrder.tax ?? 0)}</span>
                 </div>
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
-                  <span>${selectedOrder.total?.toFixed(2)}</span>
+                  <span>{formatPrice(selectedOrder.total ?? 0)}</span>
                 </div>
               </div>
             </div>

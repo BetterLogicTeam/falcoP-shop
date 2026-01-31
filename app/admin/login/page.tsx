@@ -77,7 +77,7 @@ export default function AdminLogin() {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Admin Login</h1>
-          <p className="text-gray-300">Access the Falco P Admin Panel</p>
+          <p className="text-gray-300">Access the Falco Peak Admin Panel</p>
         </div>
 
         {/* Login Form */}

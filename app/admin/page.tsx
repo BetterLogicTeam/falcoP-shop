@@ -5,6 +5,7 @@ import { Package, ShoppingCart, Users, TrendingUp, Plus, Edit, Trash2, User, Loa
 import Link from 'next/link'
 import { useAuth } from '../../contexts/AuthContext'
 import toast from 'react-hot-toast'
+import { formatPrice } from '../../lib/currency'
 
 interface Product {
   id: string
@@ -276,7 +277,7 @@ const AdminDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">${stats.totalRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatPrice(stats.totalRevenue)}</p>
               {stats.revenueGrowth !== 0 && (
                 <p className={`text-xs flex items-center mt-1 ${stats.revenueGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {stats.revenueGrowth >= 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
@@ -387,7 +388,7 @@ const AdminDashboard = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        ${product.price}
+                        {formatPrice(product.price)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
@@ -479,7 +480,7 @@ const AdminDashboard = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        ${order.total.toFixed(2)}
+                        {formatPrice(order.total)}
                       </td>
                     </tr>
                   ))}

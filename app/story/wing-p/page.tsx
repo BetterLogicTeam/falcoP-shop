@@ -27,7 +27,7 @@ export default function WingPowerStory() {
               <ArrowLeft className="w-5 h-5" />
               <span className="font-semibold">{t('common.back_to_stories', 'Back to Stories')}</span>
             </Link>
-            <div className="text-falco-accent font-bold text-xl">FALCO P</div>
+            <div className="text-falco-accent font-bold text-xl">FALCO PEAK</div>
           </div>
         </div>
       </nav>
@@ -75,7 +75,7 @@ export default function WingPowerStory() {
                 </p>
 
                 <p className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-falco-accent to-falco-gold text-center my-12">
-                  {t('story.intro', 'INTRODUCING THE FALCO P "WING P"')}
+                  {t('story.intro', 'INTRODUCING THE FALCO PEAK "WING P"')}
                 </p>
 
                 <p className="text-xl text-gray-400 italic text-center mb-12">
@@ -83,7 +83,7 @@ export default function WingPowerStory() {
                 </p>
 
                 <p>
-                  <span className="text-xl font-bold text-falco-accent">Look at it.</span> The side isn't adorned with a simple print. It's sculpted with a sweeping, layered wing motif crafted from premium leather. This is aerodynamic artistry. This is the silhouette of a predator poised to strike, a statement that you are here to dominate, not just participate. On the heel, the name <span className="text-falco-gold font-semibold">Falco P</span> is stamped with authority—a badge of the elite.
+                  <span className="text-xl font-bold text-falco-accent">Look at it.</span> The side isn't adorned with a simple print. It's sculpted with a sweeping, layered wing motif crafted from premium leather. This is aerodynamic artistry. This is the silhouette of a predator poised to strike, a statement that you are here to dominate, not just participate. On the heel, the name <span className="text-falco-gold font-semibold">Falco Peak</span> is stamped with authority—a badge of the elite.
                 </p>
 
                 <p>
@@ -121,13 +121,13 @@ export default function WingPowerStory() {
                 {/* Final CTA */}
                 <div className="bg-gradient-to-r from-falco-accent to-falco-gold rounded-2xl p-8 text-center mt-16">
                   <h3 className="text-2xl font-black text-falco-primary mb-6">
-                    {t('story.available_now', 'The Falco P "Wing P" – Available Now.')}
+                    {t('story.available_now', 'The Falco Peak "Wing P" – Available Now.')}
                   </h3>
                   <Link 
                     href="/shop" 
                     className="inline-flex items-center space-x-2 bg-falco-primary text-falco-accent px-8 py-4 rounded-full font-bold text-lg hover:bg-falco-primary hover:text-falco-accent hover:shadow-lg hover:shadow-falco-accent/25 hover:scale-105 transition-all duration-300 border-2 border-falco-accent"
                   >
-                    <span>{t('story.collection_btn', 'FALCO P Collection')}</span>
+                    <span>{t('story.collection_btn', 'FALCO PEAK Collection')}</span>
                     <Zap className="w-5 h-5" />
                   </Link>
                 </div>

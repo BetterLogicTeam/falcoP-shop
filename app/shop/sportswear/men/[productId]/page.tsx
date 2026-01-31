@@ -8,6 +8,7 @@ import { ArrowLeft, Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw,
 import { useCart } from '../../../../../contexts/CartContext'
 import toast from 'react-hot-toast'
 import CartButton from '../../../../../components/CartButton'
+import { formatPrice, FREE_SHIPPING_THRESHOLD_SEK } from '@/lib/currency'
 
 const ProductDetailPage = () => {
   const params = useParams()
@@ -68,7 +69,7 @@ const ProductDetailPage = () => {
               <span className="font-semibold">Back to Men's Sportswear</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link href="/" className="text-falco-accent font-bold text-xl">FALCO P</Link>
+              <Link href="/" className="text-falco-accent font-bold text-xl">FALCO PEAK</Link>
               <CartButton />
             </div>
           </div>
@@ -105,8 +106,8 @@ const ProductDetailPage = () => {
                   <span className="text-gray-400">({product.reviews} reviews)</span>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <span className="text-3xl font-bold text-falco-accent">${product.price}</span>
-                  {product.originalPrice && product.originalPrice > product.price && <span className="text-xl text-gray-500 line-through">${product.originalPrice}</span>}
+                  <span className="text-3xl font-bold text-falco-accent">{formatPrice(product.price)}</span>
+                  {product.originalPrice && product.originalPrice > product.price && <span className="text-xl text-gray-500 line-through">{formatPrice(product.originalPrice)}</span>}
                 </div>
               </div>
 
@@ -130,7 +131,7 @@ const ProductDetailPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-8 border-t border-gray-800">
-                <div className="flex items-center space-x-3"><Truck className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Free Shipping</p><p className="text-gray-400 text-sm">On orders $1800 and over</p></div></div>
+                <div className="flex items-center space-x-3"><Truck className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Free Shipping</p><p className="text-gray-400 text-sm">On orders over {formatPrice(FREE_SHIPPING_THRESHOLD_SEK)}</p></div></div>
                 <div className="flex items-center space-x-3"><Shield className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Warranty</p><p className="text-gray-400 text-sm">1 year guarantee</p></div></div>
                 <div className="flex items-center space-x-3"><RotateCcw className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Easy Returns</p><p className="text-gray-400 text-sm">14 day return policy</p></div></div>
                 <div className="flex items-center space-x-3"><Award className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Premium Quality</p><p className="text-gray-400 text-sm">Certified materials</p></div></div>
@@ -152,7 +153,7 @@ const ProductDetailPage = () => {
                       <h3 className="font-semibold text-white text-sm mb-2 line-clamp-2 group-hover:text-falco-accent transition-colors">{relatedProduct.name}</h3>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-1"><Star className="w-4 h-4 text-yellow-400 fill-current" /><span className="text-gray-300 text-sm">{relatedProduct.rating}</span></div>
-                        <div className="text-falco-accent font-bold">${relatedProduct.price}</div>
+                        <div className="text-falco-accent font-bold">{formatPrice(relatedProduct.price)}</div>
                       </div>
                     </div>
                   </Link>

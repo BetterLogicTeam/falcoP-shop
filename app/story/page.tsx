@@ -27,7 +27,7 @@ export default function StoriesIndex() {
     },
     {
       id: 'falco-p',
-      title: 'FALCO P STORY',
+      title: 'FALCO PEAK STORY',
       subtitle: 'The Evolution',
       description: 'Experience the story of the peregrine falcon\'s grace captured in every step - engineered for athletes who understand flight.',
       href: '/story/falco-p',
@@ -50,7 +50,7 @@ export default function StoriesIndex() {
               <ArrowLeft className="w-5 h-5" />
               <span className="font-semibold">{t('common.back_to_home', 'Back to Home')}</span>
             </Link>
-            <div className="text-falco-accent font-bold text-xl">FALCO P</div>
+            <div className="text-falco-accent font-bold text-xl">FALCO PEAK</div>
           </div>
         </div>
       </nav>
@@ -64,7 +64,7 @@ export default function StoriesIndex() {
               {t('stories.title', 'OUR STORIES')}
             </h1>
             <p className="text-xl text-white/80 max-w-3xl mx-auto mb-8">
-              {t('stories.subtitle', 'Discover the inspiration, vision, and craftsmanship behind every Falco P creation')}
+              {t('stories.subtitle', 'Discover the inspiration, vision, and craftsmanship behind every Falco Peak creation')}
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-falco-accent to-falco-gold mx-auto rounded-full"></div>
           </div>

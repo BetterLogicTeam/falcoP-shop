@@ -64,7 +64,7 @@ const SettingsPage = () => {
   const [hasChanges, setHasChanges] = useState(false)
   const [settings, setSettings] = useState<Settings>({
     // General Settings
-    siteName: 'Falco P',
+    siteName: 'Falco Peak',
     siteDescription: 'Premium Sportswear | Unleash Your Inner Maverick',
     siteUrl: 'https://falco-p.vercel.app',
     adminEmail: 'admin@falcop.com',
@@ -83,7 +83,7 @@ const SettingsPage = () => {
     smtpPort: '587',
     smtpUsername: '',
     smtpPassword: '',
-    fromName: 'Falco P Team',
+    fromName: 'Falco Peak Team',
     fromEmail: 'noreply@falcop.com',
 
     // Notification Settings

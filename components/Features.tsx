@@ -110,7 +110,7 @@ export default function Features() {
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-6 lg:px-0">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-4 sm:mb-6">
-            {t('features.title', 'WHY CHOOSE')} <span className="gradient-text">FALCO P</span>?
+            {t('features.title', 'WHY CHOOSE')} <span className="gradient-text">FALCO PEAK</span>?
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-white/80 max-w-3xl mx-auto">
             {t('features.subtitle', 'We combine aerodynamic design, innovative mechanisms, and premium quality to create sportswear that doesn\'t just meet expectations—it exceeds them.')}

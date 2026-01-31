@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Search, Edit, Trash2, Eye, Package, Loader2, RefreshCw, X } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import { formatPrice } from '../../lib/currency'
 
 interface Product {
   id: string
@@ -256,10 +257,10 @@ const ProductManagement = () => {
                     <div className="text-sm text-gray-500 capitalize">{product.subcategory}</div>
                   </td>
                   <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ${product.price}
+                    {formatPrice(product.price)}
                     {product.originalPrice && product.originalPrice > product.price && (
                       <div className="text-xs text-gray-500 line-through">
-                        ${product.originalPrice}
+                        {formatPrice(product.originalPrice ?? 0)}
                       </div>
                     )}
                   </td>
@@ -386,9 +387,9 @@ const ProductManagement = () => {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl font-bold text-green-600">${selectedProduct.price}</span>
+                    <span className="text-2xl font-bold text-green-600">{formatPrice(selectedProduct.price)}</span>
                     {selectedProduct.originalPrice && selectedProduct.originalPrice > selectedProduct.price && (
-                      <span className="text-lg text-gray-400 line-through">${selectedProduct.originalPrice}</span>
+                      <span className="text-lg text-gray-400 line-through">{formatPrice(selectedProduct.originalPrice)}</span>
                     )}
                   </div>
 

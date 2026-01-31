@@ -17,7 +17,7 @@ export default function TermsAndConditions() {
               <ArrowLeft className="w-5 h-5" />
               <span className="font-semibold">Back to Home</span>
             </Link>
-            <div className="text-falco-accent font-bold text-xl">FALCO P</div>
+            <div className="text-falco-accent font-bold text-xl">FALCO PEAK</div>
           </div>
         </div>
       </nav>
@@ -38,7 +38,7 @@ export default function TermsAndConditions() {
             <div className="prose prose-lg prose-invert max-w-none text-gray-300 leading-relaxed">
               
               <h2 className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-falco-accent to-falco-gold mb-6">
-                FALCO P – Terms and Conditions of Sale and Use
+                FALCO PEAK – Terms and Conditions of Sale and Use
               </h2>
               
               <p className="text-falco-accent italic mb-8">
@@ -46,7 +46,7 @@ export default function TermsAndConditions() {
               </p>
 
               <p className="text-lg mb-8">
-                These Terms and Conditions ("Terms") govern your access to and use of the FALCO P website (falcop.com), related applications (e.g., a member app), and any services provided by FALCO P ("FALCO P," "we," "us," or "our"), including your purchase of products through our platforms. Please read these Terms carefully before using our services.
+                These Terms and Conditions ("Terms") govern your access to and use of the FALCO PEAK website (falcop.com), related applications (e.g., a member app), and any services provided by FALCO PEAK ("FALCO PEAK," "we," "us," or "our"), including your purchase of products through our platforms. Please read these Terms carefully before using our services.
               </p>
 
               <p className="text-lg mb-8">
@@ -55,7 +55,7 @@ export default function TermsAndConditions() {
 
               <h3 className="text-xl font-bold text-falco-accent mb-4">1. Company Information</h3>
               <div className="mb-8">
-                <p>FALCO P</p>
+                <p>FALCO PEAK</p>
                 <p>vårfrugatan 2</p>
                 <p>Organisationsnummer: 200011024494</p>
                 <p>Email: falcoswoop@gmail.com</p>
@@ -93,19 +93,19 @@ export default function TermsAndConditions() {
 
               <h3 className="text-xl font-bold text-falco-accent mb-4">6. Intellectual Property Rights</h3>
               <p className="mb-8">
-                All content available on our services, including designs, text, graphics, images, logos, and software, is the property of FALCO P or our licensors and is protected by copyright, trademark, and other intellectual property laws. You may not use, reproduce, or distribute any content without our prior written permission.
+                All content available on our services, including designs, text, graphics, images, logos, and software, is the property of FALCO PEAK or our licensors and is protected by copyright, trademark, and other intellectual property laws. You may not use, reproduce, or distribute any content without our prior written permission.
               </p>
 
               <h3 className="text-xl font-bold text-falco-accent mb-4">7. User-Generated Content</h3>
               <p className="mb-8">
-                If you submit any content to us (e.g., product reviews, photos, contest entries, or ideas), you grant FALCO P a non-exclusive, royalty-free, perpetual, and worldwide license to use, reproduce, modify, and display that content for any purpose in connection with our business. You represent that you own the content you submit.
+                If you submit any content to us (e.g., product reviews, photos, contest entries, or ideas), you grant FALCO PEAK a non-exclusive, royalty-free, perpetual, and worldwide license to use, reproduce, modify, and display that content for any purpose in connection with our business. You represent that you own the content you submit.
               </p>
 
               <h3 className="text-xl font-bold text-falco-accent mb-4">8. Disclaimer and Limitation of Liability</h3>
               <div className="mb-8 space-y-4">
                 <p><span className="text-falco-gold font-semibold">Products "As Is":</span> Our products are sold "as is." We disclaim all warranties to the fullest extent permitted by applicable law, except for the warranties explicitly stated in our warranty policy and those mandated by Swedish consumer law.</p>
                 
-                <p><span className="text-falco-gold font-semibold">Limited Liability:</span> FALCO P shall not be liable for any indirect, incidental, or consequential damages arising from your use of our services or products. Our total liability to you for any claim shall be limited to the purchase price of the product(s) you purchased from us. <span className="text-falco-gold italic">This limitation does not apply in cases of wilful misconduct, gross negligence, or personal injury, and it does not infringe upon your mandatory rights under Swedish consumer law.</span></p>
+                <p><span className="text-falco-gold font-semibold">Limited Liability:</span> FALCO PEAK shall not be liable for any indirect, incidental, or consequential damages arising from your use of our services or products. Our total liability to you for any claim shall be limited to the purchase price of the product(s) you purchased from us. <span className="text-falco-gold italic">This limitation does not apply in cases of wilful misconduct, gross negligence, or personal injury, and it does not infringe upon your mandatory rights under Swedish consumer law.</span></p>
               </div>
 
               <h3 className="text-xl font-bold text-falco-accent mb-4">9. Dispute Resolution and Governing Law</h3>
@@ -130,7 +130,7 @@ export default function TermsAndConditions() {
               <div className="mb-8">
                 <p>For questions about these Terms, please contact us at:</p>
                 <p className="mt-4">
-                  FALCO P<br />
+                  FALCO PEAK<br />
                   vårfrugatan 2<br />
                   Email: falcoswoop@gmail.com
                 </p>
@@ -158,7 +158,7 @@ export default function TermsAndConditions() {
                   href="/shop" 
                   className="inline-flex items-center space-x-2 bg-falco-accent text-falco-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-falco-gold hover:scale-105 transition-all duration-300"
                 >
-                  <span>Shop FALCO P Collection</span>
+                  <span>Shop FALCO PEAK Collection</span>
                 </Link>
               </div>
             </div>

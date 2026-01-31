@@ -1,7 +1,7 @@
 {
   "name": "falco-p-website",
   "version": "1.0.0",
-  "description": "Falco P - Premium Sportswear Brand Website",
+  "description": "Falco Peak - Premium Sportswear Brand Website",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",

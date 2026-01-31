@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Search, Filter, Eye, User, Mail, Phone, MapPin, Calendar, ShoppingBag, Star, TrendingUp, Users, Loader2, RefreshCw } from 'lucide-react'
+import { formatPrice } from '../../lib/currency'
 
 interface OrderSummary {
   id: string
@@ -237,7 +238,7 @@ const CustomerManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">${stats.totalRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatPrice(stats.totalRevenue)}</p>
             </div>
             <TrendingUp className="w-8 h-8 text-green-600" />
           </div>
@@ -247,7 +248,7 @@ const CustomerManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
-              <p className="text-2xl font-bold text-gray-900">${Math.round(stats.averageOrderValue)}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatPrice(Math.round(stats.averageOrderValue))}</p>
             </div>
             <ShoppingBag className="w-8 h-8 text-purple-600" />
           </div>
@@ -321,7 +322,7 @@ const CustomerManagement = () => {
                     <p className="text-xs text-gray-500">Orders</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-green-600">${customer.totalSpent.toFixed(0)}</p>
+                    <p className="text-2xl font-bold text-green-600">{formatPrice(customer.totalSpent)}</p>
                     <p className="text-xs text-gray-500">Total Spent</p>
                   </div>
                 </div>
@@ -400,12 +401,12 @@ const CustomerManagement = () => {
                   <p className="text-sm text-gray-600">Total Orders</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg text-center">
-                  <p className="text-2xl font-bold text-green-600">${selectedCustomer.totalSpent.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-green-600">{formatPrice(selectedCustomer.totalSpent)}</p>
                   <p className="text-sm text-gray-600">Total Spent</p>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-lg text-center">
                   <p className="text-2xl font-bold text-blue-600">
-                    ${selectedCustomer.orderCount > 0 ? (selectedCustomer.totalSpent / selectedCustomer.orderCount).toFixed(2) : '0.00'}
+                    {selectedCustomer.orderCount > 0 ? formatPrice(selectedCustomer.totalSpent / selectedCustomer.orderCount) : '0.00'}
                   </p>
                   <p className="text-sm text-gray-600">Avg Order Value</p>
                 </div>
@@ -458,7 +459,7 @@ const CustomerManagement = () => {
                           <p className="text-sm text-gray-600">{new Date(order.createdAt).toLocaleDateString()}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium text-gray-900">${order.total.toFixed(2)}</p>
+                          <p className="font-medium text-gray-900">{formatPrice(order.total)}</p>
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getOrderStatusColor(order.status)}`}>
                             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                           </span>

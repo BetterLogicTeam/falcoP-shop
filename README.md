@@ -1,4 +1,4 @@
-# Falco P Sportswear E-commerce Website
+# Falco Peak Sportswear E-commerce Website
 
 A modern, responsive e-commerce website built with Next.js, featuring a complete admin panel, payment integration, and elegant UI design.
 
@@ -147,4 +147,4 @@ For support or questions, please open an issue in the GitHub repository.
 
 ---
 
-Built with ❤️ for Falco P Sportswear
+Built with ❤️ for Falco Peak Sportswear

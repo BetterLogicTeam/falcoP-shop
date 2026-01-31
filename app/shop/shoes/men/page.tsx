@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { useProducts } from '../../../../contexts/ProductContext'
 import { ArrowLeft, Star, ShoppingBag, Filter } from 'lucide-react'
+import { formatPrice } from '@/lib/currency'
 
 export default function MenShoesPage() {
   const { products, isLoading } = useProducts()
@@ -62,10 +63,10 @@ export default function MenShoesPage() {
                       <span className="text-gray-300 text-sm">{product.rating}</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-falco-accent font-bold">${product.price}</div>
-                      {product.originalPrice && product.originalPrice > product.price && (
-                        <div className="text-gray-500 text-sm line-through">${product.originalPrice}</div>
-                      )}
+<div className="text-falco-accent font-bold">{formatPrice(product.price)}</div>
+                    {product.originalPrice && product.originalPrice > product.price && (
+                      <div className="text-gray-500 text-sm line-through">{formatPrice(product.originalPrice)}</div>
+                    )}
                     </div>
                   </div>
                 </div>

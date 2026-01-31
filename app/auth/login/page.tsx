@@ -56,7 +56,7 @@ function LoginForm() {
             <Link href="/" className="inline-block">
               <img
                 src="/images/falcop.jpg"
-                alt="Falco P"
+                alt="Falco Peak"
                 className="h-16 w-16 mx-auto rounded-full"
               />
             </Link>

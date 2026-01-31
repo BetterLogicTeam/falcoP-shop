@@ -8,6 +8,6 @@ export const EMAILJS_CONFIG = {
 export const SUBSCRIPTION_TEMPLATE_PARAMS = {
   subscriber_email: '',
   subscription_date: '',
-  source: 'Falco P Website - Newsletter Section',
-  message: 'New subscriber interested in Falco P NFT collections, exclusive drops, community events, and brand updates.',
+  source: 'Falco Peak Website - Newsletter Section',
+  message: 'New subscriber interested in Falco Peak NFT collections, exclusive drops, community events, and brand updates.',
 }

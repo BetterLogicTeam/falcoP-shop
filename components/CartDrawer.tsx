@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useCart } from '../contexts/CartContext'
 import { useClientTranslation } from '../hooks/useClientTranslation'
+import { formatPrice } from '../lib/currency'
 
 export default function CartDrawer() {
   const { state, removeFromCart, updateQuantity, clearCart, closeCart } = useCart()
@@ -87,7 +88,7 @@ export default function CartDrawer() {
                         {item.product.name}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        ${item.product.price}
+                        {formatPrice(item.product.price)}
                       </p>
                       {item.selectedSize && (
                         <p className="text-xs text-gray-500">
@@ -150,7 +151,7 @@ export default function CartDrawer() {
                   {t('cart.total', 'Total')}:
                 </span>
                 <span className="text-xl font-bold text-gray-900">
-                  ${state.totalPrice.toFixed(2)}
+                  {formatPrice(state.totalPrice)}
                 </span>
               </div>
 

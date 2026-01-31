@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
         }
       },
       receipt: {
-        merchantName: 'Falco P - Premium Sportswear',
+        merchantName: 'Falco Peak - Premium Sportswear',
         merchantId: 'FALCO-P-001',
         terminalId: 'TERM-AP-001',
         authorizationCode: `AUTH-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,

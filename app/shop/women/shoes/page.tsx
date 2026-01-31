@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useClientTranslation } from '../../../../hooks/useClientTranslation'
 import { products } from '../../../../data/products'
 import { ArrowLeft, Filter, Grid, List, Star, ShoppingBag, Star as StarIcon } from 'lucide-react'
+import { formatPrice } from '@/lib/currency'
 
 const WomenShoesPage = () => {
   const { t } = useClientTranslation()
@@ -156,9 +157,9 @@ const WomenShoesPage = () => {
                     <span className="text-gray-300 text-sm">{product.rating}</span>
                   </div>
                   <div className="text-right">
-                    <div className="text-falco-accent font-bold group-hover:text-white transition-colors duration-300">${product.price}</div>
+                    <div className="text-falco-accent font-bold group-hover:text-white transition-colors duration-300">{formatPrice(product.price)}</div>
                     {product.originalPrice && product.originalPrice > product.price && (
-                      <div className="text-gray-500 text-sm line-through">${product.originalPrice}</div>
+                      <div className="text-gray-500 text-sm line-through">{formatPrice(product.originalPrice)}</div>
                     )}
                   </div>
                 </div>

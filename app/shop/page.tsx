@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useClientTranslation } from '../../hooks/useClientTranslation'
 import { useProducts } from '../../contexts/ProductContext'
 import { ShoppingBag, Users, Star, TrendingUp, ArrowLeft, Footprints, Shirt } from 'lucide-react'
+import { formatPrice } from '@/lib/currency'
 
 const ShopMainPage = () => {
   const { t } = useClientTranslation()
@@ -74,7 +75,7 @@ const ShopMainPage = () => {
               </div>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-              <span className="gradient-text">FALCO P</span> {t('nav.shop', 'Shop')}
+              <span className="gradient-text">FALCO PEAK</span> {t('nav.shop', 'Shop')}
             </h1>
             <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               {t('shop.hero', 'Discover our complete collection of premium athletic wear and footwear. From high-performance gear to everyday essentials, engineered for champions.')}
@@ -188,10 +189,10 @@ const ShopMainPage = () => {
                       <span className="text-gray-300 text-sm">{product.rating}</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-falco-accent font-bold group-hover:text-white transition-colors duration-300">${product.price}</div>
-                      {product.originalPrice && product.originalPrice > product.price && (
-                        <div className="text-gray-500 text-sm line-through">${product.originalPrice}</div>
-                      )}
+<div className="text-falco-accent font-bold group-hover:text-white transition-colors duration-300">{formatPrice(product.price)}</div>
+                    {product.originalPrice && product.originalPrice > product.price && (
+                        <div className="text-gray-500 text-sm line-through">{formatPrice(product.originalPrice)}</div>
+                    )}
                     </div>
                   </div>
                 </div>

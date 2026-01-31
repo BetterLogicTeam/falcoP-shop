@@ -1,4 +1,4 @@
-# 🚀 Deploy Falco P Website to Namecheap
+# 🚀 Deploy Falco Peak Website to Namecheap
 
 ## Quick Fix for Deployment
 

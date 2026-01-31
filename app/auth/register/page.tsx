@@ -91,12 +91,12 @@ export default function CustomerRegisterPage() {
             <Link href="/" className="inline-block">
               <img
                 src="/images/falcop.jpg"
-                alt="Falco P"
+                alt="Falco Peak"
                 className="h-16 w-16 mx-auto rounded-full"
               />
             </Link>
             <h1 className="text-2xl font-bold text-gray-900 mt-4">Create Account</h1>
-            <p className="text-gray-600 mt-2">Join Falco P today</p>
+            <p className="text-gray-600 mt-2">Join Falco Peak today</p>
           </div>
 
           {/* Form */}

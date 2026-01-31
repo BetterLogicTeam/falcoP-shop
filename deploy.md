@@ -1,4 +1,4 @@
-# 🚀 Deployment Guide for Falco P Website
+# 🚀 Deployment Guide for Falco Peak Website
 
 ## 📦 Build for Static Hosting
 

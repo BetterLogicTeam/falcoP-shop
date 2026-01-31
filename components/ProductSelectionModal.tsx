@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { Product } from '../data/products'
 import { useCart } from '../contexts/CartContext'
 import toast from 'react-hot-toast'
+import { formatPrice } from '../lib/currency'
 
 interface ProductSelectionModalProps {
   product: Product | null
@@ -101,16 +102,16 @@ export default function ProductSelectionModal({ product, isOpen, onClose }: Prod
               <p className="text-gray-600 mb-3 text-sm leading-relaxed">{product.description}</p>
               <div className="flex items-center space-x-3">
                 <span className="text-2xl font-bold text-falco-accent">
-                  ${product.price}
+                  {formatPrice(product.price)}
                 </span>
                 {product.originalPrice && product.originalPrice > product.price && (
                   <span className="text-gray-500 line-through text-lg">
-                    ${product.originalPrice}
+                    {formatPrice(product.originalPrice)}
                   </span>
                 )}
                 {product.originalPrice && product.originalPrice > product.price && (
                   <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full text-xs font-semibold">
-                    Save ${(product.originalPrice - product.price).toFixed(2)}
+                    Save {formatPrice(product.originalPrice - product.price)}
                   </span>
                 )}
               </div>
@@ -204,7 +205,7 @@ export default function ProductSelectionModal({ product, isOpen, onClose }: Prod
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
               </svg>
-              <span>Add to Cart - ${(product.price * quantity).toFixed(2)}</span>
+              <span>Add to Cart - {formatPrice(product.price * quantity)}</span>
             </button>
           </div>
         </div>

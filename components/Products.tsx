@@ -11,6 +11,7 @@ import { useCart } from '../contexts/CartContext'
 import { useProducts } from '../contexts/ProductContext'
 import ProductSelectionModal from './ProductSelectionModal'
 import { Product } from '../data/products'
+import { formatPrice } from '../lib/currency'
 
 export default function Products() {
   const { t } = useClientTranslation()
@@ -254,11 +255,11 @@ export default function Products() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <span className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
-                      ${product.price}
+                      {formatPrice(product.price)}
                     </span>
                     {product.originalPrice && product.originalPrice > product.price && (
                       <span className="text-gray-400 line-through text-sm sm:text-base">
-                        ${product.originalPrice}
+                        {formatPrice(product.originalPrice)}
                       </span>
                     )}
                   </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, DollarSign, ShoppingBag, Users, Star, BarChart3, PieChart, Activity, Loader2, RefreshCw } from 'lucide-react'
+import { formatPrice } from '../../lib/currency'
 
 interface AnalyticsData {
   overview: {
@@ -92,7 +93,7 @@ const AnalyticsDashboard = () => {
       <div className="relative w-full">
         {/* Tooltip on hover */}
         <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-          ${value.toLocaleString()}
+          {formatPrice(value)}
         </div>
         <div className="w-full bg-gray-100 rounded-lg h-40 flex items-end overflow-hidden">
           <div
@@ -107,7 +108,7 @@ const AnalyticsDashboard = () => {
       </div>
       <p className="text-xs font-medium text-gray-600 mt-3">{label}</p>
       <p className={`text-sm font-bold ${isHighest ? 'text-green-600' : 'text-gray-900'}`}>
-        ${value.toLocaleString()}
+        {formatPrice(value)}
       </p>
     </div>
   )
@@ -175,7 +176,7 @@ const AnalyticsDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
           title="Total Revenue"
-          value={`$${analyticsData.overview.totalRevenue.toLocaleString()}`}
+          value={formatPrice(analyticsData.overview.totalRevenue)}
           growth={analyticsData.overview.revenueGrowth}
           icon={DollarSign}
           color="bg-green-500"
@@ -196,9 +197,9 @@ const AnalyticsDashboard = () => {
         />
         <StatCard
           title="Avg Order Value"
-          value={`$${analyticsData.overview.totalOrders > 0
+          value={formatPrice(analyticsData.overview.totalOrders > 0
             ? Math.round(analyticsData.overview.totalRevenue / analyticsData.overview.totalOrders)
-            : 0}`}
+            : 0)}
           growth={0}
           icon={TrendingUp}
           color="bg-orange-500"
@@ -264,7 +265,7 @@ const AnalyticsDashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-gray-900">{segment.count} customers</p>
-                    <p className="text-xs text-gray-500">{segment.percentage}% | ${segment.revenue.toLocaleString()}</p>
+                    <p className="text-xs text-gray-500">{segment.percentage}% | {formatPrice(segment.revenue)}</p>
                   </div>
                 </div>
               ))}
@@ -302,7 +303,7 @@ const AnalyticsDashboard = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium text-gray-900">${product.revenue.toLocaleString()}</p>
+                      <p className="font-medium text-gray-900">{formatPrice(product.revenue)}</p>
                     </div>
                   </div>
                 ))}
@@ -381,7 +382,7 @@ const AnalyticsDashboard = () => {
                   </div>
                   {activity.amount && (
                     <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">${activity.amount.toFixed(2)}</p>
+                      <p className="text-sm font-medium text-gray-900">{formatPrice(activity.amount)}</p>
                     </div>
                   )}
                 </div>

@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Heart, ShoppingBag, Trash2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { formatPrice } from '@/lib/currency'
 import Image from 'next/image'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
@@ -177,11 +178,11 @@ export default function WishlistPage() {
 
                   <div className="flex items-center space-x-2 mb-4">
                     <span className="text-lg font-bold text-gray-900">
-                      ${item.product.price.toFixed(2)}
+                      {formatPrice(item.product.price)}
                     </span>
                     {item.product.originalPrice && (
                       <span className="text-sm text-gray-500 line-through">
-                        ${item.product.originalPrice.toFixed(2)}
+                        {formatPrice(item.product.originalPrice)}
                       </span>
                     )}
                   </div>

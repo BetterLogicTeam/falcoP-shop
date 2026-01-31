@@ -11,6 +11,7 @@ import { useClientTranslation } from '../../hooks/useClientTranslation'
 import StripeElementsProvider from '../../components/StripeElementsProvider'
 import PaymentForm from '../../components/PaymentForm'
 import toast from 'react-hot-toast'
+import { formatPrice, FREE_SHIPPING_THRESHOLD_SEK } from '../../lib/currency'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -419,7 +420,7 @@ export default function CheckoutPage() {
             <div className="border-t border-white/20 pt-6 space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-300">Subtotal</span>
-                <span className="text-white font-semibold">${state.totalPrice.toFixed(2)}</span>
+                <span className="text-white font-semibold">{formatPrice(state.totalPrice)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-300">Shipping</span>
@@ -431,7 +432,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between text-xl font-bold border-t border-white/20 pt-4">
                 <span className="text-white">Total</span>
-                <span className="text-falco-accent">${state.totalPrice.toFixed(2)}</span>
+                <span className="text-falco-accent">{formatPrice(state.totalPrice)}</span>
               </div>
             </div>
 
@@ -441,7 +442,7 @@ export default function CheckoutPage() {
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                   <Check className="w-4 h-4 text-white" />
                 </div>
-                <span>Free shipping on orders $1800 and over</span>
+                <span>Free shipping on orders over {formatPrice(FREE_SHIPPING_THRESHOLD_SEK)}</span>
               </div>
               <div className="flex items-center space-x-3 text-sm text-gray-300">
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">

@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { useProducts } from '../../../contexts/ProductContext'
 import { ArrowLeft, Users, Star, ShoppingBag, Shirt } from 'lucide-react'
+import { formatPrice } from '@/lib/currency'
 
 export default function SportswearPage() {
   const { products, isLoading } = useProducts()
@@ -88,7 +89,7 @@ export default function SportswearPage() {
                         <Star className="w-4 h-4 text-yellow-400 fill-current" />
                         <span className="text-gray-300 text-sm">{product.rating}</span>
                       </div>
-                      <div className="text-falco-accent font-bold">${product.price}</div>
+                      <div className="text-falco-accent font-bold">{formatPrice(product.price)}</div>
                     </div>
                   </div>
                 </Link>

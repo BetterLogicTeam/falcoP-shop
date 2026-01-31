@@ -16,7 +16,7 @@ export default function Testimonials() {
       role: 'Professional Athlete',
       sport: 'Track & Field',
       rating: 5,
-      text: 'Falco P has completely transformed my performance. The aerodynamic design and premium materials give me that extra edge I need to compete at the highest level.',
+      text: 'Falco Peak has completely transformed my performance. The aerodynamic design and premium materials give me that extra edge I need to compete at the highest level.',
       image: '/images/20.jpg',
       verified: true
     },
@@ -26,7 +26,7 @@ export default function Testimonials() {
       role: 'Fitness Enthusiast',
       sport: 'CrossFit',
       rating: 5,
-      text: 'The quality is unmatched. I\'ve been using Falco P gear for over a year now, and it still looks and performs like new. Worth every penny!',
+      text: 'The quality is unmatched. I\'ve been using Falco Peak gear for over a year now, and it still looks and performs like new. Worth every penny!',
       image: '/images/20.jpg',
       verified: true
     },
@@ -36,7 +36,7 @@ export default function Testimonials() {
       role: 'Basketball Player',
       sport: 'Professional League',
       rating: 5,
-      text: 'These shoes are incredible. The grip, comfort, and style are all top-notch. I feel faster and more confident on the court with Falco P.',
+      text: 'These shoes are incredible. The grip, comfort, and style are all top-notch. I feel faster and more confident on the court with Falco Peak.',
       image: '/images/20.jpg',
       verified: true
     },
@@ -46,7 +46,7 @@ export default function Testimonials() {
       role: 'Marathon Runner',
       sport: 'Long Distance',
       rating: 5,
-      text: 'I\'ve run 3 marathons in my Falco P shoes. The cushioning and support are perfect for long distances. My feet never felt better!',
+      text: 'I\'ve run 3 marathons in my Falco Peak shoes. The cushioning and support are perfect for long distances. My feet never felt better!',
       image: '/images/20.jpg',
       verified: true
     },
@@ -86,7 +86,7 @@ export default function Testimonials() {
             {t('testimonials.title', 'WHAT OUR')} <span className="gradient-text">{t('testimonials.highlight', 'ATHLETES')}</span> {t('testimonials.say', 'SAY')}
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            {t('testimonials.subtitle', "Don't just take our word for it. Hear from the athletes who trust Falco P to elevate their performance.")}
+            {t('testimonials.subtitle', "Don't just take our word for it. Hear from the athletes who trust Falco Peak to elevate their performance.")}
           </p>
         </div>
 

@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Package, Truck, CheckCircle, Clock, XCircle, Loader2, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
+import { formatPrice } from '@/lib/currency'
 
 interface OrderItem {
   id: string
@@ -192,7 +193,7 @@ export default function CustomerOrdersPage() {
                         <div className="flex items-center space-x-4 text-sm text-gray-600">
                           <span>{new Date(order.createdAt).toLocaleDateString()}</span>
                           <span>{order.items.length} {order.items.length === 1 ? 'item' : 'items'}</span>
-                          <span className="font-semibold text-gray-900">${order.total.toFixed(2)}</span>
+                          <span className="font-semibold text-gray-900">{formatPrice(order.total)}</span>
                         </div>
                       </div>
                       {isExpanded ? (
@@ -268,19 +269,19 @@ export default function CustomerOrdersPage() {
                         <div className="bg-gray-50 rounded-lg p-4 space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Subtotal</span>
-                            <span>${order.subtotal.toFixed(2)}</span>
+                            <span>{formatPrice(order.subtotal)}</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Shipping</span>
-                            <span>{order.shippingCost === 0 ? 'Free' : `$${order.shippingCost?.toFixed(2) || '0.00'}`}</span>
+                            <span>{order.shippingCost === 0 ? 'Free' : formatPrice(order.shippingCost ?? 0)}</span>
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Tax</span>
-                            <span>${order.tax.toFixed(2)}</span>
+                            <span>{formatPrice(order.tax)}</span>
                           </div>
                           <div className="flex justify-between font-semibold text-lg pt-2 border-t border-gray-200">
                             <span>Total</span>
-                            <span>${order.total.toFixed(2)}</span>
+                            <span>{formatPrice(order.total)}</span>
                           </div>
                         </div>
                       </div>

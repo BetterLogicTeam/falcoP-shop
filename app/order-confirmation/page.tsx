@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { CheckCircle, Package, Truck, Home, ShoppingBag, Clock, Mail, Phone, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { formatPrice } from '@/lib/currency'
 
 interface OrderItem {
   id: string
@@ -144,7 +145,7 @@ function OrderConfirmationContent() {
                           {(item.size || item.color) && ' • '}
                           Qty: {item.quantity}
                         </p>
-                        <p className="text-lg font-bold text-gray-900">${item.price.toFixed(2)}</p>
+                        <p className="text-lg font-bold text-gray-900">{formatPrice(item.price)}</p>
                       </div>
                     </div>
                   ))}
@@ -153,19 +154,19 @@ function OrderConfirmationContent() {
                 <div className="mt-6 pt-6 border-t border-gray-200 space-y-2">
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Subtotal</span>
-                    <span>${order?.subtotal?.toFixed(2) || '0.00'}</span>
+                    <span>{order?.subtotal != null ? formatPrice(order.subtotal) : '0.00'}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Shipping</span>
-                    <span>{order?.shipping === 0 ? 'Free' : `$${order?.shipping?.toFixed(2)}`}</span>
+                    <span>{order?.shipping === 0 ? 'Free' : (order?.shipping != null ? formatPrice(order.shipping) : '0.00')}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Tax</span>
-                    <span>${order?.tax?.toFixed(2) || '0.00'}</span>
+                    <span>{order?.tax != null ? formatPrice(order.tax) : '0.00'}</span>
                   </div>
                   <div className="flex justify-between items-center text-lg font-semibold pt-2 border-t">
                     <span className="text-gray-900">Total</span>
-                    <span className="text-2xl text-green-600">${order?.total?.toFixed(2) || '0.00'}</span>
+                    <span className="text-2xl text-green-600">{order?.total != null ? formatPrice(order.total) : '0.00'}</span>
                   </div>
                 </div>
               </div>
@@ -288,7 +289,7 @@ function OrderConfirmationContent() {
                 <Truck className="w-6 h-6 text-blue-600" />
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Free Shipping</h3>
-              <p className="text-sm text-gray-600">On all orders over $50</p>
+              <p className="text-sm text-gray-600">On all orders over 500 kr</p>
             </div>
 
             <div className="text-center p-6 bg-white rounded-xl shadow-md border border-gray-200">

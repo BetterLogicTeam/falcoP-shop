@@ -28,14 +28,14 @@ export default function LoadingScreen() {
           <div className="w-20 h-20 rounded-full overflow-hidden mx-auto animate-glow">
             <Image
               src="/images/falcop.jpg"
-              alt="Falco P Logo"
+              alt="Falco Peak Logo"
               width={80}
               height={80}
               className="w-full h-full object-cover"
             />
           </div>
           <h1 className="text-4xl font-display font-bold gradient-text mt-4 animate-fade-in">
-            FALCO P
+            FALCO PEAK
           </h1>
         </div>
 

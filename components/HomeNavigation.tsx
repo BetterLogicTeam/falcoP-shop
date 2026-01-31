@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Menu, X, ShoppingBag, User, Search, LogOut, Package, Settings } from 'lucide-react'
+import { Menu, X, ShoppingBag, User, Search, Heart, LogOut, Package, Settings } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
@@ -62,7 +62,7 @@ export default function HomeNavigation() {
             <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl overflow-hidden group-hover:scale-105 transition-transform duration-300 shadow-lg">
               <Image
                 src="/images/falcop.jpg"
-                alt="Falco P Logo"
+                alt="Falco Peak Logo"
                 width={56}
                 height={56}
                 className="w-full h-full object-cover"
@@ -70,7 +70,7 @@ export default function HomeNavigation() {
             </div>
             <div className="flex flex-col bg-black/50 px-2 py-1 sm:px-3 sm:py-2 rounded-lg backdrop-blur-sm">
               <span className="text-lg sm:text-xl md:text-2xl font-black text-white tracking-tight leading-none relative z-10">
-                FALCO P
+                FALCO PEAK
               </span>
               <span className="text-xs text-gray-400 font-medium tracking-wider relative z-10 hidden sm:block">
                 PREMIUM SPORTSWEAR
@@ -106,9 +106,16 @@ export default function HomeNavigation() {
 
           <div className="hidden lg:flex items-center space-x-2 xl:space-x-4 2xl:space-x-6">
             <LanguageSelector />
-            <button className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full">
+            <button className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full" aria-label="Search">
               <Search className="w-4 h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6" />
             </button>
+            <Link
+              href="/account/wishlist"
+              className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full"
+              aria-label="Wishlist"
+            >
+              <Heart className="w-4 h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6" />
+            </Link>
 
             {/* User Menu */}
             <div className="relative" ref={userMenuRef}>
@@ -189,12 +196,36 @@ export default function HomeNavigation() {
             </button>
           </div>
 
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-white hover:text-falco-accent transition-colors duration-300"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile: Search, Favorite, Cart, Menu (always visible in header) */}
+          <div className="lg:hidden flex items-center space-x-2">
+            <button className="p-2 text-white hover:text-gray-300 transition-colors duration-300" aria-label="Search">
+              <Search className="w-5 h-5" />
+            </button>
+            <Link
+              href="/account/wishlist"
+              className="p-2 text-white hover:text-gray-300 transition-colors duration-300"
+              aria-label="Wishlist"
+            >
+              <Heart className="w-5 h-5" />
+            </Link>
+            <button
+              onClick={openCart}
+              className="relative p-2 text-white hover:text-gray-300 transition-colors duration-300"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {state.totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-falco-accent text-black text-xs font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {state.totalItems}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 text-white hover:text-falco-accent transition-colors duration-300"
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
         {isOpen && (
