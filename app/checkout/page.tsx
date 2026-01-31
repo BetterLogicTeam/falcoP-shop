@@ -11,7 +11,7 @@ import { useClientTranslation } from '../../hooks/useClientTranslation'
 import StripeElementsProvider from '../../components/StripeElementsProvider'
 import PaymentForm from '../../components/PaymentForm'
 import toast from 'react-hot-toast'
-import { formatPrice, FREE_SHIPPING_THRESHOLD_SEK } from '../../lib/currency'
+import { formatPrice, FREE_SHIPPING_THRESHOLD_SEK } from '@/lib/currency'
 
 export default function CheckoutPage() {
   const router = useRouter()

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Search, Filter, Eye, User, Mail, Phone, MapPin, Calendar, ShoppingBag, Star, TrendingUp, Users, Loader2, RefreshCw } from 'lucide-react'
-import { formatPrice } from '../../lib/currency'
+import { formatPrice } from '@/lib/currency'
 
 interface OrderSummary {
   id: string

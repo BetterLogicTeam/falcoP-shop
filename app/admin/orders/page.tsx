@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Package, Search, Truck, CheckCircle, Clock, XCircle, Loader2, RefreshCw, DollarSign, Eye, X } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { formatPrice } from '../../lib/currency'
+import { formatPrice } from '@/lib/currency'
 
 interface OrderItem {
   id: string

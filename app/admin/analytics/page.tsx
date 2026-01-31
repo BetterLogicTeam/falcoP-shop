@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, DollarSign, ShoppingBag, Users, Star, BarChart3, PieChart, Activity, Loader2, RefreshCw } from 'lucide-react'
-import { formatPrice } from '../../lib/currency'
+import { formatPrice } from '@/lib/currency'
 
 interface AnalyticsData {
   overview: {

@@ -5,7 +5,7 @@ import { Package, ShoppingCart, Users, TrendingUp, Plus, Edit, Trash2, User, Loa
 import Link from 'next/link'
 import { useAuth } from '../../contexts/AuthContext'
 import toast from 'react-hot-toast'
-import { formatPrice } from '../../lib/currency'
+import { formatPrice } from '@/lib/currency'
 
 interface Product {
   id: string

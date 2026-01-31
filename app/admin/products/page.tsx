@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Search, Edit, Trash2, Eye, Package, Loader2, RefreshCw, X } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
-import { formatPrice } from '../../lib/currency'
+import { formatPrice } from '@/lib/currency'
 
 interface Product {
   id: string
