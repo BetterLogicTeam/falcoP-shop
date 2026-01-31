@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { useClientTranslation } from '../../../../hooks/useClientTranslation'
 import { products } from '../../../../data/products'
+import { formatPrice } from '@/lib/currency'
 import { ArrowLeft, Filter, Grid, List, Star, ShoppingBag, Star as StarIcon } from 'lucide-react'
 
 const WomenSportswearPage = () => {

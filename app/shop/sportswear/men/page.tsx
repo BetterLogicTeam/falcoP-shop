@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { useProducts } from '../../../../contexts/ProductContext'
+import { formatPrice } from '@/lib/currency'
 import { ArrowLeft, Star, ShoppingBag } from 'lucide-react'
 
 export default function MenSportswearPage() {
