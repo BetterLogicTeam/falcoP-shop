@@ -19,7 +19,7 @@ export default function StoriesIndex() {
       id: 'wing-p',
       title: 'WING P STORY',
       subtitle: 'The Original Dream',
-      description: 'Discover the visionary journey of Abdusebur and the birth of Wing Power - where performance meets perfection.',
+      description: 'Discover the visionary journey and the birth of Wing Power - where performance meets perfection.',
       href: '/story/wing-p',
       icon: Zap,
       gradient: 'from-falco-accent to-falco-gold',

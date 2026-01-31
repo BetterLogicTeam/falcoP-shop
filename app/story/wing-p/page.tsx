@@ -67,11 +67,11 @@ export default function WingPowerStory() {
               <div className="space-y-8 text-gray-300 leading-relaxed text-lg">
                 
                 <p>
-                  This dream first took flight in the mind of a visionary named <span className="text-falco-accent font-semibold">Abdusebur</span>. He watched the Peregrine Falcon, nature's ultimate athlete, and saw more than a bird; he saw a blueprint for perfection. He saw power, grace, and untamed speed. For years, he labored to capture that essence, to distill the very soul of the falcon into something you could wear.
+                  This dream first took flight in the mind of a visionary . They watched the Peregrine Falcon, nature's ultimate athlete, and saw more than a bird; they saw a blueprint for perfection. they saw power, grace, and untamed speed. For years, they labored to capture that essence, to distill the very soul of the falcon into something you could wear.
                 </p>
 
                 <p>
-                  He called it <span className="text-falco-gold font-bold italic">Wing Power</span>. This is that dream, realized.
+                  they called it <span className="text-falco-gold font-bold italic">Wing Power</span>. This is that dream, realized.
                 </p>
 
                 <p className="text-2xl sm:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-falco-accent to-falco-gold text-center my-12">
@@ -109,7 +109,7 @@ export default function WingPowerStory() {
                 <p className="text-2xl font-bold text-falco-accent text-center my-8">{t('story.this_can_be_you', 'This can be you.')}</p>
 
                 <p className="text-center">
-                  {t('story.waiting_for_you', "The dream is no longer just Abdusebur's. It's here. It's real. It's waiting for you.")}
+                  {t('story.waiting_for_you', "The dream is no longer just individual's. It's here. It's real. It's waiting for you.")}
                 </p>
                 
                 <p className="text-xl font-bold text-white text-center">{t('story.own_it', 'Stop moving through the world. Start owning it.')}</p>

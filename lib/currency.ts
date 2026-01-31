@@ -6,8 +6,8 @@
 export const CURRENCY = 'SEK' as const
 export const CURRENCY_SYMBOL = 'kr'
 
-/** Free shipping threshold in SEK */
-export const FREE_SHIPPING_THRESHOLD_SEK = 15000
+/** Free shipping threshold in SEK (orders 1800 kr and over) */
+export const FREE_SHIPPING_THRESHOLD_SEK = 1800
 
 /**
  * Format a price for display (e.g. 900 -> "900 kr")

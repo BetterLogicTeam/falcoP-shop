@@ -1,7 +1,7 @@
 /**
  * Set all product prices to SEK:
- * - Kids category: 600 SEK
- * - All others (men, women): 900 SEK
+ * - Kids category: 599 SEK
+ * - All others (men, women): 899 SEK
  *
  * Run: node scripts/set-prices-sek.js
  * Requires: DATABASE_URL in .env
@@ -10,8 +10,8 @@
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
-const PRICE_ADULT = 900   // SEK
-const PRICE_KIDS = 600    // SEK
+const PRICE_ADULT = 899   // SEK
+const PRICE_KIDS = 599    // SEK
 
 async function setPricesSEK() {
   try {
