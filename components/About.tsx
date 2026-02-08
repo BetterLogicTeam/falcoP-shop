@@ -118,7 +118,6 @@ export default function About() {
               {/* Video Container */}
               <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-[500px] bg-gradient-to-br from-gray-800 to-black rounded-2xl sm:rounded-3xl overflow-hidden">
                 <video
-                  autoPlay
                   loop
                   playsInline
                   controls

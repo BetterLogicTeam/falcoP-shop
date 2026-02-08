@@ -404,13 +404,10 @@ export default function CheckoutPage() {
                     {item.selectedSize && (
                       <p className="text-xs text-gray-300">Size: {item.selectedSize}</p>
                     )}
-                    {item.selectedColor && (
-                      <p className="text-xs text-gray-300">Color: {item.selectedColor}</p>
-                    )}
                     <p className="text-sm text-gray-300">Qty: {item.quantity}</p>
                   </div>
                   <div className="text-sm font-bold text-white">
-                    ${(item.product.price * item.quantity).toFixed(2)}
+                    {formatPrice(item.product.price * item.quantity)}
                   </div>
                 </div>
               ))}

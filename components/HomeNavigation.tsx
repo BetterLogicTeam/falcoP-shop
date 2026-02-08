@@ -8,6 +8,7 @@ import { useSession, signOut } from 'next-auth/react'
 import { useClientTranslation } from '../hooks/useClientTranslation'
 import { useCart } from '../contexts/CartContext'
 import LanguageSelector from './LanguageSelector'
+import SearchModal from './SearchModal'
 
 export default function HomeNavigation() {
   const { t } = useClientTranslation()
@@ -16,6 +17,7 @@ export default function HomeNavigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
 
   // Close user menu when clicking outside
@@ -106,9 +108,10 @@ export default function HomeNavigation() {
 
           <div className="hidden lg:flex items-center space-x-2 xl:space-x-4 2xl:space-x-6">
             <LanguageSelector />
-            <button className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full" aria-label="Search">
+            <button type="button" onClick={() => setSearchOpen(true)} className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full" aria-label="Search">
               <Search className="w-4 h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6" />
             </button>
+            <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
             <Link
               href="/account/wishlist"
               className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full"
@@ -198,7 +201,7 @@ export default function HomeNavigation() {
 
           {/* Mobile: Search, Favorite, Cart, Menu (always visible in header) */}
           <div className="lg:hidden flex items-center space-x-2">
-            <button className="p-2 text-white hover:text-gray-300 transition-colors duration-300" aria-label="Search">
+            <button type="button" onClick={() => setSearchOpen(true)} className="p-2 text-white hover:text-gray-300 transition-colors duration-300" aria-label="Search">
               <Search className="w-5 h-5" />
             </button>
             <Link

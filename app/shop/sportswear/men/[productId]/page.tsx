@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useProducts } from '../../../../../contexts/ProductContext'
 import { ArrowLeft, Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, Award } from 'lucide-react'
 import { useCart } from '../../../../../contexts/CartContext'
@@ -13,9 +14,11 @@ import { formatPrice, FREE_SHIPPING_THRESHOLD_SEK } from '@/lib/currency'
 const ProductDetailPage = () => {
   const params = useParams()
   const productId = params?.productId as string
+  const { data: session } = useSession()
   const { products, isLoading } = useProducts()
   const { addToCart } = useCart()
   const [selectedSize, setSelectedSize] = useState('')
+  const [wishlistLoading, setWishlistLoading] = useState(false)
   const [selectedColor, setSelectedColor] = useState('')
   const [quantity, setQuantity] = useState(1)
   const [activeImageIndex, setActiveImageIndex] = useState(0)
@@ -55,6 +58,31 @@ const ProductDetailPage = () => {
     if (product.sizes.length > 0 && !selectedSize) { toast.error('Please select a size'); return }
     if (product.colors.length > 0 && !selectedColor) { toast.error('Please select a color'); return }
     addToCart(product, quantity, selectedSize || undefined, selectedColor || undefined)
+  }
+
+  const handleWishlist = async () => {
+    if (!session) { toast.error('Please sign in to add to wishlist'); return }
+    setWishlistLoading(true)
+    try {
+      const res = await fetch('/api/wishlist', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId: product.id }) })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { toast.error(data.error === 'Product already in wishlist' ? 'Already in wishlist' : data.error || 'Failed to add'); return }
+      toast.success('Added to wishlist')
+    } catch { toast.error('Failed to add to wishlist') }
+    finally { setWishlistLoading(false) }
+  }
+
+  const handleShare = async () => {
+    const url = typeof window !== 'undefined' ? window.location.href : ''
+    try {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share({ title: product.name, url })
+        toast.success('Link shared')
+      } else {
+        await navigator.clipboard.writeText(url)
+        toast.success('Link copied to clipboard')
+      }
+    } catch (e) { if ((e as Error).name !== 'AbortError') toast.error('Could not share') }
   }
 
   const relatedProducts = products.filter(p => p.category === product.category && p.subcategory === product.subcategory && p.id !== product.id).slice(0, 4)
@@ -126,8 +154,8 @@ const ProductDetailPage = () => {
 
               <div className="flex space-x-4">
                 <button onClick={handleAddToCart} className="flex-1 bg-falco-accent text-black px-6 py-4 rounded-full font-bold hover:bg-falco-gold transition-colors duration-300 flex items-center justify-center space-x-2"><ShoppingCart className="w-5 h-5" /><span>Add to Cart</span></button>
-                <button className="p-4 border border-gray-600 text-white rounded-full hover:border-falco-accent hover:text-falco-accent transition-colors duration-300"><Heart className="w-5 h-5" /></button>
-                <button className="p-4 border border-gray-600 text-white rounded-full hover:border-falco-accent hover:text-falco-accent transition-colors duration-300"><Share2 className="w-5 h-5" /></button>
+                <button type="button" onClick={handleWishlist} disabled={wishlistLoading} className="p-4 border border-gray-600 text-white rounded-full hover:border-falco-accent hover:text-falco-accent transition-colors duration-300 disabled:opacity-50" aria-label="Add to wishlist"><Heart className="w-5 h-5" /></button>
+                <button type="button" onClick={handleShare} className="p-4 border border-gray-600 text-white rounded-full hover:border-falco-accent hover:text-falco-accent transition-colors duration-300" aria-label="Share"><Share2 className="w-5 h-5" /></button>
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-8 border-t border-gray-800">

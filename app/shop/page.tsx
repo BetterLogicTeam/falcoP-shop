@@ -2,14 +2,25 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useClientTranslation } from '../../hooks/useClientTranslation'
 import { useProducts } from '../../contexts/ProductContext'
-import { ShoppingBag, Users, Star, TrendingUp, ArrowLeft, Footprints, Shirt } from 'lucide-react'
+import { ShoppingBag, Users, Star, TrendingUp, ArrowLeft, Footprints, Shirt, Search } from 'lucide-react'
 import { formatPrice } from '@/lib/currency'
 
 const ShopMainPage = () => {
   const { t } = useClientTranslation()
+  const searchParams = useSearchParams()
+  const q = (searchParams?.get('q') ?? '').trim()
   const { products } = useProducts()
+
+  const searchResults = q
+    ? products.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q.toLowerCase()) ||
+          (p.description && p.description.toLowerCase().includes(q.toLowerCase()))
+      )
+    : []
 
   // Get category statistics
   const shoesProducts = products.filter(p => p.subcategory === 'shoes').length
@@ -62,6 +73,52 @@ const ShopMainPage = () => {
           <span className="font-semibold">{t('common.back_to_home', 'Back to Home')}</span>
         </Link>
       </div>
+
+      {/* Search results when q is set */}
+      {q && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="flex items-center gap-2 mb-6">
+            <Search className="w-6 h-6 text-falco-accent" />
+            <h2 className="text-2xl font-bold text-white">
+              Search results for &quot;{q}&quot; {searchResults.length > 0 && `(${searchResults.length})`}
+            </h2>
+          </div>
+          {searchResults.length === 0 ? (
+            <p className="text-gray-400">No products match your search. Try a different term.</p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {searchResults.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/shop/${product.subcategory}/${product.category}/${product.id}`}
+                  className="group bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 hover:border-falco-accent transition-all duration-500 overflow-hidden hover:scale-105 hover:shadow-xl hover:shadow-falco-accent/20"
+                >
+                  <div className="aspect-square bg-gray-700 relative overflow-hidden">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.src = '/images/placeholder-product.jpg'
+                      }}
+                    />
+                    {product.badge && (
+                      <div className="absolute top-3 left-3 bg-falco-accent text-black px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                        {product.badge}
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-white text-sm mb-2 line-clamp-2 group-hover:text-falco-accent transition-colors duration-300">{product.name}</h3>
+                    <div className="text-falco-accent font-bold">{formatPrice(product.price)}</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Hero Section */}
       <div className="relative pt-8 pb-16 overflow-hidden">

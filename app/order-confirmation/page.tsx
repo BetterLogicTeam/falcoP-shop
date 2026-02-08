@@ -140,9 +140,7 @@ function OrderConfirmationContent() {
                         <h3 className="font-semibold text-gray-900">{item.productName}</h3>
                         <p className="text-sm text-gray-600">
                           {item.size && `Size: ${item.size}`}
-                          {item.size && item.color && ' • '}
-                          {item.color && `Color: ${item.color}`}
-                          {(item.size || item.color) && ' • '}
+                          {item.size && ' • '}
                           Qty: {item.quantity}
                         </p>
                         <p className="text-lg font-bold text-gray-900">{formatPrice(item.price)}</p>

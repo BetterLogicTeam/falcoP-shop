@@ -95,11 +95,6 @@ export default function CartDrawer() {
                           Size: {item.selectedSize}
                         </p>
                       )}
-                      {item.selectedColor && (
-                        <p className="text-xs text-gray-500">
-                          Color: {item.selectedColor}
-                        </p>
-                      )}
                     </div>
 
                     {/* Quantity Controls */}

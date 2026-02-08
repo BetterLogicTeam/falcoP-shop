@@ -1,22 +1,19 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-// Use placeholder during build when DATABASE_URL may be unset (e.g. Vercel collect page data)
+// Placeholder when DATABASE_URL unset (e.g. Vercel collect page data)
 const databaseUrl =
   process.env.DATABASE_URL ?? 'postgresql://placeholder:placeholder@localhost:5432/placeholder'
-
-const pool = new Pool({ connectionString: databaseUrl })
-const adapter = new PrismaPg(pool)
 
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    adapter,
+    datasources: {
+      db: { url: databaseUrl },
+    },
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   })
 
