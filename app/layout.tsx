@@ -6,6 +6,7 @@ import I18nProvider from '../components/I18nProvider'
 import { CartProvider } from '../contexts/CartContext'
 import { ProductProvider } from '../contexts/ProductContext'
 import CartDrawer from '../components/CartDrawer'
+import WhatsAppButton from '../components/WhatsAppButton'
 import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ 
@@ -88,6 +89,7 @@ export default function RootLayout({
               <CartProvider>
                 {children}
                 <CartDrawer />
+                <WhatsAppButton />
                 <Toaster
                   position="top-right"
                   toastOptions={{
