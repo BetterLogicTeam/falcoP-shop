@@ -235,7 +235,9 @@ export default function Features() {
                     ref={videoRef}
                     key={currentVideoIndex}
                     src={videos[currentVideoIndex]}
+                    autoPlay
                     muted
+                    loop
                     playsInline
                     controls
                     className="w-full h-full object-cover rounded-2xl"

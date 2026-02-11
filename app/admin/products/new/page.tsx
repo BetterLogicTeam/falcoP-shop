@@ -130,6 +130,8 @@ const ProductForm = () => {
     setIsSubmitting(true)
 
     try {
+      const isShoes = formData.subcategory === 'shoes'
+
       // Create product object
       const productData = {
         name: formData.name,
@@ -146,7 +148,9 @@ const ProductForm = () => {
         reviews: parseInt(formData.reviews),
         inStock: formData.stock === 'In Stock',
         colors: ['White'], // Default colors
-        sizes: ['S', 'M', 'L'], // Default sizes
+        sizes: isShoes
+          ? ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'] // Numeric sizes for shoes
+          : ['S', 'M', 'L'], // S/M/L for sportswear
         features: ['High Quality', 'Comfortable'] // Default features
       }
 

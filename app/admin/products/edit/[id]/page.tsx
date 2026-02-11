@@ -165,6 +165,12 @@ const ProductEditForm = () => {
     setIsSubmitting(true)
 
     try {
+      // Determine sizes based on category/subcategory
+      const defaultSizes =
+        formData.subcategory === 'shoes'
+          ? ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45']
+          : ['S', 'M', 'L']
+
       // Create updated product object
       const updatedProductData = {
         name: formData.name,
@@ -181,7 +187,7 @@ const ProductEditForm = () => {
         reviews: parseInt(formData.reviews),
         inStock: formData.stock === 'In Stock',
         colors: ['White'], // Default colors
-        sizes: ['S', 'M', 'L'], // Default sizes
+        sizes: defaultSizes, // Default sizes (numeric for shoes, S/M/L otherwise)
         features: ['High Quality', 'Comfortable'] // Default features
       }
 

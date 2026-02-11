@@ -121,34 +121,50 @@ export default function About() {
                   loop
                   playsInline
                   controls
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover relative z-0"
                 >
                   <source src="/videos/falcop.mp4" type="video/mp4" />
                 </video>
 
-                {/* Elegant Gradient Overlays */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-falco-accent/10 via-transparent to-falco-gold/10"></div>
+                {/* Elegant Gradient Overlays - pointer-events-none so video controls are clickable */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" aria-hidden />
+                <div className="absolute inset-0 bg-gradient-to-r from-falco-accent/10 via-transparent to-falco-gold/10 pointer-events-none" aria-hidden />
 
-                {/* Brand Badge */}
-                <div className="absolute top-3 left-3 sm:top-6 sm:left-6 bg-gradient-to-r from-falco-accent to-falco-gold rounded-lg sm:rounded-xl px-2 py-1 sm:px-4 sm:py-2">
+                {/* Brand Badge - pointer-events-none so it doesn't block play button */}
+                <div className="absolute top-3 left-3 sm:top-6 sm:left-6 bg-gradient-to-r from-falco-accent to-falco-gold rounded-lg sm:rounded-xl px-2 py-1 sm:px-4 sm:py-2 pointer-events-none z-10">
                   <span className="text-falco-primary text-xs sm:text-sm font-black tracking-wider">
                     WING P
                   </span>
                 </div>
               </div>
 
-              {/* Enhanced Decorative Elements */}
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-falco-accent/30 to-transparent rounded-full animate-pulse blur-sm"></div>
-              <div className="absolute -bottom-6 -left-6 w-40 h-40 bg-gradient-to-br from-falco-gold/30 to-transparent rounded-full animate-pulse blur-sm" style={{ animationDelay: '1s' }}></div>
+              {/* Enhanced Decorative Elements (visual only, don't block clicks) */}
+              <div
+                className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-falco-accent/30 to-transparent rounded-full animate-pulse blur-sm pointer-events-none"
+                aria-hidden
+              ></div>
+              <div
+                className="absolute -bottom-6 -left-6 w-40 h-40 bg-gradient-to-br from-falco-gold/30 to-transparent rounded-full animate-pulse blur-sm pointer-events-none"
+                style={{ animationDelay: '1s' }}
+                aria-hidden
+              ></div>
             </div>
 
-            {/* Enhanced Background Elements */}
-            <div className="absolute inset-0 bg-gradient-to-br from-falco-accent/20 to-falco-gold/20 rounded-3xl transform rotate-2 blur-sm"></div>
-            <div className="absolute inset-0 bg-gradient-to-tl from-falco-gold/10 to-falco-accent/10 rounded-3xl transform -rotate-1 blur-sm"></div>
+            {/* Enhanced Background Elements (visual only) */}
+            <div
+              className="absolute inset-0 bg-gradient-to-br from-falco-accent/20 to-falco-gold/20 rounded-3xl transform rotate-2 blur-sm pointer-events-none"
+              aria-hidden
+            ></div>
+            <div
+              className="absolute inset-0 bg-gradient-to-tl from-falco-gold/10 to-falco-accent/10 rounded-3xl transform -rotate-1 blur-sm pointer-events-none"
+              aria-hidden
+            ></div>
 
-            {/* Glow Effect */}
-            <div className="absolute inset-0 rounded-3xl shadow-[0_0_50px_rgba(34,211,238,0.3)] group-hover:shadow-[0_0_80px_rgba(34,211,238,0.5)] transition-all duration-500"></div>
+            {/* Glow Effect (visual only) */}
+            <div
+              className="absolute inset-0 rounded-3xl shadow-[0_0_50px_rgba(34,211,238,0.3)] group-hover:shadow-[0_0_80px_rgba(34,211,238,0.5)] transition-all duration-500 pointer-events-none"
+              aria-hidden
+            ></div>
           </div>
         </div>
 
