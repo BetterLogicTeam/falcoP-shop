@@ -69,6 +69,8 @@ export default function Hero() {
               {/* Just the video background, no overlay images */}
               <div className="w-full max-w-md sm:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto h-56 sm:h-64 md:h-72 lg:h-80 xl:h-96 rounded-2xl overflow-hidden shadow-2xl">
                 <video
+                  autoPlay
+                  muted
                   loop
                   playsInline
                   controls

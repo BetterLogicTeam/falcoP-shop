@@ -111,7 +111,6 @@ export default function HomeNavigation() {
             <button type="button" onClick={() => setSearchOpen(true)} className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full" aria-label="Search">
               <Search className="w-4 h-4 xl:w-5 xl:h-5 2xl:w-6 2xl:h-6" />
             </button>
-            <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
             <Link
               href="/account/wishlist"
               className="p-2 xl:p-3 text-white hover:text-gray-300 transition-colors duration-300 hover:bg-white/10 rounded-full"
@@ -230,6 +229,9 @@ export default function HomeNavigation() {
             </button>
           </div>
         </div>
+
+        {/* Global search modal (desktop + mobile) */}
+        <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
 
         {isOpen && (
           <div className="lg:hidden absolute top-full left-0 right-0 bg-falco-primary/95 backdrop-blur-md border-t border-white/10 mobile-padding max-h-[80vh] overflow-y-auto">
