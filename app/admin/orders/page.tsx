@@ -25,6 +25,7 @@ interface Order {
   paymentStatus: string
   total: number
   subtotal: number
+  shippingCost?: number
   tax: number
   items: OrderItem[]
   createdAt: string
@@ -279,7 +280,7 @@ export default function AdminOrdersPage() {
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-semibold text-gray-900">
-                          ${order.total?.toFixed(2)}
+                          {formatPrice(order.total ?? 0)}
                         </div>
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
@@ -371,6 +372,10 @@ export default function AdminOrdersPage() {
                 <div className="flex justify-between text-sm mb-1">
                   <span>Subtotal</span>
                   <span>{formatPrice(selectedOrder.subtotal ?? 0)}</span>
+                </div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span>Shipping</span>
+                  <span>{formatPrice(selectedOrder.shippingCost ?? 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm mb-1">
                   <span>Tax</span>

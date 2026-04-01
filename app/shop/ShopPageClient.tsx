@@ -140,7 +140,7 @@ function ShopMainContent() {
               </div>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
-              <span className="gradient-text">FALCO PEAK</span> {t('nav.shop', 'Shop')}
+              <span className="gradient-text">FALCO P</span> {t('nav.shop', 'Shop')}
             </h1>
             <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               {t('shop.hero', 'Discover our complete collection of premium athletic wear and footwear. From high-performance gear to everyday essentials, engineered for champions.')}

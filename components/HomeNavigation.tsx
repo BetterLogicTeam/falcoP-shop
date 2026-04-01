@@ -64,7 +64,7 @@ export default function HomeNavigation() {
             <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl overflow-hidden group-hover:scale-105 transition-transform duration-300 shadow-lg">
               <Image
                 src="/images/falcop.jpg"
-                alt="Falco Peak Logo"
+                alt="Falco P Logo"
                 width={56}
                 height={56}
                 className="w-full h-full object-cover"
@@ -72,7 +72,7 @@ export default function HomeNavigation() {
             </div>
             <div className="flex flex-col bg-black/50 px-2 py-1 sm:px-3 sm:py-2 rounded-lg backdrop-blur-sm">
               <span className="text-lg sm:text-xl md:text-2xl font-black text-white tracking-tight leading-none relative z-10">
-                FALCO PEAK
+                FALCO P
               </span>
               <span className="text-xs text-gray-400 font-medium tracking-wider relative z-10 hidden sm:block">
                 PREMIUM SPORTSWEAR

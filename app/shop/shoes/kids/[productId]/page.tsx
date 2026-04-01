@@ -9,7 +9,8 @@ import { ArrowLeft, Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw,
 import { useCart } from '../../../../../contexts/CartContext'
 import toast from 'react-hot-toast'
 import CartButton from '../../../../../components/CartButton'
-import { formatPrice, FREE_SHIPPING_THRESHOLD_SEK } from '@/lib/currency'
+import SizeGuide from '@/components/SizeGuide'
+import { formatPrice, SHIPPING_COST_SEK } from '@/lib/currency'
 
 const ProductDetailPage = () => {
   const params = useParams()
@@ -97,7 +98,7 @@ const ProductDetailPage = () => {
               <span className="font-semibold">Back to Kids' Shoes</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link href="/" className="text-falco-accent font-bold text-xl">FALCO PEAK</Link>
+              <Link href="/" className="text-falco-accent font-bold text-xl">FALCO P</Link>
               <CartButton />
             </div>
           </div>
@@ -144,7 +145,15 @@ const ProductDetailPage = () => {
               <div><h3 className="text-xl font-semibold text-white mb-3">Features</h3><ul className="space-y-2">{product.features.map((feature, index) => <li key={index} className="flex items-center space-x-3 text-gray-300"><div className="w-2 h-2 bg-falco-accent rounded-full"></div><span>{feature}</span></li>)}</ul></div>
 
               {product.sizes.length > 0 && (
-                <div><h3 className="text-lg font-semibold text-white mb-3">Size</h3><div className="flex flex-wrap gap-3">{product.sizes.map((size) => <button key={size} onClick={() => setSelectedSize(size)} className={`px-4 py-2 rounded-lg border transition-colors duration-300 ${selectedSize === size ? 'border-falco-accent bg-falco-accent text-black' : 'border-gray-600 text-white hover:border-falco-accent'}`}>{size}</button>)}</div></div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3">Size</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {product.sizes.map((size) => <button key={size} onClick={() => setSelectedSize(size)} className={`px-4 py-2 rounded-lg border transition-colors duration-300 ${selectedSize === size ? 'border-falco-accent bg-falco-accent text-black' : 'border-gray-600 text-white hover:border-falco-accent'}`}>{size}</button>)}
+                  </div>
+                  <div className="mt-4">
+                    <SizeGuide />
+                  </div>
+                </div>
               )}
               {/* Color Selection - Hidden, only White available */}
               {/* {product.colors.length > 0 && (
@@ -160,7 +169,7 @@ const ProductDetailPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-8 border-t border-gray-800">
-                <div className="flex items-center space-x-3"><Truck className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Free Shipping</p><p className="text-gray-400 text-sm">On orders over {formatPrice(FREE_SHIPPING_THRESHOLD_SEK)}</p></div></div>
+                <div className="flex items-center space-x-3"><Truck className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Shipping</p><p className="text-gray-400 text-sm">Flat fee {formatPrice(SHIPPING_COST_SEK)}</p></div></div>
                 <div className="flex items-center space-x-3"><Shield className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Warranty</p><p className="text-gray-400 text-sm">1 year guarantee</p></div></div>
                 <div className="flex items-center space-x-3"><RotateCcw className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Easy Returns</p><p className="text-gray-400 text-sm">14 day return policy</p></div></div>
                 <div className="flex items-center space-x-3"><Award className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Premium Quality</p><p className="text-gray-400 text-sm">Certified materials</p></div></div>

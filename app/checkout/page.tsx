@@ -11,7 +11,7 @@ import { useClientTranslation } from '../../hooks/useClientTranslation'
 import StripeElementsProvider from '../../components/StripeElementsProvider'
 import PaymentForm from '../../components/PaymentForm'
 import toast from 'react-hot-toast'
-import { formatPrice, FREE_SHIPPING_THRESHOLD_SEK } from '@/lib/currency'
+import { formatPrice, SHIPPING_COST_SEK, FREE_SHIPPING_SUBTOTAL_SEK, getShippingCostBySubtotal } from '@/lib/currency'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -31,6 +31,18 @@ export default function CheckoutPage() {
     country: 'US',
     phone: '',
   })
+  const [couponCode, setCouponCode] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    id: string
+    code: string
+    description?: string | null
+    discountAmount: number
+  } | null>(null)
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false)
+  const subtotal = state.totalPrice
+  const shippingCost = getShippingCostBySubtotal(subtotal)
+  const discount = appliedCoupon?.discountAmount || 0
+  const orderTotal = Math.max(0, subtotal + shippingCost - discount)
 
   // Wait for client-side hydration before checking cart
   useEffect(() => {
@@ -83,8 +95,9 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           customerInfo: formData,
           items: orderItems,
-          totalAmount: state.totalPrice,
-          paymentIntentId: paymentIntent.id
+          totalAmount: orderTotal,
+          paymentIntentId: paymentIntent.id,
+          couponCode: appliedCoupon?.code || null
         })
       })
 
@@ -104,6 +117,47 @@ export default function CheckoutPage() {
       clearCart()
       router.push(`/order-confirmation?payment_intent=${paymentIntent.id}`)
     }
+  }
+
+  const handleApplyCoupon = async () => {
+    const code = couponCode.trim()
+    if (!code) {
+      toast.error('Enter a coupon code')
+      return
+    }
+
+    try {
+      setIsApplyingCoupon(true)
+      const response = await fetch('/api/coupons/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          subtotal,
+          customerEmail: formData.email || session?.user?.email || null,
+        }),
+      })
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || 'Invalid coupon')
+      }
+
+      setAppliedCoupon(data.coupon)
+      setCouponCode(data.coupon.code)
+      toast.success(`Coupon applied: -${formatPrice(data.coupon.discountAmount)}`)
+    } catch (error: any) {
+      setAppliedCoupon(null)
+      toast.error(error.message || 'Failed to apply coupon')
+    } finally {
+      setIsApplyingCoupon(false)
+    }
+  }
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null)
+    setCouponCode('')
+    toast.success('Coupon removed')
   }
 
   const handlePaymentError = (error: string) => {
@@ -366,7 +420,7 @@ export default function CheckoutPage() {
                 </div>
                 <StripeElementsProvider>
                   <PaymentForm
-                    totalAmount={state.totalPrice}
+                    totalAmount={orderTotal}
                     customerInfo={formData}
                     onSuccess={handlePaymentSuccess}
                     onError={handlePaymentError}
@@ -415,21 +469,61 @@ export default function CheckoutPage() {
 
             {/* Order Totals */}
             <div className="border-t border-white/20 pt-6 space-y-3">
+              <div>
+                <label className="block text-sm font-semibold text-gray-200 mb-2">Discount code</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    placeholder="Enter code"
+                    className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400"
+                  />
+                  {appliedCoupon ? (
+                    <button
+                      type="button"
+                      onClick={handleRemoveCoupon}
+                      className="px-4 py-2 rounded-lg bg-red-500/80 text-white hover:bg-red-500"
+                    >
+                      Remove
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      disabled={isApplyingCoupon}
+                      className="px-4 py-2 rounded-lg bg-falco-accent text-black font-semibold disabled:opacity-70"
+                    >
+                      {isApplyingCoupon ? 'Applying...' : 'Apply'}
+                    </button>
+                  )}
+                </div>
+                {appliedCoupon && (
+                  <p className="text-xs text-green-400 mt-2">
+                    Applied {appliedCoupon.code}
+                    {appliedCoupon.description ? ` - ${appliedCoupon.description}` : ''}
+                  </p>
+                )}
+              </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-300">Subtotal</span>
-                <span className="text-white font-semibold">{formatPrice(state.totalPrice)}</span>
+                <span className="text-white font-semibold">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-300">Shipping</span>
-                <span className="text-green-400 font-semibold">Free</span>
+                <span className="text-white font-semibold">{shippingCost === 0 ? 'Free' : formatPrice(shippingCost)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-300">Discount</span>
+                <span className="text-green-400 font-semibold">-{formatPrice(discount)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-300">Tax</span>
-                <span className="text-gray-300">Calculated at checkout</span>
+                <span className="text-gray-300">{formatPrice(0)}</span>
               </div>
               <div className="flex justify-between text-xl font-bold border-t border-white/20 pt-4">
                 <span className="text-white">Total</span>
-                <span className="text-falco-accent">{formatPrice(state.totalPrice)}</span>
+                <span className="text-falco-accent">{formatPrice(orderTotal)}</span>
               </div>
             </div>
 
@@ -439,7 +533,9 @@ export default function CheckoutPage() {
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                   <Check className="w-4 h-4 text-white" />
                 </div>
-                <span>Free shipping on orders over {formatPrice(FREE_SHIPPING_THRESHOLD_SEK)}</span>
+                <span>
+                  Shipping {formatPrice(SHIPPING_COST_SEK)} (free on orders {formatPrice(FREE_SHIPPING_SUBTOTAL_SEK)} and above)
+                </span>
               </div>
               <div className="flex items-center space-x-3 text-sm text-gray-300">
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">

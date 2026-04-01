@@ -29,7 +29,7 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
         country: 'SE',
         currency: 'sek',
         total: {
-          label: 'Falco Peak Order',
+          label: 'Falco P Order',
           amount: sekToOre(totalAmount),
         },
         requestPayerName: true,

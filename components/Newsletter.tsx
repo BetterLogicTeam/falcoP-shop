@@ -29,9 +29,9 @@ export default function Newsletter() {
           hour: '2-digit',
           minute: '2-digit'
         }),
-        source: 'Falco Peak Website - Newsletter Section',
+        source: 'Falco P Website - Newsletter Section',
         message: `New subscriber interested in:
-🎯 Falco Peak NFT Collections & New Drops
+🎯 Falco P NFT Collections & New Drops
 🚀 Exclusive Early Access to Limited Edition Releases  
 🎪 Community Events & Discord Announcements
 📖 Behind-the-Scenes Content & Brand Stories
@@ -53,7 +53,7 @@ Subscriber joined from the main newsletter section on ${window.location.href}`
 
       if (response.status === 200) {
         setStatus('success')
-        setMessage(t('newsletter.success_message', '🚀 Successfully subscribed! Welcome to the Falco Peak family. Check your email for exclusive content!'))
+        setMessage(t('newsletter.success_message', '🚀 Successfully subscribed! Welcome to the Falco P family. Check your email for exclusive content!'))
         setEmail('')
       } else {
         throw new Error('Failed to send email')
@@ -77,7 +77,7 @@ Subscriber joined from the main newsletter section on ${window.location.href}`
               {t('newsletter.title', 'STAY IN THE')} <span className="gradient-text">{t('newsletter.title_highlight', 'LOOP')}</span>
             </h2>
             <p className="text-xl text-white/80 max-w-2xl mx-auto">
-              {t('newsletter.subtitle', 'Get exclusive access to new releases, special offers, and insider updates from the Falco Peak team.')}
+              {t('newsletter.subtitle', 'Get exclusive access to new releases, special offers, and insider updates from the Falco P team.')}
             </p>
           </div>
 

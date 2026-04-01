@@ -19,7 +19,12 @@ export async function GET(request: NextRequest) {
         email: session.user.email
       },
       include: {
-        items: true
+        items: true,
+        coupon: {
+          select: {
+            code: true
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc'

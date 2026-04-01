@@ -9,7 +9,8 @@ import { ArrowLeft, Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw,
 import { useCart } from '../../../../../contexts/CartContext'
 import toast from 'react-hot-toast'
 import CartButton from '../../../../../components/CartButton'
-import { formatPrice, FREE_SHIPPING_THRESHOLD_SEK } from '@/lib/currency'
+import SizeGuide from '@/components/SizeGuide'
+import { formatPrice, SHIPPING_COST_SEK } from '@/lib/currency'
 
 const ProductDetailPage = () => {
   const params = useParams()
@@ -133,7 +134,7 @@ const ProductDetailPage = () => {
               <span className="font-semibold">Back to Men's Shoes</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link href="/" className="text-falco-accent font-bold text-xl">FALCO PEAK</Link>
+              <Link href="/" className="text-falco-accent font-bold text-xl">FALCO P</Link>
               <CartButton />
             </div>
           </div>
@@ -245,6 +246,9 @@ const ProductDetailPage = () => {
                       </button>
                     ))}
                   </div>
+                  <div className="mt-4">
+                    <SizeGuide />
+                  </div>
                 </div>
               )}
 
@@ -320,8 +324,8 @@ const ProductDetailPage = () => {
                 <div className="flex items-center space-x-3">
                   <Truck className="w-6 h-6 text-falco-accent" />
                   <div>
-                    <p className="text-white font-semibold">Free Shipping</p>
-                    <p className="text-gray-400 text-sm">On orders over {formatPrice(FREE_SHIPPING_THRESHOLD_SEK)}</p>
+                    <p className="text-white font-semibold">Shipping</p>
+                    <p className="text-gray-400 text-sm">Flat fee {formatPrice(SHIPPING_COST_SEK)}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">

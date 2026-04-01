@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { getShippingCostBySubtotal } from '@/lib/currency'
 
 // Generate order number
 function generateOrderNumber(): string {
@@ -147,7 +148,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    const shippingCost = body.shippingCost || 0
+    const shippingCost = body.shippingCost ?? getShippingCostBySubtotal(subtotal)
     const tax = body.tax || 0
     const discount = body.discount || 0
     const total = subtotal + shippingCost + tax - discount

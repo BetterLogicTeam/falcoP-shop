@@ -24,7 +24,7 @@ interface Order {
   status: string
   total: number
   subtotal: number
-  shipping: number
+  shippingCost: number
   tax: number
   shippingAddress: any
   items: OrderItem[]
@@ -156,7 +156,7 @@ function OrderConfirmationContent() {
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Shipping</span>
-                    <span>{order?.shipping === 0 ? 'Free' : (order?.shipping != null ? formatPrice(order.shipping) : '0.00')}</span>
+                    <span>{order?.shippingCost != null ? formatPrice(order.shippingCost) : '0.00'}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Tax</span>
@@ -287,7 +287,7 @@ function OrderConfirmationContent() {
                 <Truck className="w-6 h-6 text-blue-600" />
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Free Shipping</h3>
-              <p className="text-sm text-gray-600">On all orders over 500 kr</p>
+              <p className="text-sm text-gray-600">Flat shipping fee 59 kr per order</p>
             </div>
 
             <div className="text-center p-6 bg-white rounded-xl shadow-md border border-gray-200">

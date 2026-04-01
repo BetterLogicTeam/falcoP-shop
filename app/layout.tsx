@@ -23,12 +23,12 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'Falco Peak - Premium Sportswear | Unleash Your Inner Maverick',
-  description: 'Falco Peak is a forward-thinking sports shoes and clothing brand that empowers athletes to unleash their full potential with innovative, high-quality sportswear inspired by the majestic falcon.',
+  title: 'Falco P - Premium Sportswear | Unleash Your Inner Maverick',
+  description: 'Falco P is a forward-thinking sports shoes and clothing brand that empowers athletes to unleash their full potential with innovative, high-quality sportswear inspired by the majestic falcon.',
   keywords: 'sportswear, athletic shoes, sports clothing, falcon, premium, performance, style, innovation',
-  authors: [{ name: 'Falco Peak' }],
-  creator: 'Falco Peak',
-  publisher: 'Falco Peak',
+  authors: [{ name: 'Falco P' }],
+  creator: 'Falco P',
+  publisher: 'Falco P',
   icons: {
     icon: '/images/falcop.jpg',
     shortcut: '/images/falcop.jpg',
@@ -41,16 +41,16 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL('https://falco-p.vercel.app'),
   openGraph: {
-    title: 'Falco Peak - Premium Sportswear | Unleash Your Inner Maverick',
+    title: 'Falco P - Premium Sportswear | Unleash Your Inner Maverick',
     description: 'Empower athletes with innovative, high-quality sportswear inspired by the majestic falcon.',
     url: 'https://falco-p.vercel.app',
-    siteName: 'Falco Peak',
+    siteName: 'Falco P',
     images: [
       {
         url: '/images/banner.jpg',
         width: 1200,
         height: 630,
-        alt: 'Falco Peak - Premium Sportswear',
+        alt: 'Falco P - Premium Sportswear',
       },
     ],
     locale: 'en_US',
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Falco Peak - Premium Sportswear',
+    title: 'Falco P - Premium Sportswear',
     description: 'Empower athletes with innovative, high-quality sportswear inspired by the majestic falcon.',
     images: ['/images/banner.jpg'],
   },

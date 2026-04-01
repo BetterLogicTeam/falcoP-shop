@@ -29,8 +29,12 @@ interface Order {
   total: number
   subtotal: number
   tax: number
+  discount?: number
   shippingCost: number
   items: OrderItem[]
+  coupon?: {
+    code: string
+  } | null
   createdAt: string
   shippingLine1?: string
   shippingCity?: string
@@ -175,7 +179,7 @@ export default function CustomerOrdersPage() {
               const isExpanded = expandedOrder === order.id
 
               return (
-                <div key={order.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div key={order.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                   {/* Order Header */}
                   <button
                     onClick={() => toggleOrder(order.id)}
@@ -193,6 +197,11 @@ export default function CustomerOrdersPage() {
                         <div className="flex items-center space-x-4 text-sm text-gray-600">
                           <span>{new Date(order.createdAt).toLocaleDateString()}</span>
                           <span>{order.items.length} {order.items.length === 1 ? 'item' : 'items'}</span>
+                          {(order.discount ?? 0) > 0 && (
+                            <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                              Saved {formatPrice(order.discount ?? 0)}
+                            </span>
+                          )}
                           <span className="font-semibold text-gray-900">{formatPrice(order.total)}</span>
                         </div>
                       </div>
@@ -241,7 +250,7 @@ export default function CustomerOrdersPage() {
                                 </p>
                               </div>
                               <p className="font-medium text-gray-900">
-                                ${(item.price * item.quantity).toFixed(2)}
+                                {formatPrice(item.price * item.quantity)}
                               </p>
                             </div>
                           ))}
@@ -273,8 +282,16 @@ export default function CustomerOrdersPage() {
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Shipping</span>
-                            <span>{order.shippingCost === 0 ? 'Free' : formatPrice(order.shippingCost ?? 0)}</span>
+                            <span>{formatPrice(order.shippingCost ?? 0)}</span>
                           </div>
+                          {(order.discount ?? 0) > 0 && (
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-600">
+                                Discount{order.coupon?.code ? ` (${order.coupon.code})` : ''}
+                              </span>
+                              <span className="text-emerald-700 font-medium">-{formatPrice(order.discount ?? 0)}</span>
+                            </div>
+                          )}
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Tax</span>
                             <span>{formatPrice(order.tax)}</span>

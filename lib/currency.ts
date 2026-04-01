@@ -6,8 +6,16 @@
 export const CURRENCY = 'SEK' as const
 export const CURRENCY_SYMBOL = 'kr'
 
-/** Free shipping threshold in SEK (orders 1800 kr and over) */
-export const FREE_SHIPPING_THRESHOLD_SEK = 1800
+/** Flat shipping fee in SEK */
+export const SHIPPING_COST_SEK = 59
+export const FREE_SHIPPING_SUBTOTAL_SEK = 1998
+
+/**
+ * Shipping is free when subtotal reaches FREE_SHIPPING_SUBTOTAL_SEK.
+ */
+export function getShippingCostBySubtotal(subtotal: number): number {
+  return subtotal >= FREE_SHIPPING_SUBTOTAL_SEK ? 0 : SHIPPING_COST_SEK
+}
 
 /**
  * Format a price for display (e.g. 900 -> "900 kr")

@@ -10,7 +10,8 @@ import { ArrowLeft, Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw,
 import { useCart } from '../../../../../../contexts/CartContext'
 import toast from 'react-hot-toast'
 import CartButton from '../../../../../../components/CartButton'
-import { formatPrice, FREE_SHIPPING_THRESHOLD_SEK } from '@/lib/currency'
+import SizeGuide from '@/components/SizeGuide'
+import { formatPrice, SHIPPING_COST_SEK } from '@/lib/currency'
 
 interface ProductDetailPageProps {
   params: {
@@ -136,7 +137,7 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
               <span className="font-semibold">Back to {params.category.charAt(0).toUpperCase() + params.category.slice(1)}</span>
             </Link>
             <div className="flex items-center space-x-4">
-              <div className="text-falco-accent font-bold text-xl">FALCO PEAK</div>
+              <div className="text-falco-accent font-bold text-xl">FALCO P</div>
               <CartButton />
             </div>
           </div>
@@ -260,6 +261,9 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                       </button>
                     ))}
                   </div>
+                  <div className="mt-4">
+                    <SizeGuide variant={params.category === 'shoes' ? 'unisex-footwear' : 'apparel'} />
+                  </div>
                 </div>
               )}
 
@@ -338,8 +342,8 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                 <div className="flex items-center space-x-3">
                   <Truck className="w-6 h-6 text-falco-accent" />
                   <div>
-                    <p className="text-white font-semibold">Free Shipping</p>
-                    <p className="text-gray-400 text-sm">On orders over {formatPrice(FREE_SHIPPING_THRESHOLD_SEK)}</p>
+                    <p className="text-white font-semibold">Shipping</p>
+                    <p className="text-gray-400 text-sm">Flat fee {formatPrice(SHIPPING_COST_SEK)}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">

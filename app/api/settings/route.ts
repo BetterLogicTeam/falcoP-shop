@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma'
 // Default settings
 const defaultSettings = {
   // General Settings
-  siteName: 'Falco Peak',
+  siteName: 'Falco P',
   siteDescription: 'Premium Sportswear | Unleash Your Inner Maverick',
   siteUrl: 'https://falco-p.vercel.app',
   adminEmail: 'admin@falcop.com',
@@ -23,7 +23,7 @@ const defaultSettings = {
   smtpPort: '587',
   smtpUsername: '',
   smtpPassword: '',
-  fromName: 'Falco Peak Team',
+  fromName: 'Falco P Team',
   fromEmail: 'noreply@falcop.com',
 
   // Notification Settings
