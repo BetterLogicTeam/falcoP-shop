@@ -6,9 +6,9 @@ const defaultSettings = {
   // General Settings
   siteName: 'Falco P',
   siteDescription: 'Premium Sportswear | Unleash Your Inner Maverick',
-  siteUrl: 'https://falco-p.vercel.app',
+  siteUrl: 'https://falcop.com',
   adminEmail: 'admin@falcop.com',
-  timezone: 'America/New_York',
+  timezone: 'Europe/Stockholm',
   currency: 'SEK',
   language: 'en',
 

@@ -66,10 +66,10 @@ const SettingsPage = () => {
     // General Settings
     siteName: 'Falco P',
     siteDescription: 'Premium Sportswear | Unleash Your Inner Maverick',
-    siteUrl: 'https://falco-p.vercel.app',
+    siteUrl: 'https://falcop.com',
     adminEmail: 'admin@falcop.com',
-    timezone: 'America/New_York',
-    currency: 'USD',
+    timezone: 'Europe/Stockholm',
+    currency: 'SEK',
     language: 'en',
 
     // Appearance Settings
@@ -280,11 +280,23 @@ const SettingsPage = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Site URL</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Main website URL</label>
+        <p className="text-xs text-gray-500 mb-2">
+          Customer-facing storefront link (emails, previews, admin reference). Production:{' '}
+          <a
+            href="https://falcop.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-falco-accent hover:underline font-medium"
+          >
+            falcop.com
+          </a>
+        </p>
         <input
           type="url"
           value={settings.siteUrl}
           onChange={(e) => handleInputChange('siteUrl', e.target.value)}
+          placeholder="https://falcop.com"
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
         />
       </div>
@@ -297,12 +309,13 @@ const SettingsPage = () => {
             onChange={(e) => handleInputChange('timezone', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
           >
+            <option value="Europe/Stockholm">Stockholm (CET)</option>
+            <option value="Europe/London">London (GMT)</option>
+            <option value="Europe/Paris">Paris (CET)</option>
             <option value="America/New_York">Eastern Time (ET)</option>
             <option value="America/Chicago">Central Time (CT)</option>
             <option value="America/Denver">Mountain Time (MT)</option>
             <option value="America/Los_Angeles">Pacific Time (PT)</option>
-            <option value="Europe/London">London (GMT)</option>
-            <option value="Europe/Paris">Paris (CET)</option>
             <option value="Asia/Tokyo">Tokyo (JST)</option>
           </select>
         </div>
@@ -313,8 +326,9 @@ const SettingsPage = () => {
             onChange={(e) => handleInputChange('currency', e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
           >
-            <option value="USD">USD ($)</option>
+            <option value="SEK">SEK (kr)</option>
             <option value="EUR">EUR (€)</option>
+            <option value="USD">USD ($)</option>
             <option value="GBP">GBP (£)</option>
             <option value="CAD">CAD (C$)</option>
             <option value="AUD">AUD (A$)</option>

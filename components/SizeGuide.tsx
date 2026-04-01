@@ -7,7 +7,7 @@ import { APPAREL_ROWS } from '@/lib/sizeGuideContent'
 export type SizeGuideVariant = 'unisex-footwear' | 'apparel'
 
 interface SizeGuideProps {
-  /** Shoes: teaser + link to full chart page (Nike-style). Sportswear: table + link to apparel page. */
+  /** Shoes: teaser + link to full chart page. Sportswear: table + link to apparel page. */
   variant?: SizeGuideVariant
 }
 
@@ -59,10 +59,11 @@ export default function SizeGuide({ variant = 'unisex-footwear' }: SizeGuideProp
     <div className="rounded-xl border border-gray-700 bg-gray-900/60 p-4">
       <div className="mb-2 flex items-center gap-2">
         <Ruler className="h-4 w-4 text-falco-accent" />
-        <h4 className="text-sm font-semibold text-white">Unisex footwear — sizes</h4>
+        <h4 className="text-sm font-semibold text-white">Footwear sizes</h4>
       </div>
       <p className="text-xs leading-relaxed text-gray-400">
-        Full guide includes <strong className="text-gray-300">two different chart images</strong> (US/UK/EU plus foot-length reference) and step-by-step measuring — on a dedicated page.
+        Full guide: <strong className="text-gray-300">women’s, men’s, kids’, and unisex</strong> tables with{' '}
+        <strong className="text-gray-300">EU, US, UK, and cm</strong>, plus chart images and how to measure — on a dedicated page.
       </p>
       <Link
         href="/size-guide"

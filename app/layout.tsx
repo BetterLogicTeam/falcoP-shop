@@ -39,11 +39,11 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://falco-p.vercel.app'),
+  metadataBase: new URL('https://falcop.com'),
   openGraph: {
     title: 'Falco P - Premium Sportswear | Unleash Your Inner Maverick',
     description: 'Empower athletes with innovative, high-quality sportswear inspired by the majestic falcon.',
-    url: 'https://falco-p.vercel.app',
+    url: 'https://falcop.com',
     siteName: 'Falco P',
     images: [
       {

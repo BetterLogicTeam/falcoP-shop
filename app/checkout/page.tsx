@@ -12,6 +12,7 @@ import StripeElementsProvider from '../../components/StripeElementsProvider'
 import PaymentForm from '../../components/PaymentForm'
 import toast from 'react-hot-toast'
 import { formatPrice, SHIPPING_COST_SEK, FREE_SHIPPING_SUBTOTAL_SEK, getShippingCostBySubtotal } from '@/lib/currency'
+import { SHIPPING_COUNTRY_GROUPS } from '@/lib/shippingCountries'
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -387,10 +388,15 @@ export default function CheckoutPage() {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-falco-accent focus:border-transparent text-white transition-all duration-300 hover:bg-white/15"
                 >
-                  <option value="US" className="bg-gray-800 text-white">United States</option>
-                  <option value="CA" className="bg-gray-800 text-white">Canada</option>
-                  <option value="GB" className="bg-gray-800 text-white">United Kingdom</option>
-                  <option value="AU" className="bg-gray-800 text-white">Australia</option>
+                  {SHIPPING_COUNTRY_GROUPS.map((group) => (
+                    <optgroup key={group.label} label={group.label}>
+                      {group.countries.map((c) => (
+                        <option key={c.code} value={c.code} className="bg-gray-800 text-white">
+                          {c.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
                 </select>
               </div>
 

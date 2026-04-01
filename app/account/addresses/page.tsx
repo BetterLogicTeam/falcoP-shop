@@ -8,6 +8,7 @@ import Link from 'next/link'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import toast from 'react-hot-toast'
+import { getAllShippingCountriesByName } from '@/lib/shippingCountries'
 
 interface Address {
   id: string
@@ -340,12 +341,11 @@ export default function AddressesPage() {
                     required
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
                   >
-                    <option value="United States">United States</option>
-                    <option value="Canada">Canada</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
+                    {getAllShippingCountriesByName().map((c) => (
+                      <option key={c.code} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
                     <option value="Japan">Japan</option>
                     <option value="India">India</option>
                     <option value="Other">Other</option>

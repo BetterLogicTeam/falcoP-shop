@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { getStripeShippingCountryCodes } from '@/lib/shippingCountries'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-09-30.clover',
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
       cancel_url: `${request.nextUrl.origin}/checkout`,
       customer_email: customerInfo.email,
       shipping_address_collection: {
-        allowed_countries: ['US', 'CA', 'GB', 'AU'],
+        allowed_countries: getStripeShippingCountryCodes() as Stripe.Checkout.SessionCreateParams.ShippingAddressCollection.AllowedCountry[],
       },
       metadata: {
         customerInfo: JSON.stringify(customerInfo),

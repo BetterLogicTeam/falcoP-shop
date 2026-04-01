@@ -5,9 +5,9 @@ import Footer from '@/components/Footer'
 import SizeGuideFootwearCharts from '@/components/SizeGuideFootwearCharts'
 
 export const metadata: Metadata = {
-  title: 'Unisex footwear size chart | Falco P',
+  title: 'Footwear size guide | Falco P',
   description:
-    'Find your Falco P shoe size: unisex US men’s / women’s, UK, EU, and foot length. How to measure your feet.',
+    'Women’s, men’s, kids’, and unisex shoe sizes: EU, US, UK, and foot length in cm. How to measure your feet.',
 }
 
 export default function SizeGuidePage() {
@@ -28,18 +28,9 @@ export default function SizeGuidePage() {
           <span className="text-gray-300">Size guide</span>
         </nav>
 
-        <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Unisex shoes — size chart</h1>
+        <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Footwear — size guide</h1>
         <p className="mt-2 text-sm text-gray-500">
-          Same idea as dedicated charts on major sportswear sites — full detail on its own page so you can bookmark or share it (
-          <a
-            href="https://www.nike.com/se/en/size-fit/unisex-footwear-mens-based"
-            className="text-falco-accent underline-offset-2 hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            reference: Nike unisex footwear chart
-          </a>
-          ).
+          Women’s, men’s, and kids’ sizes plus unisex — each with EU, US, UK, and cm. Bookmark or share this page; measuring steps are below.
         </p>
 
         <div className="mt-10 rounded-2xl border border-gray-800 bg-gray-900/40 p-6 sm:p-8">
