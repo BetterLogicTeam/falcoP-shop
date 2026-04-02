@@ -4,10 +4,7 @@ const nextConfig = {
     domains: ['localhost', 'res.cloudinary.com'],
     unoptimized: true,
   },
-  env: {
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
-  },
+  // Stripe keys: use .env only — never expose STRIPE_SECRET_KEY here (server reads process.env in API routes).
   async headers() {
     return [
       {

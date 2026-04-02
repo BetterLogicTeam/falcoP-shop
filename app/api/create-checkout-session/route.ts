@@ -2,12 +2,22 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { getStripeShippingCountryCodes } from '@/lib/shippingCountries'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-})
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY
+  if (!key) return null
+  return new Stripe(key, { apiVersion: '2025-09-30.clover' })
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const stripe = getStripe()
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Stripe is not configured (missing STRIPE_SECRET_KEY).' },
+        { status: 500 }
+      )
+    }
+
     const { items, customerInfo } = await request.json()
 
     // Create line items for Stripe

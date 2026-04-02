@@ -1,26 +1,52 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useStripe, useElements, CardElement, PaymentRequestButtonElement } from '@stripe/react-stripe-js'
-import { CreditCard, Lock, Smartphone, Globe, Shield, CheckCircle, Zap } from 'lucide-react'
+import { useStripe, useElements, PaymentElement, PaymentRequestButtonElement } from '@stripe/react-stripe-js'
+import { CreditCard, Lock, Smartphone, Shield, CheckCircle, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { formatPrice, sekToOre } from '../lib/currency'
+
+export type PendingCheckoutPayload = {
+  customerInfo: Record<string, string>
+  items: Array<{
+    productId: string
+    name: string
+    image: string
+    price: number
+    quantity: number
+    size: string | null
+    color: string | null
+  }>
+  totalAmount: number
+  couponCode: string | null
+}
 
 interface PaymentFormProps {
   totalAmount: number
   customerInfo: any
   onSuccess: (paymentIntent: any) => void
   onError: (error: string) => void
+  /** True when PaymentIntent was created with Klarna (not card-only fallback) */
+  stripeIncludesKlarna?: boolean
+  /** Saved before Klarna/card redirect so order can be created on return */
+  buildPendingCheckout?: () => PendingCheckoutPayload
 }
 
-export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onError }: PaymentFormProps) {
+export default function PaymentForm({
+  totalAmount,
+  customerInfo,
+  onSuccess,
+  onError,
+  buildPendingCheckout,
+  stripeIncludesKlarna = false,
+}: PaymentFormProps) {
   const stripe = useStripe()
   const elements = useElements()
   const [isProcessing, setIsProcessing] = useState(false)
   const [cardError, setCardError] = useState<string | null>(null)
   const [paymentRequest, setPaymentRequest] = useState<any>(null)
   const [canMakePayment, setCanMakePayment] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'card' | 'apple' | 'google' | 'swiss'>('card')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'card' | 'apple' | 'google'>('card')
 
   // Setup Apple Pay, Google Pay and Payment Request
   useEffect(() => {
@@ -69,25 +95,35 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
             }),
           })
 
-          const { clientSecret, error: serverError } = await response.json()
+          const payload = await response.json().catch(() => ({}))
+          if (!response.ok) {
+            ev.complete('fail')
+            throw new Error(
+              typeof payload.error === 'string' ? payload.error : `Server error: ${response.status}`
+            )
+          }
+
+          const { clientSecret, error: serverError } = payload
 
           if (serverError) {
             ev.complete('fail')
             throw new Error(serverError)
           }
 
-          // Confirm payment
-          const { error } = await stripe.confirmCardPayment(clientSecret, {
+          const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
             payment_method: ev.paymentMethod.id,
           })
 
           if (error) {
             ev.complete('fail')
             onError(error.message || 'Payment failed')
-          } else {
+          } else if (paymentIntent?.status === 'succeeded') {
             ev.complete('success')
-            toast.success('Apple Pay payment successful!')
-            onSuccess({ id: ev.paymentMethod.id })
+            toast.success('Payment successful!')
+            onSuccess(paymentIntent)
+          } else {
+            ev.complete('fail')
+            onError('Payment was not completed')
           }
         } catch (error: any) {
           ev.complete('fail')
@@ -104,210 +140,17 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
     console.log('Can make payment:', canMakePayment)
   }, [stripe, elements, canMakePayment])
 
-  const handleGooglePay = async () => {
-    setIsProcessing(true)
-    try {
-      // Show processing message
-      toast.loading('Processing Google Pay payment...', { duration: 2000 })
-
-      const response = await fetch('/api/google-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: sekToOre(totalAmount),
-          currency: 'SEK',
-          customerInfo,
-          paymentMethod: 'google_pay',
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Google Pay payment failed')
-      }
-
-      const result = await response.json()
-
-      if (result.success) {
-        // Show success with Google Pay details
-        toast.success(`Google Pay payment successful! Transaction: ${result.data.transactionId}`, {
-          duration: 5000,
-          style: {
-            background: '#10B981',
-            color: '#fff',
-            fontSize: '16px',
-            fontWeight: '600',
-          },
-        })
-
-        // Log the transaction details
-        console.log('Google Pay Details:', result.data)
-
-        onSuccess({
-          id: result.data.transactionId,
-          method: 'google_pay',
-          googlePayData: result.data
-        })
-      } else {
-        throw new Error(result.error || 'Google Pay payment failed')
-      }
-    } catch (error: any) {
-      onError(error.message || 'Google Pay payment failed')
-      toast.error(`Google Pay payment failed: ${error.message}`, {
-        duration: 4000,
-        style: {
-          background: '#EF4444',
-          color: '#fff',
-          fontSize: '16px',
-          fontWeight: '600',
-        },
-      })
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  const handleApplePay = async () => {
-    setIsProcessing(true)
-    try {
-      // Show processing message
-      toast.loading('Processing Apple Pay payment...', { duration: 2000 })
-
-      const response = await fetch('/api/apple-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: sekToOre(totalAmount),
-          currency: 'SEK',
-          customerInfo,
-          paymentMethod: 'apple_pay',
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Apple Pay payment failed')
-      }
-
-      const result = await response.json()
-
-      if (result.success) {
-        // Show success with Apple Pay details
-        toast.success(`Apple Pay payment successful! Transaction: ${result.data.transactionId}`, {
-          duration: 5000,
-          style: {
-            background: '#10B981',
-            color: '#fff',
-            fontSize: '16px',
-            fontWeight: '600',
-          },
-        })
-
-        // Log the transaction details
-        console.log('Apple Pay Details:', result.data)
-
-        onSuccess({
-          id: result.data.transactionId,
-          method: 'apple_pay',
-          applePayData: result.data
-        })
-      } else {
-        throw new Error(result.error || 'Apple Pay payment failed')
-      }
-    } catch (error: any) {
-      onError(error.message || 'Apple Pay payment failed')
-      toast.error(`Apple Pay payment failed: ${error.message}`, {
-        duration: 4000,
-        style: {
-          background: '#EF4444',
-          color: '#fff',
-          fontSize: '16px',
-          fontWeight: '600',
-        },
-      })
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  const handleSwissPay = async () => {
-    setIsProcessing(true)
-    try {
-      // Show processing message
-      toast.loading('Processing Swish payment...', { duration: 2000 })
-
-      const response = await fetch('/api/swiss-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: sekToOre(totalAmount),
-          currency: 'SEK',
-          customerInfo,
-          paymentMethod: 'swish',
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Swish payment failed')
-      }
-
-      const result = await response.json()
-
-      if (result.success) {
-        // Show success with Swish details
-        toast.success(`Swish payment successful! Transaction: ${result.data.transactionId}`, {
-          duration: 5000,
-          style: {
-            background: '#78BE20',
-            color: '#fff',
-            fontSize: '16px',
-            fontWeight: '600',
-          },
-        })
-
-        // Log the transaction details
-        console.log('Swish Payment Details:', result.data)
-
-        onSuccess({
-          id: result.data.transactionId,
-          method: 'swish',
-          swishData: result.data
-        })
-      } else {
-        throw new Error(result.error || 'Swish payment failed')
-      }
-    } catch (error: any) {
-      onError(error.message || 'Swish payment failed')
-      toast.error(`Swish payment failed: ${error.message}`, {
-        duration: 4000,
-        style: {
-          background: '#EF4444',
-          color: '#fff',
-          fontSize: '16px',
-          fontWeight: '600',
-        },
-      })
-    } finally {
-      setIsProcessing(false)
-    }
-  }
+  /* Apple Pay / Google Pay: charges go through Stripe PaymentRequest + PaymentIntent (useEffect above).
+   * Swish: disabled — restore from git / re-enable Swish UI + swiss-payment route when ready. */
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
 
-    if (selectedPaymentMethod === 'swiss') {
-      await handleSwissPay()
-      return
-    }
-
-    if (selectedPaymentMethod === 'google') {
-      await handleGooglePay()
-      return
-    }
-
-    if (selectedPaymentMethod === 'apple') {
-      await handleApplePay()
+    if (selectedPaymentMethod === 'google' || selectedPaymentMethod === 'apple') {
+      toast('Use the Google Pay or Apple Pay button above — payment runs through Stripe.', {
+        icon: '💳',
+        duration: 4000,
+      })
       return
     }
 
@@ -318,56 +161,42 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
     setIsProcessing(true)
     setCardError(null)
 
-    const cardElement = elements.getElement(CardElement)
-
-    if (!cardElement) {
-      setIsProcessing(false)
-      return
-    }
-
     try {
-      // Create payment intent
-      const response = await fetch('/api/create-payment-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: sekToOre(totalAmount),
-          currency: 'sek',
-          customerInfo,
-        }),
-      })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('API Error:', errorText)
-        throw new Error(`Server error: ${response.status}`)
+      if (buildPendingCheckout) {
+        try {
+          sessionStorage.setItem('falco_pending_checkout', JSON.stringify(buildPendingCheckout()))
+        } catch {
+          /* ignore quota / private mode */
+        }
       }
 
-      const { clientSecret, error: serverError } = await response.json()
-
-      if (serverError) {
-        throw new Error(serverError)
+      const { error: submitError } = await elements.submit()
+      if (submitError) {
+        setCardError(submitError.message || 'Check payment details')
+        onError(submitError.message || 'Invalid payment form')
+        setIsProcessing(false)
+        return
       }
 
-      if (!clientSecret) {
-        throw new Error('No client secret received from server')
-      }
+      const returnUrl = `${window.location.origin}/order-confirmation`
 
-      // Confirm payment with Stripe
-      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: `${customerInfo.firstName} ${customerInfo.lastName}`,
-            email: customerInfo.email,
-            address: {
-              line1: customerInfo.address,
-              city: customerInfo.city,
-              state: customerInfo.state,
-              postal_code: customerInfo.zipCode,
-              country: customerInfo.country,
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: returnUrl,
+          receipt_email: customerInfo.email || undefined,
+          payment_method_data: {
+            billing_details: {
+              name: `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || undefined,
+              email: customerInfo.email || undefined,
+              phone: customerInfo.phone || undefined,
+              address: {
+                line1: customerInfo.address || undefined,
+                city: customerInfo.city || undefined,
+                state: customerInfo.state || undefined,
+                postal_code: customerInfo.zipCode || undefined,
+                country: customerInfo.country || undefined,
+              },
             },
           },
         },
@@ -376,8 +205,18 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
       if (error) {
         setCardError(error.message || 'Payment failed')
         onError(error.message || 'Payment failed')
-      } else if (paymentIntent.status === 'succeeded') {
-        toast.success('Credit card payment successful!', {
+        try {
+          sessionStorage.removeItem('falco_pending_checkout')
+        } catch {
+          /* ignore */
+        }
+      } else if (paymentIntent?.status === 'succeeded') {
+        try {
+          sessionStorage.removeItem('falco_pending_checkout')
+        } catch {
+          /* ignore */
+        }
+        toast.success('Payment successful!', {
           duration: 5000,
           style: {
             background: '#10B981',
@@ -388,6 +227,7 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
         })
         onSuccess(paymentIntent)
       }
+      /* Klarna may redirect the browser — sessionStorage keeps pending order until return */
     } catch (error: any) {
       const errorMessage = error.message || 'Payment failed. Please try again.'
       setCardError(errorMessage)
@@ -396,23 +236,6 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
     } finally {
       setIsProcessing(false)
     }
-  }
-
-  const cardElementOptions = {
-    style: {
-      base: {
-        fontSize: '16px',
-        color: '#ffffff',
-        '::placeholder': {
-          color: '#9CA3AF',
-        },
-        backgroundColor: 'transparent',
-      },
-      invalid: {
-        color: '#EF4444',
-      },
-    },
-    hidePostalCode: false,
   }
 
   return (
@@ -463,8 +286,12 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
                 <CreditCard className={`w-6 h-6 ${selectedPaymentMethod === 'card' ? 'text-black' : 'text-white'}`} />
               </div>
               <div>
-                <div className="font-semibold text-white">Credit/Debit Card</div>
-                <div className="text-sm text-gray-300">Traditional payment</div>
+                <div className="font-semibold text-white">
+                  {stripeIncludesKlarna ? 'Card & Klarna' : 'Card'}
+                </div>
+                <div className="text-sm text-gray-300">
+                  {stripeIncludesKlarna ? 'Stripe — card or pay later' : 'Stripe — debit / credit'}
+                </div>
               </div>
             </div>
             
@@ -589,52 +416,9 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
             </div>
           </label>
 
-          {/* Swish */}
-          <label className={`group relative flex flex-col p-6 border-2 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-            selectedPaymentMethod === 'swiss'
-              ? 'border-falco-accent bg-gradient-to-br from-falco-accent/20 to-falco-accent/10 shadow-lg ring-2 ring-falco-accent/30'
-              : 'border-white/20 hover:border-white/40 hover:shadow-md bg-white/5'
-            }`}>
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="swiss"
-              checked={selectedPaymentMethod === 'swiss'}
-              onChange={(e) => setSelectedPaymentMethod(e.target.value as 'swiss')}
-              className="sr-only"
-            />
-
-            {/* Selection indicator */}
-            {selectedPaymentMethod === 'swiss' && (
-              <div className="absolute top-3 right-3">
-                <div className="w-6 h-6 bg-falco-accent rounded-full flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-black" />
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center mb-4">
-              <div className={`p-3 rounded-lg mr-4 transition-colors ${
-                selectedPaymentMethod === 'swiss' ? 'bg-[#78BE20]' : 'bg-white/10 group-hover:bg-white/20'
-              }`}>
-                <Smartphone className={`w-6 h-6 ${selectedPaymentMethod === 'swiss' ? 'text-white' : 'text-white'}`} />
-              </div>
-              <div>
-                <div className="font-semibold text-white">Swish</div>
-                <div className="text-sm text-gray-300">Swedish mobile payment</div>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2 mb-3">
-              <div className="w-16 h-8 bg-[#78BE20] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">Swish</span>
-              </div>
-            </div>
-
-            <div className="text-xs text-gray-400">
-              Pay instantly with your phone
-            </div>
-          </label>
+          {/* Swish — disabled for now; re-enable radio + panels when integrating real Swish.
+          <label className={...}> ... Swish ... </label>
+          */}
         </div>
       </div>
 
@@ -654,34 +438,68 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
         </div>
       )}
 
-          {/* Card Details - Only show for card payment */}
+          {/* Card + Klarna (Stripe Payment Element) */}
           {selectedPaymentMethod === 'card' && (
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <CreditCard className="w-5 h-5 text-falco-accent" />
-                <h4 className="text-lg font-semibold text-white">Card Information</h4>
+                <h4 className="text-lg font-semibold text-white">
+                  {stripeIncludesKlarna ? 'Card or Klarna' : 'Card'}
+                </h4>
               </div>
+              {stripeIncludesKlarna ? (
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  <strong className="text-gray-300">Klarna</strong> only appears when the customer’s country matches
+                  your Stripe rules (e.g. Sweden, Norway, Germany, UK — not the United States if US isn’t listed
+                  there). Set <strong className="text-gray-300">Country</strong> in shipping to a supported country,
+                  then reload payment if needed. Amount must stay within your Klarna min/max in SEK.
+                </p>
+              ) : (
+                <p className="text-xs text-amber-200/90 leading-relaxed rounded-lg bg-amber-500/10 border border-amber-500/25 px-3 py-2">
+                  Klarna isn’t on this PaymentIntent (enable it in{' '}
+                  <strong>Stripe → Settings → Payment methods</strong>, match currency/country/amount rules, and check
+                  the terminal for “card+klarna failed”). The country in this form should match your Klarna customer
+                  rules; the country inside the card box must be supported too. You can still pay by card.
+                </p>
+              )}
               <div className="p-6 border-2 border-white/20 rounded-xl bg-white/5 hover:border-white/30 transition-colors">
-          {stripe ? (
-            <CardElement
-              options={cardElementOptions}
-              onChange={(event) => {
-                setCardError(event.error ? event.error.message : null)
-              }}
-            />
-          ) : (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-falco-accent mx-auto mb-4"></div>
-              <p className="text-gray-300">Loading payment form...</p>
-            </div>
-          )}
-        </div>
-        {cardError && (
+                {stripe ? (
+                  <PaymentElement
+                    options={{
+                      layout: 'tabs',
+                      paymentMethodOrder: ['klarna', 'card'],
+                      defaultValues: {
+                        billingDetails: {
+                          name: `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || undefined,
+                          email: customerInfo.email || undefined,
+                          phone: customerInfo.phone || undefined,
+                          address: {
+                            line1: customerInfo.address || undefined,
+                            city: customerInfo.city || undefined,
+                            state: customerInfo.state || undefined,
+                            postal_code: customerInfo.zipCode || undefined,
+                            country: customerInfo.country || undefined,
+                          },
+                        },
+                      },
+                    }}
+                    onChange={(e) => {
+                      setCardError(e.error ? e.error.message : null)
+                    }}
+                  />
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-falco-accent mx-auto mb-4"></div>
+                    <p className="text-gray-300">Loading payment form...</p>
+                  </div>
+                )}
+              </div>
+              {cardError && (
                 <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
                   <p className="text-red-200 text-sm">{cardError}</p>
                 </div>
-        )}
-      </div>
+              )}
+            </div>
           )}
 
           {/* Apple Pay Section */}
@@ -722,85 +540,35 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
             </div>
           )}
 
-          {/* Swish Info */}
-          {selectedPaymentMethod === 'swiss' && (
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Smartphone className="w-5 h-5 text-[#78BE20]" />
-                <h4 className="text-lg font-semibold text-white">Swish Payment</h4>
-              </div>
-
-              {/* Swish Payment Section */}
-              <div className="bg-gradient-to-br from-[#78BE20]/20 to-[#78BE20]/5 border-2 border-[#78BE20]/30 rounded-xl p-6">
-                <div className="text-center mb-6">
-                  <div className="w-20 h-20 bg-[#78BE20] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <span className="text-white font-bold text-2xl">Swish</span>
-                  </div>
-                  <p className="text-white font-medium">Pay with Swish</p>
-                  <p className="text-sm text-gray-400">Fast & secure Swedish mobile payment</p>
-                </div>
-
-                <div className="bg-white/10 rounded-lg p-4 border border-white/20">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-semibold text-white">Payment Amount</span>
-                    <span className="text-lg font-bold text-[#78BE20]">{formatPrice(totalAmount)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-400">Processing Fee</span>
-                    <span className="text-sm text-[#78BE20]">Free</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 text-center">
-                  <p className="text-xs text-gray-400 mb-2">Open Swish app to complete payment</p>
-                  <div className="flex justify-center">
-                    <div className="w-12 h-8 bg-[#78BE20] rounded text-white text-xs flex items-center justify-center font-bold">Swish</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Payment Buttons */}
           <div className="space-y-4">
             {/* Apple Pay Button */}
-            {selectedPaymentMethod === 'apple' && canMakePayment && paymentRequest && (
+            {selectedPaymentMethod === 'apple' && (
               <div className="space-y-3">
-                <div className="relative">
-                  <PaymentRequestButtonElement
-                    options={{
-                      paymentRequest,
-                      style: {
-                        paymentRequestButton: {
-                          type: 'default',
-                          theme: 'dark',
-                          height: '56px',
+                {canMakePayment && paymentRequest && (
+                  <div className="relative">
+                    <PaymentRequestButtonElement
+                      options={{
+                        paymentRequest,
+                        style: {
+                          paymentRequestButton: {
+                            type: 'default',
+                            theme: 'dark',
+                            height: '56px',
+                          },
                         },
-                      },
-                    }}
-                  />
-                </div>
-                <div className="text-center">
-                  <button
-                    type="submit"
-                    disabled={isProcessing}
-                    className="w-full bg-black text-white py-4 rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        <span>Processing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                        </svg>
-                        <span>Pay with Apple Pay</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                      }}
+                    />
+                  </div>
+                )}
+                <p className="text-center text-sm text-gray-400">
+                  Tap the button above — Apple Pay is processed securely by Stripe.
+                </p>
+                {!canMakePayment && (
+                  <p className="text-center text-sm text-amber-200/90">
+                    Apple Pay isn’t available here (try Safari on iPhone/Mac, or use card).
+                  </p>
+                )}
               </div>
             )}
 
@@ -823,27 +591,14 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
                     />
                   </div>
                 )}
-                <div className="text-center">
-                  <button
-                    type="submit"
-                    disabled={isProcessing}
-                    className="w-full bg-gradient-to-r from-blue-500 to-green-500 text-white py-4 rounded-xl font-semibold hover:from-blue-600 hover:to-green-600 transition-all duration-300 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        <span>Processing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                          <span className="text-blue-500 font-bold text-sm">G</span>
-                        </div>
-                        <span>Pay with Google Pay</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                <p className="text-center text-sm text-gray-400">
+                  Tap the button above — Google Pay is processed securely by Stripe.
+                </p>
+                {!canMakePayment && (
+                  <p className="text-center text-sm text-amber-200/90">
+                    Google Pay isn’t available in this browser. Try Chrome or use card payment.
+                  </p>
+                )}
               </div>
             )}
 
@@ -873,38 +628,16 @@ export default function PaymentForm({ totalAmount, customerInfo, onSuccess, onEr
               </button>
             )}
 
-            {/* Swish Button */}
-            {selectedPaymentMethod === 'swiss' && (
-              <button
-                type="submit"
-                disabled={isProcessing}
-                className="w-full bg-gradient-to-r from-[#78BE20] via-[#6BAD1C] to-[#5E9C18] text-white py-4 rounded-xl font-semibold hover:from-[#6BAD1C] hover:via-[#5E9C18] hover:to-[#518B14] transition-all duration-300 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none"
-              >
-                {isProcessing ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Processing Swish Payment...</span>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-8 h-6 bg-white rounded flex items-center justify-center">
-                      <span className="text-[#78BE20] font-bold text-xs">Swish</span>
-                    </div>
-                    <span>Pay {formatPrice(totalAmount)}</span>
-                  </>
-                )}
-              </button>
-            )}
           </div>
 
       {/* Security Notice */}
           <div className="flex items-center justify-center space-x-3 text-sm text-gray-600 pt-4 border-t border-gray-200">
         <Lock className="w-4 h-4" />
             <span>
-              {selectedPaymentMethod === 'card' && 'Secure payment powered by Stripe'}
-              {selectedPaymentMethod === 'apple' && 'Secure payment with Apple Pay'}
-              {selectedPaymentMethod === 'google' && 'Secure payment with Google Pay'}
-              {selectedPaymentMethod === 'swiss' && 'Secure payment with Swish'}
+              {selectedPaymentMethod === 'card' &&
+                (stripeIncludesKlarna ? 'Card & Klarna via Stripe' : 'Secure payment via Stripe')}
+              {selectedPaymentMethod === 'apple' && 'Apple Pay via Stripe'}
+              {selectedPaymentMethod === 'google' && 'Google Pay via Stripe'}
             </span>
       </div>
     </form>

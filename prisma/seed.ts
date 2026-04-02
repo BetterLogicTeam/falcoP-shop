@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { products } from '../data/products'
+import { ensureNewsletterSubscriberCoupon, getNewsletterSubscriberCouponCode } from '../lib/newsletter-coupon'
 
 const prisma = new PrismaClient()
 
@@ -87,6 +88,9 @@ async function main() {
     })
     console.log('✅ Admin password updated (email: admin@falcop.com, password: admin123)')
   }
+
+  await ensureNewsletterSubscriberCoupon(prisma)
+  console.log(`✅ Newsletter subscriber coupon ready: ${getNewsletterSubscriberCouponCode()} (10% off, once per email)`)
 
   console.log('🎉 Database seeding completed!')
 }

@@ -52,6 +52,9 @@
     "email_placeholder": "የኢሜል አድራሻዎን ያስገቡ",
     "subscribe": "አሁን ይመዝገቡ",
     "success_message": "🚀 ወደ ፋልኮ ፒክ እንኳን በደህና መጡ! ለልዩ ይዘት ኢሜልዎን ይመልከቱ።",
+    "subscriber_code_line": "በክፍያ ጊዜ {{code}} ኮድን ይጠቀሙ ለ10% ቅናሽ (በኢሜል አንድ ጊዜ)።",
+    "your_code_label": "የደንበኛ ምዝገባ ኮድዎ",
+    "benefit_discount": "በክፍያ ግዢ ላይ በግል የደንበኛ ኮድዎ 10% ቅናሽ ያግኙ (በኢሜል አንድ ጊዜ)",
     "error_message": "የሆነ ችግር ተፈጥሯል። እባክዎ እንደገና ይሞክሩ!"
   },
   "footer": {

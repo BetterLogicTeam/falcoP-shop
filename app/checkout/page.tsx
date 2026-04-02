@@ -11,7 +11,13 @@ import { useClientTranslation } from '../../hooks/useClientTranslation'
 import StripeElementsProvider from '../../components/StripeElementsProvider'
 import PaymentForm from '../../components/PaymentForm'
 import toast from 'react-hot-toast'
-import { formatPrice, SHIPPING_COST_SEK, FREE_SHIPPING_SUBTOTAL_SEK, getShippingCostBySubtotal } from '@/lib/currency'
+import {
+  formatPrice,
+  SHIPPING_COST_SEK,
+  FREE_SHIPPING_SUBTOTAL_SEK,
+  getShippingCostBySubtotal,
+  sekToOre,
+} from '@/lib/currency'
 import { SHIPPING_COUNTRY_GROUPS } from '@/lib/shippingCountries'
 
 export default function CheckoutPage() {
@@ -32,6 +38,10 @@ export default function CheckoutPage() {
     country: 'US',
     phone: '',
   })
+  const [paymentClientSecret, setPaymentClientSecret] = useState<string | null>(null)
+  const [paymentIntentLoading, setPaymentIntentLoading] = useState(false)
+  const [paymentIntentError, setPaymentIntentError] = useState<string | null>(null)
+  const [stripeIncludesKlarna, setStripeIncludesKlarna] = useState(false)
   const [couponCode, setCouponCode] = useState('')
   const [appliedCoupon, setAppliedCoupon] = useState<{
     id: string
@@ -63,6 +73,80 @@ export default function CheckoutPage() {
       router.push('/shop')
     }
   }, [isMounted, state.items.length, router])
+
+  useEffect(() => {
+    if (!isMounted || state.items.length === 0) {
+      setPaymentClientSecret(null)
+      setStripeIncludesKlarna(false)
+      return
+    }
+    const email = formData.email?.trim()
+    if (!email?.includes('@')) {
+      setPaymentClientSecret(null)
+      setPaymentIntentError(null)
+      return
+    }
+
+    let cancelled = false
+    setPaymentIntentLoading(true)
+    setPaymentIntentError(null)
+
+    fetch('/api/create-payment-intent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: sekToOre(orderTotal),
+        currency: 'sek',
+        customerInfo: formData,
+      }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}))
+        if (cancelled) return
+        if (!r.ok) {
+          setPaymentIntentError(typeof d.error === 'string' ? d.error : 'Could not start payment. Check Stripe keys and try again.')
+          setPaymentClientSecret(null)
+          setStripeIncludesKlarna(false)
+          return
+        }
+        if (!d.clientSecret) {
+          setPaymentIntentError('No payment session returned from server.')
+          setPaymentClientSecret(null)
+          setStripeIncludesKlarna(false)
+          return
+        }
+        setPaymentIntentError(null)
+        setStripeIncludesKlarna(d.includesKlarna === true)
+        setPaymentClientSecret(d.clientSecret)
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPaymentIntentError('Network error loading payment. Try refreshing.')
+          setPaymentClientSecret(null)
+          setStripeIncludesKlarna(false)
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setPaymentIntentLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    isMounted,
+    state.items.length,
+    orderTotal,
+    formData.email,
+    formData.firstName,
+    formData.lastName,
+    formData.address,
+    formData.city,
+    formData.state,
+    formData.zipCode,
+    formData.country,
+    formData.phone,
+  ])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -424,14 +508,46 @@ export default function CheckoutPage() {
                   </div>
                   <h3 className="text-2xl font-bold text-white">Payment Information</h3>
                 </div>
-                <StripeElementsProvider>
-                  <PaymentForm
-                    totalAmount={orderTotal}
-                    customerInfo={formData}
-                    onSuccess={handlePaymentSuccess}
-                    onError={handlePaymentError}
-                  />
-                </StripeElementsProvider>
+                {paymentIntentLoading && (
+                  <p className="text-gray-400 text-sm py-4">Loading payment methods…</p>
+                )}
+                {!paymentIntentLoading && !paymentClientSecret && (
+                  <div className="space-y-2 py-4 text-sm">
+                    <p className="text-gray-400">
+                      Enter a valid email address to load card, Klarna (if enabled in Stripe), and wallet pay.
+                    </p>
+                    {paymentIntentError && (
+                      <p className="text-red-300 rounded-lg bg-red-500/10 border border-red-500/30 px-3 py-2">
+                        {paymentIntentError}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {paymentClientSecret && (
+                  <StripeElementsProvider clientSecret={paymentClientSecret}>
+                    <PaymentForm
+                      totalAmount={orderTotal}
+                      customerInfo={formData}
+                      onSuccess={handlePaymentSuccess}
+                      onError={handlePaymentError}
+                      stripeIncludesKlarna={stripeIncludesKlarna}
+                      buildPendingCheckout={() => ({
+                        customerInfo: formData as Record<string, string>,
+                        items: state.items.map((item) => ({
+                          productId: item.product.id,
+                          name: item.product.name,
+                          image: item.product.image,
+                          price: item.product.price,
+                          quantity: item.quantity,
+                          size: item.selectedSize || null,
+                          color: item.selectedColor || null,
+                        })),
+                        totalAmount: orderTotal,
+                        couponCode: appliedCoupon?.code ?? null,
+                      })}
+                    />
+                  </StripeElementsProvider>
+                )}
               </div>
             </div>
           </div>

@@ -14,7 +14,11 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "npx ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "stripe:login": "node scripts/stripe-cli.cjs login",
+    "stripe:whoami": "node scripts/stripe-cli.cjs config --list",
+    "stripe:logs": "node scripts/stripe-cli.cjs logs tail",
+    "stripe:verify": "node scripts/verify-stripe.cjs"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

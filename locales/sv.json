@@ -52,6 +52,9 @@
     "email_placeholder": "Ange din e-postadress",
     "subscribe": "Prenumerera Nu",
     "success_message": "🚀 Välkommen till Falco Peak! Kolla din e-post för exklusivt innehåll.",
+    "subscriber_code_line": "Använd koden {{code}} i kassan för 10% rabatt (en gång per e-post).",
+    "your_code_label": "Din prenumerantkod",
+    "benefit_discount": "Få 10% rabatt med din personliga prenumerantkod i kassan (en gång per e-post)",
     "error_message": "Något gick fel. Vänligen försök igen!"
   },
   "footer": {

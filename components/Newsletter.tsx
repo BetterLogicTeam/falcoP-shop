@@ -6,22 +6,41 @@ import emailjs from '@emailjs/browser'
 import { EMAILJS_CONFIG, SUBSCRIPTION_TEMPLATE_PARAMS } from '../lib/emailjs'
 import { useClientTranslation } from '../hooks/useClientTranslation'
 
+const PUBLIC_NEWSLETTER_CODE =
+  (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_NEWSLETTER_SUBSCRIBER_COUPON_CODE?.trim()) || 'FALCO10'
+
 export default function Newsletter() {
   const { t } = useClientTranslation()
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
+  const [subscriberDiscountCode, setSubscriberDiscountCode] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('loading')
     setMessage('')
-    
+    setSubscriberDiscountCode(null)
+    const subscriberEmail = email.trim()
+
     try {
+      const subRes = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: subscriberEmail }),
+      })
+      const subJson = await subRes.json().catch(() => ({}))
+      if (!subRes.ok) {
+        throw new Error(typeof subJson.error === 'string' ? subJson.error : 'Could not save subscription')
+      }
+      const discountCode =
+        typeof subJson.discountCode === 'string' ? subJson.discountCode : PUBLIC_NEWSLETTER_CODE.toUpperCase()
+
       // Prepare template parameters with the redesigned template structure
       const templateParams = {
         ...SUBSCRIPTION_TEMPLATE_PARAMS,
-        subscriber_email: email,
+        subscriber_email: subscriberEmail,
+        subscriber_discount_code: discountCode,
         subscription_date: new Date().toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
@@ -40,26 +59,37 @@ export default function Newsletter() {
 🦅 Wing P Story Updates & Brand Evolution
 ⚡ Live Mint Events & Community Competitions
 
+Subscriber discount code: ${discountCode}
+
 Subscriber joined from the main newsletter section on ${window.location.href}`
       }
 
-      // Send email using EmailJS
-      const response = await emailjs.send(
-        EMAILJS_CONFIG.SERVICE_ID,
-        EMAILJS_CONFIG.TEMPLATE_ID,
-        templateParams,
-        EMAILJS_CONFIG.PUBLIC_KEY
-      )
-
-      if (response.status === 200) {
-        setStatus('success')
-        setMessage(t('newsletter.success_message', '🚀 Successfully subscribed! Welcome to the Falco P family. Check your email for exclusive content!'))
-        setEmail('')
-      } else {
-        throw new Error('Failed to send email')
+      try {
+        const response = await emailjs.send(
+          EMAILJS_CONFIG.SERVICE_ID,
+          EMAILJS_CONFIG.TEMPLATE_ID,
+          templateParams,
+          EMAILJS_CONFIG.PUBLIC_KEY
+        )
+        if (response.status !== 200) {
+          console.warn('EmailJS returned non-200:', response.status)
+        }
+      } catch (emailErr) {
+        console.warn('EmailJS notification failed (subscriber still saved):', emailErr)
       }
+
+      setStatus('success')
+      setSubscriberDiscountCode(discountCode)
+      const codeLine = t(
+        'newsletter.subscriber_code_line',
+        'Use code {{code}} at checkout for 10% off (one use per email).'
+      ).replace(/\{\{code\}\}/g, discountCode)
+      setMessage(
+        `${t('newsletter.success_message', '🚀 Successfully subscribed! Welcome to the Falco P family.')}\n\n${codeLine}`
+      )
+      setEmail('')
     } catch (error) {
-      console.error('EmailJS Error:', error)
+      console.error('Newsletter subscribe error:', error)
       setStatus('error')
       setMessage(t('newsletter.error_message', 'Oops! Something went wrong. Please try again or contact us directly.'))
     }
@@ -116,13 +146,25 @@ Subscriber joined from the main newsletter section on ${window.location.href}`
                   ? 'bg-green-500/20 border border-green-400/30 text-green-300' 
                   : 'bg-red-500/20 border border-red-400/30 text-red-300'
               }`}>
-                <div className="flex items-center justify-center space-x-2">
-                  {status === 'success' ? (
-                    <CheckCircle className="w-5 h-5" />
-                  ) : (
-                    <AlertCircle className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex items-center justify-center space-x-2">
+                    {status === 'success' ? (
+                      <CheckCircle className="w-5 h-5 shrink-0" />
+                    ) : (
+                      <AlertCircle className="w-5 h-5 shrink-0" />
+                    )}
+                    <span className="text-sm font-medium whitespace-pre-line text-left">{message}</span>
+                  </div>
+                  {status === 'success' && subscriberDiscountCode && (
+                    <div className="w-full max-w-sm rounded-xl border border-green-400/40 bg-green-500/10 px-4 py-3">
+                      <p className="text-xs uppercase tracking-wide text-green-400/90 mb-1">
+                        {t('newsletter.your_code_label', 'Your subscriber code')}
+                      </p>
+                      <p className="font-mono text-lg font-bold tracking-[0.2em] text-green-100">
+                        {subscriberDiscountCode}
+                      </p>
+                    </div>
                   )}
-                  <span className="text-sm font-medium">{message}</span>
                 </div>
                 {status === 'success' && (
                   <div className="mt-2 text-xs text-center text-green-400/80">
@@ -140,7 +182,12 @@ Subscriber joined from the main newsletter section on ${window.location.href}`
                 <span className="text-falco-accent font-bold text-lg">%</span>
               </div>
               <h3 className="text-lg font-semibold text-white mb-2">Exclusive Discounts</h3>
-              <p className="text-white/60 text-sm">Get 20% off your first order and access to member-only sales</p>
+              <p className="text-white/60 text-sm">
+                {t(
+                  'newsletter.benefit_discount',
+                  'Get 10% off with your personal subscriber code at checkout (one use per email)'
+                )}
+              </p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-falco-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">

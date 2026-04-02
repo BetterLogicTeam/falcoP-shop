@@ -52,6 +52,9 @@
     "email_placeholder": "Enter your email address",
     "subscribe": "Subscribe Now",
     "success_message": "🚀 Welcome to Falco Peak! Check your email for exclusive content.",
+    "subscriber_code_line": "Use code {{code}} at checkout for 10% off (one use per email).",
+    "your_code_label": "Your subscriber code",
+    "benefit_discount": "Get 10% off with your personal subscriber code at checkout (one use per email)",
     "error_message": "Something went wrong. Please try again!"
   },
   "footer": {

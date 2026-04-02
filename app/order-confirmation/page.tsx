@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useEffect, useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import React, { useEffect, useState, useRef, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { useCart } from '@/contexts/CartContext'
 import { CheckCircle, Package, Truck, Home, ShoppingBag, Clock, Mail, Phone, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -34,9 +35,77 @@ interface Order {
 
 function OrderConfirmationContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
+  const { clearCart } = useCart()
+  const klarnaReturnHandled = useRef(false)
   const [order, setOrder] = useState<Order | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // After Klarna (or other redirect) Stripe sends user here with ?payment_intent=&redirect_status=succeeded
+  useEffect(() => {
+    const pi = searchParams?.get('payment_intent')
+    const rs = searchParams?.get('redirect_status')
+    if (!pi || rs !== 'succeeded' || klarnaReturnHandled.current) return
+
+    const raw = typeof window !== 'undefined' ? sessionStorage.getItem('falco_pending_checkout') : null
+    if (!raw) return
+
+    klarnaReturnHandled.current = true
+    let pending: {
+      customerInfo: Record<string, string>
+      items: Array<{
+        productId: string
+        name: string
+        image: string
+        price: number
+        quantity: number
+        size: string | null
+        color: string | null
+      }>
+      totalAmount: number
+      couponCode: string | null
+    }
+    try {
+      pending = JSON.parse(raw)
+    } catch {
+      klarnaReturnHandled.current = false
+      return
+    }
+
+    fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customerInfo: pending.customerInfo,
+        items: pending.items,
+        totalAmount: pending.totalAmount,
+        paymentIntentId: pi,
+        couponCode: pending.couponCode,
+      }),
+    })
+      .then(async (r) => {
+        const data = await r.json().catch(() => ({}))
+        if (!r.ok) {
+          console.error('Order create after redirect:', data)
+          klarnaReturnHandled.current = false
+          return
+        }
+        try {
+          sessionStorage.removeItem('falco_pending_checkout')
+        } catch {
+          /* ignore */
+        }
+        clearCart()
+        const num = data.order?.orderNumber
+        router.replace(
+          `/order-confirmation?order=${encodeURIComponent(num || '')}&payment_intent=${encodeURIComponent(pi)}`
+        )
+      })
+      .catch(() => {
+        klarnaReturnHandled.current = false
+      })
+  }, [searchParams, router, clearCart])
 
   useEffect(() => {
     const fetchOrder = async () => {
