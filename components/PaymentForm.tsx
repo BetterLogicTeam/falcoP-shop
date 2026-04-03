@@ -180,8 +180,10 @@ export default function PaymentForm({
 
       const returnUrl = `${window.location.origin}/order-confirmation`
 
+      /** `redirect: 'if_required'` is required for correct typings (`PaymentIntentResult`); Klarna still redirects when needed. */
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
+        redirect: 'if_required',
         confirmParams: {
           return_url: returnUrl,
           receipt_email: customerInfo.email || undefined,
@@ -483,9 +485,7 @@ export default function PaymentForm({
                         },
                       },
                     }}
-                    onChange={(e) => {
-                      setCardError(e.error ? e.error.message : null)
-                    }}
+                    onChange={() => setCardError(null)}
                   />
                 ) : (
                   <div className="text-center py-8">
