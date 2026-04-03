@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import { getStripeShippingCountryCodes } from '@/lib/shippingCountries'
 
 function getStripe() {
-  const key = process.env.STRIPE_SECRET_KEY
+  const key = process.env.STRIPE_SECRET_KEY?.trim()
   if (!key) return null
   return new Stripe(key, { apiVersion: '2025-09-30.clover' })
 }
