@@ -1,5 +1,46 @@
 /** Shared copy & data for size guide (PDP + dedicated pages). */
 
+/**
+ * Official Falco P unisex foot length (cm) by EU size (stakeholder spec — unisex only).
+ * Half EU sizes use linear interpolation between whole sizes.
+ */
+const BRAND_EU_FOOT_CM: Record<number, number> = {
+  36: 24.1,
+  37: 24.7,
+  38: 25.4,
+  39: 26.1,
+  40: 26.7,
+  41: 27.4,
+  42: 28.1,
+  43: 28.7,
+  44: 29.4,
+  45: 30.1,
+}
+
+function brandFootLengthCmForEu(euLabel: string, fallback: string): string {
+  const n = parseFloat(String(euLabel).replace(',', '.'))
+  if (Number.isNaN(n)) return fallback
+  const whole = Math.floor(n + 1e-9)
+  const frac = n - whole
+  const lo = BRAND_EU_FOOT_CM[whole]
+  const hi = BRAND_EU_FOOT_CM[whole + 1]
+  if (frac < 0.001) {
+    return lo !== undefined ? lo.toFixed(1) : fallback
+  }
+  if (lo !== undefined && hi !== undefined) {
+    return (lo + frac * (hi - lo)).toFixed(1)
+  }
+  // e.g. EU 45.5 — assume ~same step as 44→45 (0.7 cm)
+  if (lo !== undefined && frac > 0 && whole === 45) {
+    return (lo + frac * 0.7).toFixed(1)
+  }
+  return fallback
+}
+
+function applyBrandCm(rows: FootwearSizeRow[]): FootwearSizeRow[] {
+  return rows.map((r) => ({ ...r, cm: brandFootLengthCmForEu(r.eu, r.cm) }))
+}
+
 export type FootwearSizeRow = { eu: string; us: string; uk: string; cm: string }
 
 export type FootwearSizeGuideBlock = {
@@ -28,73 +69,27 @@ const FOOTWEAR_ROWS_MEN: FootwearSizeRow[] = [
   { eu: '47', us: '13', uk: '12', cm: '31' },
 ]
 
-/** Approximate conversions — use foot length (cm) when between sizes. Order: women, men, kids, then unisex (same numbers as men’s US / EU / UK / cm). */
+/**
+ * Single public footwear chart: unisex only (stakeholder request).
+ * EU 36–37.5 prepended so brand cm 36–45 is fully covered; 38+ aligns with men’s US/UK scale.
+ */
+const FOOTWEAR_ROWS_UNISEX: FootwearSizeRow[] = applyBrandCm([
+  { eu: '36', us: '4', uk: '3.5', cm: '23' },
+  { eu: '36.5', us: '4.5', uk: '4', cm: '23.5' },
+  { eu: '37', us: '5', uk: '4.5', cm: '24' },
+  { eu: '37.5', us: '5.5', uk: '5', cm: '24.5' },
+  ...FOOTWEAR_ROWS_MEN.map((r) => ({ ...r })),
+])
+
+/** Footwear size guide: unisex chart only (EU, US, UK, cm). */
 export const FOOTWEAR_SIZE_GUIDE_BLOCKS: FootwearSizeGuideBlock[] = [
-  {
-    id: 'women',
-    title: "Women's footwear",
-    description: "US sizes are women's US. Match EU, UK, or cm to your usual brand if unsure.",
-    usColumnLabel: 'US',
-    rows: [
-      { eu: '35', us: '5', uk: '2.5', cm: '22' },
-      { eu: '35.5', us: '5.5', uk: '3', cm: '22.5' },
-      { eu: '36', us: '6', uk: '3.5', cm: '23' },
-      { eu: '37', us: '6.5', uk: '4', cm: '23.5' },
-      { eu: '37.5', us: '7', uk: '4.5', cm: '24' },
-      { eu: '38', us: '7.5', uk: '5', cm: '24.5' },
-      { eu: '38.5', us: '8', uk: '5.5', cm: '25' },
-      { eu: '39', us: '8.5', uk: '6', cm: '25.5' },
-      { eu: '40', us: '9', uk: '6.5', cm: '26' },
-      { eu: '40.5', us: '9.5', uk: '7', cm: '26.5' },
-      { eu: '41', us: '10', uk: '7.5', cm: '27' },
-      { eu: '42', us: '10.5', uk: '8', cm: '27.5' },
-      { eu: '42.5', us: '11', uk: '8.5', cm: '28' },
-      { eu: '43', us: '11.5', uk: '9', cm: '28.5' },
-      { eu: '44', us: '12', uk: '9.5', cm: '29' },
-    ],
-  },
-  {
-    id: 'men',
-    title: "Men's footwear",
-    description: "US sizes are men's US.",
-    usColumnLabel: 'US',
-    rows: FOOTWEAR_ROWS_MEN,
-  },
-  {
-    id: 'kids',
-    title: "Kids' footwear",
-    description: 'US column uses kids sizing (C = child, Y = youth). Ages vary by child — foot length (cm) is the best check.',
-    usColumnLabel: 'US (kids)',
-    rows: [
-      { eu: '27', us: '10C', uk: '9', cm: '16.5' },
-      { eu: '28', us: '11C', uk: '10', cm: '17' },
-      { eu: '28.5', us: '11.5C', uk: '10.5', cm: '17.5' },
-      { eu: '29', us: '12C', uk: '11', cm: '18' },
-      { eu: '30', us: '12.5C', uk: '11.5', cm: '18.5' },
-      { eu: '31', us: '13C', uk: '12', cm: '19' },
-      { eu: '31.5', us: '13.5C', uk: '12.5', cm: '19.5' },
-      { eu: '32', us: '1Y', uk: '13', cm: '20' },
-      { eu: '33', us: '1.5Y', uk: '1', cm: '20.5' },
-      { eu: '33.5', us: '2Y', uk: '1.5', cm: '21' },
-      { eu: '34', us: '2.5Y', uk: '2', cm: '21.5' },
-      { eu: '35', us: '3Y', uk: '2.5', cm: '22' },
-      { eu: '35.5', us: '3.5Y', uk: '3', cm: '22.5' },
-      { eu: '36', us: '4Y', uk: '3.5', cm: '23' },
-      { eu: '36.5', us: '4.5Y', uk: '4', cm: '23.5' },
-      { eu: '37', us: '5Y', uk: '4.5', cm: '24' },
-      { eu: '37.5', us: '5.5Y', uk: '5', cm: '24.5' },
-      { eu: '38', us: '6Y', uk: '5.5', cm: '25' },
-      { eu: '38.5', us: '6.5Y', uk: '6', cm: '25.5' },
-      { eu: '39', us: '7Y', uk: '6', cm: '26' },
-    ],
-  },
   {
     id: 'unisex',
     title: 'Unisex footwear',
     description:
-      'Unisex styles usually use men’s US on the label. The EU, UK, and cm columns match the men’s table — use the women’s table if you normally shop women’s US sizes.',
+      'Falco P footwear uses one unisex chart. US is men’s US on the box; match your foot length (cm) to EU — official cm values for EU 36–45.',
     usColumnLabel: 'US',
-    rows: [...FOOTWEAR_ROWS_MEN],
+    rows: FOOTWEAR_ROWS_UNISEX,
   },
 ]
 
@@ -107,7 +102,7 @@ export const FOOTWEAR_CHART_IMAGES = {
 export const FOOTWEAR_CHART_SECTIONS = [
   {
     title: 'Chart image 1',
-    caption: 'Visual reference — compare with the EU / US / UK / cm tables above.',
+    caption: 'Visual reference — compare with the EU / US / UK / cm chart above.',
     src: FOOTWEAR_CHART_IMAGES.primary,
     alt: 'Falco P footwear size chart image — US, UK, EU reference',
   },
@@ -125,7 +120,7 @@ export const FOOT_MEASURE_STEPS = [
   'With a pen or pencil pointed straight down, have someone help you mark the tip of the big toe and the outermost part of the heel.',
   'Step off the paper and measure the distance between the two marks. That is your foot length.',
   'Repeat with the other foot. Many people have one foot slightly longer — use the longer measurement.',
-  'Match your foot length (cm) to the tables above with EU, US, UK. If you are between sizes, we recommend sizing up.',
+  'Match your foot length (cm) to the chart above with EU, US, and UK. If you are between sizes, we recommend sizing up.',
 ] as const
 
 export const APPAREL_ROWS = [

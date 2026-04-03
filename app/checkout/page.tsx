@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, CreditCard, Lock, Check, LogIn } from 'lucide-react'
+import { ArrowLeft, CreditCard, Lock, Check } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
@@ -19,10 +19,11 @@ import {
   sekToOre,
 } from '@/lib/currency'
 import { SHIPPING_COUNTRY_GROUPS } from '@/lib/shippingCountries'
+import { rememberOrderLookupEmail } from '@/lib/order-lookup'
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const { state, clearCart } = useCart()
   const { t } = useClientTranslation()
   const [isProcessing, setIsProcessing] = useState(false)
@@ -193,11 +194,13 @@ export default function CheckoutPage() {
         toast.error('Order created but failed to save. Please contact support.')
       }
 
+      rememberOrderLookupEmail(formData.email)
       // Clear cart and redirect to success page
       clearCart()
       router.push(`/order-confirmation?order=${data.order?.orderNumber || ''}&payment_intent=${paymentIntent.id}`)
     } catch (error) {
       console.error('Error creating order:', error)
+      rememberOrderLookupEmail(formData.email)
       // Still redirect even if order save fails
       clearCart()
       router.push(`/order-confirmation?payment_intent=${paymentIntent.id}`)
@@ -247,52 +250,6 @@ export default function CheckoutPage() {
 
   const handlePaymentError = (error: string) => {
     console.error('Payment error:', error)
-  }
-
-  // Show loading while checking authentication status
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-falco-primary flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-black"></div>
-        <div className="relative z-10 text-center">
-          <div className="w-16 h-16 border-4 border-falco-accent border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-          <p className="text-gray-300">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Require authentication to checkout
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-falco-primary flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/50 to-black"></div>
-        <div className="relative z-10 text-center max-w-md mx-auto px-4">
-          <div className="w-20 h-20 bg-gradient-to-br from-falco-accent to-falco-gold rounded-full flex items-center justify-center mx-auto mb-6">
-            <LogIn className="w-10 h-10 text-black" />
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-4">Sign In Required</h1>
-          <p className="text-gray-300 mb-8">Please sign in to your account to complete your purchase. This helps us track your orders and provide better support.</p>
-          <div className="space-y-4">
-            <Link
-              href="/auth/login?callbackUrl=/checkout"
-              className="block w-full bg-gradient-to-r from-falco-accent to-falco-gold text-black px-8 py-4 rounded-xl font-bold hover:from-falco-gold hover:to-falco-accent transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/auth/register?callbackUrl=/checkout"
-              className="block w-full bg-white/10 text-white px-8 py-4 rounded-xl font-bold border border-white/20 hover:bg-white/20 transition-all duration-300"
-            >
-              Create Account
-            </Link>
-            <Link href="/shop" className="block text-gray-400 hover:text-white transition-colors mt-4">
-              ← Continue Shopping
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   if (state.items.length === 0) {
@@ -357,6 +314,21 @@ export default function CheckoutPage() {
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-falco-accent focus:border-transparent text-white placeholder-gray-400 transition-all duration-300 hover:bg-white/15"
                   placeholder="Enter your email"
                 />
+                <p className="text-xs text-gray-400 mt-2 leading-relaxed">
+                  Used for your receipt and order status. No account required — track any time with your order number and this email on{' '}
+                  <Link href="/track-order" className="text-falco-accent hover:underline font-medium">
+                    Track order
+                  </Link>
+                  .
+                </p>
+                {!session && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    <Link href="/auth/login?callbackUrl=/checkout" className="text-falco-accent/90 hover:underline">
+                      Sign in
+                    </Link>{' '}
+                    (optional) to see purchases under My account.
+                  </p>
+                )}
               </div>
 
               {/* Name */}

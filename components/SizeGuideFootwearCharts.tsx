@@ -65,11 +65,9 @@ export default function SizeGuideFootwearCharts({ dense }: SizeGuideFootwearChar
             : 'text-xs leading-relaxed text-gray-400'
         }
       >
-        Footwear is split into <strong className="text-white">women’s</strong>,{' '}
-        <strong className="text-white">men’s</strong>, and <strong className="text-white">kids’</strong>{' '}
-        tables, then <strong className="text-white">unisex</strong>. Each table lists{' '}
-        <strong className="text-white">EU</strong>, <strong className="text-white">US</strong>,{' '}
-        <strong className="text-white">UK</strong>, and <strong className="text-white">foot length (cm)</strong>.
+        Official <strong className="text-white">unisex</strong> chart:{' '}
+        <strong className="text-white">EU</strong>, <strong className="text-white">US</strong> (men’s on the
+        label), <strong className="text-white">UK</strong>, and <strong className="text-white">foot length (cm)</strong>.
       </p>
 
       <div className={dense ? 'space-y-10' : 'space-y-8'}>
@@ -113,7 +111,7 @@ export default function SizeGuideFootwearCharts({ dense }: SizeGuideFootwearChar
             Chart images
           </h2>
           <p className="mt-1 text-sm text-gray-500">
-            Scroll horizontally if needed. Use together with the EU / US / UK / cm tables above.
+            Scroll horizontally if needed. Use together with the EU / US / UK / cm chart above.
           </p>
         </div>
         <div className="space-y-8">

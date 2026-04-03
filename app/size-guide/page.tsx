@@ -5,9 +5,9 @@ import Footer from '@/components/Footer'
 import SizeGuideFootwearCharts from '@/components/SizeGuideFootwearCharts'
 
 export const metadata: Metadata = {
-  title: 'Footwear size guide | Falco P',
+  title: 'Unisex footwear size guide | Falco P',
   description:
-    'Women’s, men’s, kids’, and unisex shoe sizes: EU, US, UK, and foot length in cm. How to measure your feet.',
+    'Falco P unisex shoe sizes: EU, US, UK, and foot length in cm. How to measure your feet.',
 }
 
 export default function SizeGuidePage() {
@@ -28,9 +28,9 @@ export default function SizeGuidePage() {
           <span className="text-gray-300">Size guide</span>
         </nav>
 
-        <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Footwear — size guide</h1>
+        <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Unisex footwear — size guide</h1>
         <p className="mt-2 text-sm text-gray-500">
-          Women’s, men’s, and kids’ sizes plus unisex — each with EU, US, UK, and cm. Bookmark or share this page; measuring steps are below.
+          One chart for all Falco P footwear: EU, US (men’s on the label), UK, and cm. Measuring steps and reference images are below.
         </p>
 
         <div className="mt-10 rounded-2xl border border-gray-800 bg-gray-900/40 p-6 sm:p-8">

@@ -62,8 +62,7 @@ export default function SizeGuide({ variant = 'unisex-footwear' }: SizeGuideProp
         <h4 className="text-sm font-semibold text-white">Footwear sizes</h4>
       </div>
       <p className="text-xs leading-relaxed text-gray-400">
-        Full guide: <strong className="text-gray-300">women’s, men’s, kids’, and unisex</strong> tables with{' '}
-        <strong className="text-gray-300">EU, US, UK, and cm</strong>, plus chart images and how to measure — on a dedicated page.
+        <strong className="text-gray-300">Unisex</strong> footwear chart — <strong className="text-gray-300">EU, US, UK, cm</strong>, reference images, and how to measure on the full page.
       </p>
       <Link
         href="/size-guide"

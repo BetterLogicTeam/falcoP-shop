@@ -110,6 +110,7 @@ Subscriber joined from the footer section on ${typeof window !== 'undefined' ? w
       { name: t('footer.nft_collection', 'NFT Collection'), href: 'https://nft.falcop.com/', external: true },
     ],
     support: [
+      { name: t('footer.track_order', 'Track order'), href: '/track-order' },
       { name: t('footer.size_guide', 'Size guide'), href: '/size-guide' },
       { name: t('footer.contact', 'Contact'), href: '#contact' },
     ],

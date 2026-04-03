@@ -1,12 +1,14 @@
 'use client'
 
-import React, { useEffect, useState, useRef, Suspense } from 'react'
+import React, { useEffect, useState, useRef, Suspense, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useCart } from '@/contexts/CartContext'
 import { CheckCircle, Package, Truck, Home, ShoppingBag, Clock, Mail, Phone, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { formatPrice } from '@/lib/currency'
+import { ORDER_LOOKUP_EMAIL_STORAGE_KEY, rememberOrderLookupEmail } from '@/lib/order-lookup'
 
 interface OrderItem {
   id: string
@@ -36,11 +38,15 @@ interface Order {
 function OrderConfirmationContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { data: session } = useSession()
   const { clearCart } = useCart()
   const klarnaReturnHandled = useRef(false)
   const [order, setOrder] = useState<Order | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [needsEmailForLookup, setNeedsEmailForLookup] = useState(false)
+  const [guestEmailInput, setGuestEmailInput] = useState('')
+  const [lookupSubmitting, setLookupSubmitting] = useState(false)
 
   // After Klarna (or other redirect) Stripe sends user here with ?payment_intent=&redirect_status=succeeded
   useEffect(() => {
@@ -96,6 +102,7 @@ function OrderConfirmationContent() {
         } catch {
           /* ignore */
         }
+        rememberOrderLookupEmail(pending.customerInfo.email || '')
         clearCart()
         const num = data.order?.orderNumber
         router.replace(
@@ -107,33 +114,75 @@ function OrderConfirmationContent() {
       })
   }, [searchParams, router, clearCart])
 
-  useEffect(() => {
-    const fetchOrder = async () => {
-      const orderNumber = searchParams?.get('order')
+  const fetchOrderByLookup = useCallback(
+    async (orderNumber: string, email: string) => {
+      const q = new URLSearchParams({ orderNumber, email: email.trim().toLowerCase() })
+      const response = await fetch(`/api/orders/lookup?${q.toString()}`)
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        throw new Error(typeof data.error === 'string' ? data.error : 'Order not found')
+      }
+      if (!data.order) {
+        throw new Error('Order not found')
+      }
+      setOrder(data.order as Order)
+      setError(null)
+      rememberOrderLookupEmail(email)
+    },
+    []
+  )
 
+  useEffect(() => {
+    const run = async () => {
+      const orderNumber = searchParams?.get('order')?.trim()
       if (!orderNumber) {
+        setIsLoading(false)
+        setNeedsEmailForLookup(false)
+        return
+      }
+
+      let email =
+        (typeof window !== 'undefined' ? sessionStorage.getItem(ORDER_LOOKUP_EMAIL_STORAGE_KEY) : null) ||
+        session?.user?.email ||
+        ''
+      email = email.trim().toLowerCase()
+
+      if (!email) {
+        setNeedsEmailForLookup(true)
         setIsLoading(false)
         return
       }
 
       try {
-        const response = await fetch(`/api/orders?orderNumber=${orderNumber}`)
-        if (response.ok) {
-          const data = await response.json()
-          if (data.orders && data.orders.length > 0) {
-            setOrder(data.orders[0])
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching order:', err)
-        setError('Failed to load order details')
+        await fetchOrderByLookup(orderNumber, email)
+        setNeedsEmailForLookup(false)
+      } catch (err: unknown) {
+        console.error('Order lookup:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load order')
+        setNeedsEmailForLookup(true)
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchOrder()
-  }, [searchParams])
+    run()
+  }, [searchParams, session?.user?.email, fetchOrderByLookup])
+
+  async function handleGuestEmailSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const orderNumber = searchParams?.get('order')?.trim()
+    if (!orderNumber || !guestEmailInput.trim()) return
+    setLookupSubmitting(true)
+    setError(null)
+    try {
+      await fetchOrderByLookup(orderNumber, guestEmailInput)
+      setNeedsEmailForLookup(false)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Could not find order')
+    } finally {
+      setLookupSubmitting(false)
+    }
+  }
 
   // Calculate estimated delivery (3 business days)
   const estimatedDelivery = new Date()
@@ -145,6 +194,51 @@ function OrderConfirmationContent() {
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-falco-accent mx-auto mb-4" />
           <p className="text-gray-600">Loading order details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  const orderNumberParam = searchParams?.get('order')?.trim()
+  if (orderNumberParam && needsEmailForLookup && !order) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">View your order</h1>
+          <p className="text-gray-600 text-sm mb-6">
+            For your security, enter the <strong>same email</strong> you used at checkout. Order{' '}
+            <span className="font-mono font-semibold">{orderNumberParam}</span>
+          </p>
+          <form onSubmit={handleGuestEmailSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="guest-email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
+              <input
+                id="guest-email"
+                type="email"
+                autoComplete="email"
+                required
+                value={guestEmailInput}
+                onChange={(e) => setGuestEmailInput(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-falco-accent focus:border-transparent"
+                placeholder="you@example.com"
+              />
+            </div>
+            {error && <p className="text-sm text-red-600">{error}</p>}
+            <button
+              type="submit"
+              disabled={lookupSubmitting}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-falco-accent to-falco-gold text-black font-semibold disabled:opacity-60"
+            >
+              {lookupSubmitting ? 'Loading…' : 'View order'}
+            </button>
+          </form>
+          <p className="text-center text-sm text-gray-500 mt-6">
+            <Link href="/track-order" className="text-falco-accent hover:underline">
+              Track a different order
+            </Link>
+          </p>
         </div>
       </div>
     )
