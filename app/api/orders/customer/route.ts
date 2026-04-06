@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
+import { buildFraktjaktTrackingUrl } from '@/lib/fraktjakt'
 
 export async function GET(request: NextRequest) {
   try {
@@ -38,7 +39,12 @@ export async function GET(request: NextRequest) {
       console.log('Items:', JSON.stringify(order.items, null, 2))
     })
 
-    return NextResponse.json({ orders })
+    const normalized = orders.map((order) => ({
+      ...order,
+      trackingUrl: buildFraktjaktTrackingUrl(order.trackingNumber),
+    }))
+
+    return NextResponse.json({ orders: normalized })
   } catch (error) {
     console.error('Error fetching customer orders:', error)
     return NextResponse.json(

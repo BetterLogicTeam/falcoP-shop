@@ -33,6 +33,7 @@ interface Order {
   items: OrderItem[]
   createdAt: string
   trackingNumber: string | null
+  trackingUrl?: string | null
 }
 
 function OrderConfirmationContent() {
@@ -383,9 +384,21 @@ function OrderConfirmationContent() {
                       Order Number: <span className="font-mono font-bold">{order?.orderNumber || 'N/A'}</span>
                     </p>
                     {order?.trackingNumber && (
-                      <p className="text-sm text-blue-800 mt-1">
-                        Tracking: <span className="font-mono font-bold">{order.trackingNumber}</span>
-                      </p>
+                      <div className="text-sm text-blue-800 mt-1">
+                        <p>
+                          Tracking: <span className="font-mono font-bold">{order.trackingNumber}</span>
+                        </p>
+                        {order.trackingUrl ? (
+                          <a
+                            href={order.trackingUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex mt-1 text-falco-accent hover:underline"
+                          >
+                            Track shipment
+                          </a>
+                        ) : null}
+                      </div>
                     )}
                     <p className="text-sm text-blue-700 mt-1">
                       Confirmation sent to: {order?.email}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { buildFraktjaktTrackingUrl } from '@/lib/fraktjakt'
 
 /**
  * Public guest lookup: order number + email must match (same pattern as Amazon, Shopify guest emails, etc.).
@@ -36,6 +37,7 @@ export async function GET(request: NextRequest) {
       shippingCost: row.shippingCost,
       tax: row.tax,
       trackingNumber: row.trackingNumber,
+      trackingUrl: buildFraktjaktTrackingUrl(row.trackingNumber),
       createdAt: row.createdAt.toISOString(),
       items: row.items.map((i) => ({
         id: i.id,
