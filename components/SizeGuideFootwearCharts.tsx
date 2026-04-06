@@ -35,16 +35,14 @@ function FootwearBlockTable({ block, dense }: { block: FootwearSizeGuideBlock; d
             <tr>
               <th className={th}>EU</th>
               <th className={th}>{block.usColumnLabel}</th>
-              <th className={th}>UK</th>
               <th className={th + ' pr-0'}>cm</th>
             </tr>
           </thead>
           <tbody>
             {block.rows.map((row) => (
-              <tr key={`${block.id}-${row.eu}-${row.us}-${row.uk}`}>
+              <tr key={`${block.id}-${row.eu}-${row.us}`}>
                 <td className={td}>{row.eu}</td>
                 <td className={td}>{row.us}</td>
-                <td className={td}>{row.uk}</td>
                 <td className={td + ' pr-0'}>{row.cm}</td>
               </tr>
             ))}
@@ -67,7 +65,7 @@ export default function SizeGuideFootwearCharts({ dense }: SizeGuideFootwearChar
       >
         Official <strong className="text-white">unisex</strong> chart:{' '}
         <strong className="text-white">EU</strong>, <strong className="text-white">US</strong> (men’s on the
-        label), <strong className="text-white">UK</strong>, and <strong className="text-white">foot length (cm)</strong>.
+        label), and <strong className="text-white">foot length (cm)</strong>.
       </p>
 
       <div className={dense ? 'space-y-10' : 'space-y-8'}>
@@ -111,7 +109,7 @@ export default function SizeGuideFootwearCharts({ dense }: SizeGuideFootwearChar
             Chart images
           </h2>
           <p className="mt-1 text-sm text-gray-500">
-            Scroll horizontally if needed. Use together with the EU / US / UK / cm chart above.
+            Scroll horizontally if needed. Use together with the EU / US / cm chart above.
           </p>
         </div>
         <div className="space-y-8">

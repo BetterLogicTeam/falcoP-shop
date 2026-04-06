@@ -44,6 +44,34 @@ function buildConfirmBilling(customerInfo: Record<string, unknown>) {
   return { email, fullName, billing_details, hasFullAddressForIntent }
 }
 
+function validateAddressCountryConsistency(customerInfo: Record<string, unknown>): string | null {
+  const country = String(customerInfo?.country ?? '')
+    .trim()
+    .toUpperCase()
+  const city = String(customerInfo?.city ?? '').trim()
+  const postal = String(customerInfo?.zipCode ?? '').trim()
+  const state = String(customerInfo?.state ?? '').trim()
+
+  const usZipLike = /^\d{5}(-\d{4})?$/.test(postal)
+  const ukPostcodeLike = /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i.test(postal)
+  const londonCity = /london/i.test(city)
+
+  // Guard against the exact broken case seen in production logs: US + London + UK postcode.
+  if (country === 'US') {
+    if (!usZipLike) return 'For United States, use a valid US ZIP code (e.g. 10001).'
+    if (londonCity || ukPostcodeLike || /london/i.test(state)) {
+      return 'Country is set to United States, but address looks UK. Change country to United Kingdom (GB) or enter a real US address.'
+    }
+  }
+
+  // If customer selects UK, guide toward UK postcode format.
+  if ((country === 'GB' || country === 'UK') && postal && !ukPostcodeLike) {
+    return 'For United Kingdom, use a valid UK postcode (e.g. SW1A 1AA).'
+  }
+
+  return null
+}
+
 function friendlyStripeErrorMessage(raw: string | undefined, country: unknown): string {
   const msg = (raw || '').trim()
   const isShippingValidation = msg.includes('When providing a shipping address')
@@ -201,12 +229,21 @@ export default function PaymentForm({
 
     try {
       const { email, billing_details, hasFullAddressForIntent } = buildConfirmBilling(customerInfo)
+      const consistencyError = validateAddressCountryConsistency(customerInfo)
 
       if (!email || !email.includes('@')) {
         const msg = 'Enter a valid email address before paying.'
         setCardError(msg)
         onError(msg)
         toast.error(msg)
+        setIsProcessing(false)
+        return
+      }
+
+      if (consistencyError) {
+        setCardError(consistencyError)
+        onError(consistencyError)
+        toast.error(consistencyError)
         setIsProcessing(false)
         return
       }

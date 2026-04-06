@@ -16,25 +16,25 @@ export type FootwearSizeGuideBlock = {
 }
 
 const FOOTWEAR_ROWS_UNISEX: FootwearSizeRow[] = [
-  { eu: '36', us: '4', uk: '3.5', cm: '24.1' },
-  { eu: '37', us: '5', uk: '4.5', cm: '24.7' },
-  { eu: '38', us: '5.5', uk: '5', cm: '25.4' },
-  { eu: '39', us: '6.5', uk: '6', cm: '26.1' },
+  { eu: '36', us: '3', uk: '2', cm: '24.1' },
+  { eu: '37', us: '4', uk: '3', cm: '24.7' },
+  { eu: '38', us: '5', uk: '4', cm: '25.4' },
+  { eu: '39', us: '6', uk: '5', cm: '26.1' },
   { eu: '40', us: '7', uk: '6', cm: '26.7' },
   { eu: '41', us: '8', uk: '7', cm: '27.4' },
-  { eu: '42', us: '8.5', uk: '7.5', cm: '28.1' },
-  { eu: '43', us: '9.5', uk: '8.5', cm: '28.7' },
-  { eu: '44', us: '10', uk: '9', cm: '29.4' },
-  { eu: '45', us: '11', uk: '10', cm: '30.1' },
+  { eu: '42', us: '9', uk: '8', cm: '28.1' },
+  { eu: '43', us: '10', uk: '9', cm: '28.7' },
+  { eu: '44', us: '11', uk: '10', cm: '29.4' },
+  { eu: '45', us: '12', uk: '11', cm: '30.1' },
 ]
 
-/** Footwear size guide: unisex chart only (EU, US, UK, cm). */
+/** Footwear size guide: unisex chart only (EU, US, cm shown in UI). */
 export const FOOTWEAR_SIZE_GUIDE_BLOCKS: FootwearSizeGuideBlock[] = [
   {
     id: 'unisex',
     title: 'Unisex footwear',
     description:
-      'EU 36–45 only. Foot length (cm) is exactly as provided by Falco P; US is men’s US on the box, UK for reference.',
+      'EU 36–45 only. Foot length (cm) is exactly as provided by Falco P; US is men’s US on the box.',
     usColumnLabel: 'US',
     rows: FOOTWEAR_ROWS_UNISEX,
   },
