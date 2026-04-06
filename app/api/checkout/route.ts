@@ -1,44 +1,45 @@
+import { randomBytes } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import prisma from '@/lib/prisma'
-import { getShippingCostBySubtotal } from '@/lib/currency'
+import { getShippingCostBySubtotal, sekToOre } from '@/lib/currency'
 import { calculateCouponDiscount } from '@/lib/coupons'
+import Stripe from 'stripe'
+
+const MAX_LINE_ITEMS = 50
+const MAX_LINE_QTY = 99
+
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY?.trim()
+  if (!key) return null
+  return new Stripe(key, { apiVersion: '2025-09-30.clover' })
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const {
-      customerInfo,
-      items,
-      totalAmount,
-      paymentIntentId,
-      customerId,
-      couponCode
-    } = body
+    const { customerInfo, items, paymentIntentId, couponCode } = body
 
     // Get logged-in user session
     const session = await getServerSession(authOptions)
 
     // If user is logged in, use their account email for order tracking
-    // The checkout form email is used for shipping/notifications
-    const orderEmail = session?.user?.email || customerInfo.email
-
-    // Get customer ID if logged in
-    let resolvedCustomerId = customerId || null
-    if (session?.user?.email && !resolvedCustomerId) {
-      const customer = await prisma.customer.findUnique({
-        where: { email: session.user.email }
-      })
-      if (customer) {
-        resolvedCustomerId = customer.id
-      }
+    const orderEmailRaw = session?.user?.email || customerInfo?.email
+    const orderEmail =
+      typeof orderEmailRaw === 'string' ? orderEmailRaw.trim().toLowerCase() : ''
+    if (!orderEmail || !orderEmail.includes('@')) {
+      return NextResponse.json({ error: 'A valid email is required' }, { status: 400 })
     }
 
-    console.log('=== API CHECKOUT DEBUG ===')
-    console.log('Session email:', session?.user?.email)
-    console.log('Order linked to email:', orderEmail)
-    console.log('Received items count:', items?.length)
+    // Link order to logged-in account only from session (never trust body.customerId).
+    let resolvedCustomerId: string | null = null
+    if (session?.user?.email) {
+      const customer = await prisma.customer.findUnique({
+        where: { email: session.user.email },
+      })
+      if (customer) resolvedCustomerId = customer.id
+    }
 
     // Validate required fields
     if (!customerInfo || !items || items.length === 0) {
@@ -48,13 +49,57 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate order number
-    const orderNumber = `FP-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`
+    if (!Array.isArray(items) || items.length > MAX_LINE_ITEMS) {
+      return NextResponse.json({ error: 'Invalid cart' }, { status: 400 })
+    }
 
-    // Calculate totals
-    const subtotal = items.reduce((sum: number, item: any) => {
-      return sum + (item.price * item.quantity)
-    }, 0)
+    // Server-side line items: never trust client-sent prices or names for charging / records.
+    const resolvedLines: {
+      productId: string
+      name: string
+      image: string
+      quantity: number
+      price: number
+      size: string | null
+      color: string | null
+    }[] = []
+
+    for (const raw of items) {
+      const productId = typeof raw?.productId === 'string' ? raw.productId.trim() : ''
+      const qty = Number(raw?.quantity)
+      if (!productId || !Number.isFinite(qty) || qty < 1 || qty > MAX_LINE_QTY) {
+        return NextResponse.json({ error: 'Invalid cart line item' }, { status: 400 })
+      }
+
+      const product = await prisma.product.findUnique({ where: { id: productId } })
+      if (!product) {
+        return NextResponse.json({ error: 'Invalid product in cart' }, { status: 400 })
+      }
+      if (!product.inStock) {
+        return NextResponse.json(
+          { error: `Product not available: ${product.name}` },
+          { status: 400 }
+        )
+      }
+
+      const size = raw?.size != null && String(raw.size).trim() !== '' ? String(raw.size).trim() : null
+      const color = raw?.color != null && String(raw.color).trim() !== '' ? String(raw.color).trim() : null
+
+      resolvedLines.push({
+        productId: product.id,
+        name: product.name,
+        image: product.image,
+        quantity: qty,
+        price: product.price,
+        size,
+        color,
+      })
+    }
+
+    const subtotal = resolvedLines.reduce((sum, line) => sum + line.price * line.quantity, 0)
+
+    // Generate order number (cryptographically stronger than Math.random)
+    const orderNumber = `FP-${Date.now()}-${randomBytes(4).toString('hex').toUpperCase()}`
     let couponId: string | null = null
     let discount = 0
 
@@ -82,7 +127,7 @@ export async function POST(request: NextRequest) {
 
       const customerUsage = await prisma.order.count({
         where: {
-          email: orderEmail,
+          email: { equals: orderEmail, mode: 'insensitive' },
           couponId: coupon.id,
         },
       })
@@ -98,6 +143,41 @@ export async function POST(request: NextRequest) {
     const tax = 0
     const total = Math.max(0, subtotal + shippingCost + tax - discount)
 
+    // Verify Stripe payment before creating paid orders.
+    let resolvedPaymentStatus: 'pending' | 'paid' = 'pending'
+    if (paymentIntentId) {
+      const stripe = getStripe()
+      if (!stripe) {
+        return NextResponse.json(
+          { error: 'Stripe is not configured (missing STRIPE_SECRET_KEY).' },
+          { status: 500 }
+        )
+      }
+
+      const intent = await stripe.paymentIntents.retrieve(String(paymentIntentId))
+      const okStatuses = new Set<Stripe.PaymentIntent.Status>(['succeeded', 'processing', 'requires_capture'])
+      if (!okStatuses.has(intent.status)) {
+        return NextResponse.json(
+          { error: `Payment not completed (status: ${intent.status}). Order not created.` },
+          { status: 400 }
+        )
+      }
+
+      const expectedOre = sekToOre(total)
+      if (typeof intent.amount === 'number' && intent.amount !== expectedOre) {
+        return NextResponse.json(
+          { error: 'Payment amount does not match order total.' },
+          { status: 400 }
+        )
+      }
+      const cur = typeof intent.currency === 'string' ? intent.currency.toLowerCase() : ''
+      if (cur && cur !== 'sek') {
+        return NextResponse.json({ error: 'Invalid payment currency.' }, { status: 400 })
+      }
+
+      resolvedPaymentStatus = intent.status === 'succeeded' || intent.status === 'requires_capture' ? 'paid' : 'pending'
+    }
+
     // Create order with items
     // Link order to logged-in user's email so it shows in their orders page
     const order = await prisma.$transaction(async (tx) => {
@@ -110,7 +190,7 @@ export async function POST(request: NextRequest) {
           lastName: customerInfo.lastName,
           phone: customerInfo.phone || null,
           status: 'pending',
-          paymentStatus: paymentIntentId ? 'paid' : 'pending',
+          paymentStatus: resolvedPaymentStatus,
           paymentIntentId: paymentIntentId || null,
           subtotal,
           shippingCost,
@@ -125,15 +205,15 @@ export async function POST(request: NextRequest) {
           shippingPostal: customerInfo.zipCode,
           shippingCountry: customerInfo.country || 'US',
           items: {
-            create: items.map((item: any) => ({
-              productId: item.productId,
-              name: item.name,
-              image: item.image,
-              quantity: item.quantity,
-              price: item.price,
-              size: item.size || null,
-              color: item.color || null
-            }))
+            create: resolvedLines.map((line) => ({
+              productId: line.productId,
+              name: line.name,
+              image: line.image,
+              quantity: line.quantity,
+              price: line.price,
+              size: line.size,
+              color: line.color,
+            })),
           }
         },
         include: {
@@ -150,9 +230,6 @@ export async function POST(request: NextRequest) {
 
       return createdOrder
     })
-
-    console.log('Order created with', order.items.length, 'items')
-    console.log('Order items:', JSON.stringify(order.items, null, 2))
 
     return NextResponse.json({
       success: true,

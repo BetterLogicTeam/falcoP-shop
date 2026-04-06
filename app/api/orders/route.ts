@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { getShippingCostBySubtotal } from '@/lib/currency'
+import { requireAdmin } from '@/lib/require-admin'
 
 // Generate order number
 function generateOrderNumber(): string {
@@ -9,8 +10,11 @@ function generateOrderNumber(): string {
   return `ORD-${timestamp}${random}`
 }
 
-// GET /api/orders - List all orders with filters
+// GET /api/orders - List all orders with filters (admin only)
 export async function GET(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { searchParams } = new URL(request.url)
 
@@ -98,8 +102,11 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/orders - Create a new order
+// POST /api/orders - Create a new order (admin only; storefront uses POST /api/checkout)
 export async function POST(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const body = await request.json()
 

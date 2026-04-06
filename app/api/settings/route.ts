@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { requireAdmin } from '@/lib/require-admin'
 
 // Default settings
 const defaultSettings = {
@@ -72,8 +73,11 @@ function getCategoryForKey(key: string): string {
   return 'general'
 }
 
-// GET /api/settings - Get all settings
+// GET /api/settings - Get all settings (admin only)
 export async function GET(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
@@ -110,8 +114,11 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT /api/settings - Update settings
+// PUT /api/settings - Update settings (admin only)
 export async function PUT(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const body = await request.json()
     const { settings } = body
@@ -157,8 +164,11 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// POST /api/settings/reset - Reset settings to defaults
+// POST /api/settings/reset - Reset settings to defaults (admin only)
 export async function POST(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const body = await request.json()
     const { action, category } = body

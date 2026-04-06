@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { requireAdmin } from '@/lib/require-admin'
 
-// GET /api/coupons - List coupons with influencer stats
+// GET /api/coupons - List coupons with influencer stats (admin only)
 export async function GET() {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const coupons = await prisma.coupon.findMany({
       include: {
@@ -43,8 +47,11 @@ export async function GET() {
   }
 }
 
-// POST /api/coupons - Create coupon
+// POST /api/coupons - Create coupon (admin only)
 export async function POST(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const body = await request.json()
     const code = String(body.code || '').trim().toUpperCase()

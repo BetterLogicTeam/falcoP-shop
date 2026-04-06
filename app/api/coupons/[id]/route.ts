@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { requireAdmin } from '@/lib/require-admin'
 
 // PUT /api/coupons/[id] - Update coupon fields (admin)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { id } = await params
     const body = await request.json()
@@ -38,6 +42,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { id } = await params
 

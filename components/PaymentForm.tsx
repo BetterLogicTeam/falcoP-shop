@@ -329,7 +329,7 @@ export default function PaymentForm({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       {/* Header */}
       <div className="text-center">
         <h3 className="text-2xl font-bold text-white mb-2">Secure Payment</h3>
@@ -514,7 +514,7 @@ export default function PaymentForm({
 
 
       {/* Payment Form */}
-      <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl border border-white/20 shadow-2xl p-8">
+      <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl border border-white/20 shadow-2xl p-4 sm:p-8">
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Debug Info */}
           {!stripe && selectedPaymentMethod === 'card' && (
@@ -545,11 +545,16 @@ export default function PaymentForm({
                   rules; the country inside the card box must be supported too. You can still pay by card.
                 </p>
               )}
-              <div className="p-6 border-2 border-white/20 rounded-xl bg-white/5 hover:border-white/30 transition-colors">
+              <div className="p-3 sm:p-6 border-2 border-white/20 rounded-xl bg-white/5 hover:border-white/30 transition-colors">
                 {stripe ? (
                   <PaymentElement
                     options={{
-                      layout: 'tabs',
+                      layout: {
+                        type: 'accordion',
+                        defaultCollapsed: false,
+                        radios: true,
+                        spacedAccordionItems: false,
+                      },
                       paymentMethodOrder: ['klarna', 'card'],
                       defaultValues: {
                         billingDetails: {

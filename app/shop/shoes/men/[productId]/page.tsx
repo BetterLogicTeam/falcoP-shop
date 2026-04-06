@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import CartButton from '../../../../../components/CartButton'
 import SizeGuide from '@/components/SizeGuide'
 import { formatPrice, SHIPPING_COST_SEK } from '@/lib/currency'
+import { shoeDisplayColors } from '@/lib/shoeDisplayColors'
 
 const ProductDetailPage = () => {
   const params = useParams()
@@ -31,8 +32,9 @@ const ProductDetailPage = () => {
       if (product.sizes.length > 0 && !selectedSize) {
         setSelectedSize(product.sizes[0])
       }
-      if (product.colors.length > 0 && !selectedColor) {
-        setSelectedColor(product.colors[0])
+      const colorOpts = shoeDisplayColors(product.colors)
+      if (colorOpts.length > 0 && !selectedColor) {
+        setSelectedColor(colorOpts[0])
       }
     }
   }, [product, selectedSize, selectedColor])
@@ -67,7 +69,8 @@ const ProductDetailPage = () => {
       toast.error('Please select a size')
       return
     }
-    if (product.colors.length > 0 && !selectedColor) {
+    const colorOpts = shoeDisplayColors(product.colors)
+    if (colorOpts.length > 0 && !selectedColor) {
       toast.error('Please select a color')
       return
     }
@@ -228,6 +231,26 @@ const ProductDetailPage = () => {
                 </ul>
               </div>
 
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">Color</h3>
+                <div className="flex flex-wrap gap-3">
+                  {shoeDisplayColors(product.colors).map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setSelectedColor(color)}
+                      className={`px-4 py-2 rounded-lg border transition-colors duration-300 ${
+                        selectedColor === color
+                          ? 'border-falco-accent bg-falco-accent text-black'
+                          : 'border-gray-600 text-white hover:border-falco-accent'
+                      }`}
+                    >
+                      {color}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {product.sizes.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Size</h3>
@@ -251,28 +274,6 @@ const ProductDetailPage = () => {
                   </div>
                 </div>
               )}
-
-              {/* Color Selection - Hidden, only White available */}
-              {/* {product.colors.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-3">Color</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {product.colors.map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={`px-4 py-2 rounded-lg border transition-colors duration-300 ${
-                          selectedColor === color
-                            ? 'border-falco-accent bg-falco-accent text-black'
-                            : 'border-gray-600 text-white hover:border-falco-accent'
-                        }`}
-                      >
-                        {color}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )} */}
 
               <div>
                 <h3 className="text-lg font-semibold text-white mb-3">Quantity</h3>

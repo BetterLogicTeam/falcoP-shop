@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { requireAdmin } from '@/lib/require-admin'
 
-// GET /api/customers/[id] - Get a single customer
+// GET /api/customers/[id] - Get a single customer (admin only)
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { id } = await params
 
@@ -73,11 +77,14 @@ export async function GET(
   }
 }
 
-// PUT /api/customers/[id] - Update a customer
+// PUT /api/customers/[id] - Update a customer (admin only)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { id } = await params
     const body = await request.json()
@@ -135,11 +142,14 @@ export async function PUT(
   }
 }
 
-// DELETE /api/customers/[id] - Delete a customer
+// DELETE /api/customers/[id] - Delete a customer (admin only)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { id } = await params
 

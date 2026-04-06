@@ -154,11 +154,12 @@ export async function POST(request: NextRequest) {
       clientSecret: paymentIntent.client_secret,
       includesKlarna,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating payment intent:', error)
-    return NextResponse.json(
-      { error: error.message || 'Failed to create payment intent' },
-      { status: 500 }
-    )
+    const message =
+      process.env.NODE_ENV === 'development' && error instanceof Error
+        ? error.message
+        : 'Failed to create payment intent'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

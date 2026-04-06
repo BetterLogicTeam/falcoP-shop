@@ -12,6 +12,7 @@ import toast from 'react-hot-toast'
 import CartButton from '../../../../../../components/CartButton'
 import SizeGuide from '@/components/SizeGuide'
 import { formatPrice, SHIPPING_COST_SEK } from '@/lib/currency'
+import { shoeDisplayColors } from '@/lib/shoeDisplayColors'
 
 interface ProductDetailPageProps {
   params: {
@@ -52,15 +53,18 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
     )
   }
 
+  const displayColors = params.category === 'shoes' ? shoeDisplayColors(product.colors) : product.colors
+
   // Initialize selected options
   React.useEffect(() => {
     if (product.sizes.length > 0 && !selectedSize) {
       setSelectedSize(product.sizes[0])
     }
-    if (product.colors.length > 0 && !selectedColor) {
-      setSelectedColor(product.colors[0])
+    const opts = params.category === 'shoes' ? shoeDisplayColors(product.colors) : product.colors
+    if (opts.length > 0 && !selectedColor) {
+      setSelectedColor(opts[0])
     }
-  }, [product, selectedSize, selectedColor])
+  }, [product, params.category, selectedSize, selectedColor])
 
   const handleAddToCart = () => {
     // Validate selections
@@ -69,7 +73,7 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
       return
     }
 
-    if (product.colors.length > 0 && !selectedColor) {
+    if (displayColors.length > 0 && !selectedColor) {
       toast.error('Please select a color')
       return
     }
@@ -242,6 +246,28 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                 </ul>
               </div>
 
+              {displayColors.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3">Color</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {displayColors.map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setSelectedColor(color)}
+                        className={`px-4 py-2 rounded-lg border transition-colors duration-300 ${
+                          selectedColor === color
+                            ? 'border-falco-accent bg-falco-accent text-black'
+                            : 'border-gray-600 text-white hover:border-falco-accent'
+                        }`}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Size Selection */}
               {product.sizes.length > 0 && (
                 <div>
@@ -266,28 +292,6 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
                   </div>
                 </div>
               )}
-
-              {/* Color Selection - Hidden, only White available */}
-              {/* {product.colors.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-3">Color</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {product.colors.map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={`px-4 py-2 rounded-lg border transition-colors duration-300 ${
-                          selectedColor === color
-                            ? 'border-falco-accent bg-falco-accent text-black'
-                            : 'border-gray-600 text-white hover:border-falco-accent'
-                        }`}
-                      >
-                        {color}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )} */}
 
               {/* Quantity */}
               <div>

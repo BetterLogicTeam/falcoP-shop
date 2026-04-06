@@ -15,9 +15,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    const userEmail = session.user.email!.toLowerCase()
+    const userId = (session.user as { id?: string }).id
+
     const orders = await prisma.order.findMany({
       where: {
-        email: session.user.email
+        OR: [
+          { email: { equals: userEmail, mode: 'insensitive' } },
+          ...(userId ? [{ customerId: userId }] : []),
+        ],
       },
       include: {
         items: true,
@@ -30,13 +36,6 @@ export async function GET(request: NextRequest) {
       orderBy: {
         createdAt: 'desc'
       }
-    })
-
-    console.log('=== FETCHED ORDERS DEBUG ===')
-    console.log('Total orders:', orders.length)
-    orders.forEach((order, index) => {
-      console.log(`Order ${index + 1}:`, order.orderNumber, '- Items:', order.items.length)
-      console.log('Items:', JSON.stringify(order.items, null, 2))
     })
 
     const normalized = orders.map((order) => ({

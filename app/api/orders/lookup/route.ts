@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
       orderNumber: row.orderNumber,
       email: row.email,
       status: row.status,
+      paymentStatus: row.paymentStatus,
       total: row.total,
       subtotal: row.subtotal,
       shippingCost: row.shippingCost,

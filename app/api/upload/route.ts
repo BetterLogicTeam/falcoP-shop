@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import cloudinary from '@/lib/cloudinary'
+import { requireAdmin } from '@/lib/require-admin'
 
 export async function POST(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File
@@ -71,6 +75,9 @@ export async function POST(request: NextRequest) {
 
 // Delete image from Cloudinary
 export async function DELETE(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { searchParams } = new URL(request.url)
     const publicId = searchParams.get('publicId')

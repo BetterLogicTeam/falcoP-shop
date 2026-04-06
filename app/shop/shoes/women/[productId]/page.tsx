@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import CartButton from '../../../../../components/CartButton'
 import SizeGuide from '@/components/SizeGuide'
 import { formatPrice, SHIPPING_COST_SEK } from '@/lib/currency'
+import { shoeDisplayColors } from '@/lib/shoeDisplayColors'
 
 const ProductDetailPage = () => {
   const params = useParams()
@@ -29,7 +30,8 @@ const ProductDetailPage = () => {
   useEffect(() => {
     if (product) {
       if (product.sizes.length > 0 && !selectedSize) setSelectedSize(product.sizes[0])
-      if (product.colors.length > 0 && !selectedColor) setSelectedColor(product.colors[0])
+      const colorOpts = shoeDisplayColors(product.colors)
+      if (colorOpts.length > 0 && !selectedColor) setSelectedColor(colorOpts[0])
     }
   }, [product, selectedSize, selectedColor])
 
@@ -57,7 +59,8 @@ const ProductDetailPage = () => {
 
   const handleAddToCart = () => {
     if (product.sizes.length > 0 && !selectedSize) { toast.error('Please select a size'); return }
-    if (product.colors.length > 0 && !selectedColor) { toast.error('Please select a color'); return }
+    const colorOpts = shoeDisplayColors(product.colors)
+    if (colorOpts.length > 0 && !selectedColor) { toast.error('Please select a color'); return }
     addToCart(product, quantity, selectedSize || undefined, selectedColor || undefined)
   }
 
@@ -144,6 +147,24 @@ const ProductDetailPage = () => {
               <div><h3 className="text-xl font-semibold text-white mb-3">Description</h3><p className="text-gray-300 leading-relaxed">{product.description}</p></div>
               <div><h3 className="text-xl font-semibold text-white mb-3">Features</h3><ul className="space-y-2">{product.features.map((feature, index) => <li key={index} className="flex items-center space-x-3 text-gray-300"><div className="w-2 h-2 bg-falco-accent rounded-full"></div><span>{feature}</span></li>)}</ul></div>
 
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-3">Color</h3>
+                <div className="flex flex-wrap gap-3">
+                  {shoeDisplayColors(product.colors).map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => setSelectedColor(color)}
+                      className={`px-4 py-2 rounded-lg border transition-colors duration-300 ${
+                        selectedColor === color ? 'border-falco-accent bg-falco-accent text-black' : 'border-gray-600 text-white hover:border-falco-accent'
+                      }`}
+                    >
+                      {color}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {product.sizes.length > 0 && (
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Size</h3>
@@ -159,10 +180,6 @@ const ProductDetailPage = () => {
                   </div>
                 </div>
               )}
-              {/* Color Selection - Hidden, only White available */}
-              {/* {product.colors.length > 0 && (
-                <div><h3 className="text-lg font-semibold text-white mb-3">Color</h3><div className="flex flex-wrap gap-3">{product.colors.map((color) => <button key={color} onClick={() => setSelectedColor(color)} className={`px-4 py-2 rounded-lg border transition-colors duration-300 ${selectedColor === color ? 'border-falco-accent bg-falco-accent text-black' : 'border-gray-600 text-white hover:border-falco-accent'}`}>{color}</button>)}</div></div>
-              )} */}
 
               <div><h3 className="text-lg font-semibold text-white mb-3">Quantity</h3><div className="flex items-center space-x-4"><button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 rounded-lg border border-gray-600 text-white hover:border-falco-accent transition-colors duration-300 flex items-center justify-center">-</button><span className="text-white font-semibold text-lg w-8 text-center">{quantity}</span><button onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 rounded-lg border border-gray-600 text-white hover:border-falco-accent transition-colors duration-300 flex items-center justify-center">+</button></div></div>
 

@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { requireAdmin } from '@/lib/require-admin'
 
-// GET /api/customers - List all customers with filters
+// GET /api/customers - List all customers with filters (admin only)
 export async function GET(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { searchParams } = new URL(request.url)
 
@@ -97,8 +101,11 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/customers - Create a new customer
+// POST /api/customers - Create a new customer (admin only)
 export async function POST(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const body = await request.json()
 

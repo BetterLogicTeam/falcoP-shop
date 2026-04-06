@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { requireAdmin } from '@/lib/require-admin'
 
 // Helper function to generate slug
 function generateSlug(name: string): string {
@@ -45,11 +46,14 @@ export async function GET(
   }
 }
 
-// PUT /api/products/[id] - Update a product
+// PUT /api/products/[id] - Update a product (admin only)
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { id } = await params
     const body = await request.json()
@@ -129,11 +133,14 @@ export async function PUT(
   }
 }
 
-// DELETE /api/products/[id] - Delete a product
+// DELETE /api/products/[id] - Delete a product (admin only)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { id } = await params
 

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
+import { requireAdmin } from '@/lib/require-admin'
 
 export async function GET(request: NextRequest) {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
   try {
     const { searchParams } = new URL(request.url)
     const timeRange = searchParams.get('timeRange') || '30d'

@@ -25,6 +25,7 @@ interface Order {
   orderNumber: string
   email: string
   status: string
+  paymentStatus?: string
   total: number
   subtotal: number
   shippingCost: number
@@ -48,6 +49,8 @@ function OrderConfirmationContent() {
   const [needsEmailForLookup, setNeedsEmailForLookup] = useState(false)
   const [guestEmailInput, setGuestEmailInput] = useState('')
   const [lookupSubmitting, setLookupSubmitting] = useState(false)
+
+  const paymentIsConfirmed = order?.paymentStatus === 'paid'
 
   // After Klarna (or other redirect) Stripe sends user here with ?payment_intent=&redirect_status=succeeded
   useEffect(() => {
@@ -264,13 +267,15 @@ function OrderConfirmationContent() {
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Order Confirmed!
+              {paymentIsConfirmed ? 'Order Confirmed!' : 'Order Received'}
             </h1>
             <p className="text-xl text-gray-600 mb-2">
-              Thank you for your purchase
+              {paymentIsConfirmed ? 'Thank you for your purchase' : 'Payment pending or canceled'}
             </p>
             <p className="text-lg text-gray-500">
-              Your order #{order?.orderNumber || 'N/A'} has been successfully placed
+              {paymentIsConfirmed
+                ? `Your order #${order?.orderNumber || 'N/A'} has been successfully placed`
+                : `We saved order #${order?.orderNumber || 'N/A'}, but payment is not confirmed yet.`}
             </p>
           </div>
 
@@ -348,8 +353,14 @@ function OrderConfirmationContent() {
                         <CheckCircle className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">Order Confirmed</p>
-                        <p className="text-sm text-gray-600">Payment processed successfully</p>
+                        <p className="font-semibold text-gray-900">
+                          {paymentIsConfirmed ? 'Order Confirmed' : 'Payment Pending'}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {paymentIsConfirmed
+                            ? 'Payment processed successfully'
+                            : 'Payment was not completed. Please retry checkout if needed.'}
+                        </p>
                       </div>
                     </div>
 
@@ -424,11 +435,11 @@ function OrderConfirmationContent() {
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
                         <Mail className="w-4 h-4 text-gray-600" />
-                        <span className="text-sm text-gray-700">support@falcop.com</span>
+                        <span className="text-sm text-gray-700">falcoswoop@gmail.com</span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Phone className="w-4 h-4 text-gray-600" />
-                        <span className="text-sm text-gray-700">+1 (555) 123-4567</span>
+                        <span className="text-sm text-gray-700">0046762467194</span>
                       </div>
                     </div>
                   </div>

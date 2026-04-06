@@ -81,13 +81,6 @@ export default function CheckoutPage() {
       setStripeIncludesKlarna(false)
       return
     }
-    const email = formData.email?.trim()
-    if (!email?.includes('@')) {
-      setPaymentClientSecret(null)
-      setPaymentIntentError(null)
-      return
-    }
-
     let cancelled = false
     setPaymentIntentLoading(true)
     setPaymentIntentError(null)
@@ -170,21 +163,15 @@ export default function CheckoutPage() {
         color: item.selectedColor || null
       }))
 
-      console.log('=== CHECKOUT DEBUG ===')
-      console.log('Cart items:', state.items.length)
-      console.log('Order items to send:', orderItems)
-      console.log('Total price:', state.totalPrice)
-
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerInfo: formData,
           items: orderItems,
-          totalAmount: orderTotal,
           paymentIntentId: paymentIntent.id,
-          couponCode: appliedCoupon?.code || null
-        })
+          couponCode: appliedCoupon?.code || null,
+        }),
       })
 
       const data = await response.json()
@@ -483,16 +470,11 @@ export default function CheckoutPage() {
                 {paymentIntentLoading && (
                   <p className="text-gray-400 text-sm py-4">Loading payment methods…</p>
                 )}
-                {!paymentIntentLoading && !paymentClientSecret && (
-                  <div className="space-y-2 py-4 text-sm">
-                    <p className="text-gray-400">
-                      Enter a valid email address to load card, Klarna (if enabled in Stripe), and wallet pay.
+                {!paymentIntentLoading && !paymentClientSecret && paymentIntentError && (
+                  <div className="py-4 text-sm">
+                    <p className="text-red-300 rounded-lg bg-red-500/10 border border-red-500/30 px-3 py-2">
+                      {paymentIntentError}
                     </p>
-                    {paymentIntentError && (
-                      <p className="text-red-300 rounded-lg bg-red-500/10 border border-red-500/30 px-3 py-2">
-                        {paymentIntentError}
-                      </p>
-                    )}
                   </div>
                 )}
                 {paymentClientSecret && (
