@@ -12,11 +12,15 @@ import {
  * Configure in Fraktjakt:
  *   URL: https://www.falcop.com/api/webhooks/fraktjakt
  *   Header: x-fraktjakt-token: <FRAKTJAKT_WEBHOOK_TOKEN> (recommended)
+ *   Fallback for test tools without headers:
+ *   https://www.falcop.com/api/webhooks/fraktjakt?token=<FRAKTJAKT_WEBHOOK_TOKEN>
  */
 export async function POST(request: NextRequest) {
   try {
     const headerToken = request.headers.get('x-fraktjakt-token')
-    if (!isValidFraktjaktWebhookToken(headerToken)) {
+    const queryToken = request.nextUrl.searchParams.get('token')
+    const suppliedToken = headerToken || queryToken
+    if (!isValidFraktjaktWebhookToken(suppliedToken)) {
       return NextResponse.json({ error: 'Unauthorized webhook token' }, { status: 401 })
     }
 
