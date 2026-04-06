@@ -632,6 +632,20 @@ const SettingsPage = () => {
         <p className="text-sm text-blue-600">Configure your payment gateways. Keep your API keys secure.</p>
       </div>
 
+      <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 mb-6 text-sm text-amber-950">
+        <p className="font-medium mb-1">Storefront checkout does not use the Stripe fields below</p>
+        <p className="text-amber-900/90">
+          Card and Klarna load using <code className="rounded bg-amber-100/80 px-1 text-xs">STRIPE_SECRET_KEY</code> and{' '}
+          <code className="rounded bg-amber-100/80 px-1 text-xs">NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY</code> from your server
+          environment (Netlify, Vercel, etc.) and <code className="rounded bg-amber-100/80 px-1 text-xs">.env</code>. Saving keys here
+          does not fix “Invalid API Key”. Copy a fresh <span className="font-medium">Secret key</span> from Stripe Dashboard → Developers →
+          API keys, set <code className="text-xs">STRIPE_SECRET_KEY</code> there, match live/test mode with your publishable key, then{' '}
+          <span className="font-medium">redeploy</span>. For <span className="font-medium">live Klarna</span>, enable Klarna under Stripe
+          Settings → Payment methods while <span className="font-medium">not</span> in test mode and complete any live onboarding — Klarna
+          has no separate key here; it runs through Stripe.
+        </p>
+      </div>
+
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gray-900">Stripe</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

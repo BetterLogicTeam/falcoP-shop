@@ -18,7 +18,8 @@
     "stripe:login": "node scripts/stripe-cli.cjs login",
     "stripe:whoami": "node scripts/stripe-cli.cjs config --list",
     "stripe:logs": "node scripts/stripe-cli.cjs logs tail",
-    "stripe:verify": "node scripts/verify-stripe.cjs"
+    "stripe:verify": "node scripts/verify-stripe.cjs",
+    "stripe:verify:live": "node scripts/verify-stripe.cjs --live"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

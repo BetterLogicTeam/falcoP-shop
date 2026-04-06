@@ -6,6 +6,55 @@ import { CreditCard, Lock, Smartphone, Shield, CheckCircle, Zap } from 'lucide-r
 import toast from 'react-hot-toast'
 import { formatPrice, sekToOre } from '../lib/currency'
 
+/**
+ * Billing for confirmPayment / confirmCardPayment.
+ * Do not send `shipping` on the client if the PaymentIntent already has `shipping`
+ * from create-payment-intent (secret key) — Stripe rejects changing it with the publishable key.
+ */
+function buildConfirmBilling(customerInfo: Record<string, unknown>) {
+  const email = String(customerInfo?.email ?? '').trim()
+  const first = String(customerInfo?.firstName ?? '').trim()
+  const last = String(customerInfo?.lastName ?? '').trim()
+  const fullName = `${first} ${last}`.trim() || 'Customer'
+  const country = String(customerInfo?.country ?? '')
+    .trim()
+    .toUpperCase()
+  const line1 = String(customerInfo?.address ?? '').trim()
+  const city = String(customerInfo?.city ?? '').trim()
+  const postal = String(customerInfo?.zipCode ?? '').trim()
+  const stateStr = String(customerInfo?.state ?? '').trim()
+  const phone = String(customerInfo?.phone ?? '').trim()
+
+  const hasFullAddressForIntent =
+    Boolean(email && line1 && city && postal && country.length === 2) && (country !== 'US' || Boolean(stateStr))
+
+  const billing_details = {
+    name: fullName,
+    email: email || undefined,
+    phone: phone || undefined,
+    address: {
+      line1: line1 || undefined,
+      city: city || undefined,
+      state: stateStr || undefined,
+      postal_code: postal || undefined,
+      country: country || undefined,
+    },
+  }
+
+  return { email, fullName, billing_details, hasFullAddressForIntent }
+}
+
+function friendlyStripeErrorMessage(raw: string | undefined, country: unknown): string {
+  const msg = (raw || '').trim()
+  const isShippingValidation = msg.includes('When providing a shipping address')
+  if (isShippingValidation) {
+    return String(country).toUpperCase() === 'US'
+      ? 'Please enter street, city, state, ZIP code, country, and a valid email before paying.'
+      : 'Please enter street, city, postal code, country, and a valid email before paying.'
+  }
+  return msg || 'Payment failed. Please try again.'
+}
+
 export type PendingCheckoutPayload = {
   customerInfo: Record<string, string>
   items: Array<{
@@ -68,14 +117,6 @@ export default function PaymentForm({
         if (result) {
           setCanMakePayment(true)
           setPaymentRequest(pr)
-          
-          // Check specifically for Google Pay
-          if (result.applePay) {
-            console.log('Apple Pay available')
-          }
-          if (result.googlePay) {
-            console.log('Google Pay available')
-          }
         }
       })
 
@@ -110,13 +151,17 @@ export default function PaymentForm({
             throw new Error(serverError)
           }
 
-          const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+          const { email, hasFullAddressForIntent } = buildConfirmBilling(customerInfo)
+          const walletConfirm: Parameters<typeof stripe.confirmCardPayment>[1] = {
             payment_method: ev.paymentMethod.id,
-          })
+            ...(email && hasFullAddressForIntent ? { receipt_email: email } : {}),
+          }
+
+          const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, walletConfirm)
 
           if (error) {
             ev.complete('fail')
-            onError(error.message || 'Payment failed')
+            onError(friendlyStripeErrorMessage(error.message, customerInfo?.country))
           } else if (paymentIntent?.status === 'succeeded') {
             ev.complete('success')
             toast.success('Payment successful!')
@@ -127,18 +172,11 @@ export default function PaymentForm({
           }
         } catch (error: any) {
           ev.complete('fail')
-          onError(error.message || 'Payment failed')
+          onError(friendlyStripeErrorMessage(error?.message, customerInfo?.country))
         }
       })
     }
   }, [stripe, totalAmount, customerInfo, onSuccess, onError])
-
-  // Debug: Check if Stripe is loaded
-  React.useEffect(() => {
-    console.log('Stripe loaded:', !!stripe)
-    console.log('Elements loaded:', !!elements)
-    console.log('Can make payment:', canMakePayment)
-  }, [stripe, elements, canMakePayment])
 
   /* Apple Pay / Google Pay: charges go through Stripe PaymentRequest + PaymentIntent (useEffect above).
    * Swish: disabled — restore from git / re-enable Swish UI + swiss-payment route when ready. */
@@ -162,6 +200,29 @@ export default function PaymentForm({
     setCardError(null)
 
     try {
+      const { email, billing_details, hasFullAddressForIntent } = buildConfirmBilling(customerInfo)
+
+      if (!email || !email.includes('@')) {
+        const msg = 'Enter a valid email address before paying.'
+        setCardError(msg)
+        onError(msg)
+        toast.error(msg)
+        setIsProcessing(false)
+        return
+      }
+
+      if (!hasFullAddressForIntent) {
+        const msg =
+          customerInfo.country === 'US'
+            ? 'Fill in street, city, state, ZIP, and country before paying (required for Klarna and delivery).'
+            : 'Fill in street, city, postal code, and country before paying (required for Klarna and delivery).'
+        setCardError(msg)
+        onError(msg)
+        toast.error(msg)
+        setIsProcessing(false)
+        return
+      }
+
       if (buildPendingCheckout) {
         try {
           sessionStorage.setItem('falco_pending_checkout', JSON.stringify(buildPendingCheckout()))
@@ -186,27 +247,17 @@ export default function PaymentForm({
         redirect: 'if_required',
         confirmParams: {
           return_url: returnUrl,
-          receipt_email: customerInfo.email || undefined,
+          receipt_email: email,
           payment_method_data: {
-            billing_details: {
-              name: `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || undefined,
-              email: customerInfo.email || undefined,
-              phone: customerInfo.phone || undefined,
-              address: {
-                line1: customerInfo.address || undefined,
-                city: customerInfo.city || undefined,
-                state: customerInfo.state || undefined,
-                postal_code: customerInfo.zipCode || undefined,
-                country: customerInfo.country || undefined,
-              },
-            },
+            billing_details,
           },
         },
       })
 
       if (error) {
-        setCardError(error.message || 'Payment failed')
-        onError(error.message || 'Payment failed')
+        const friendly = friendlyStripeErrorMessage(error.message, customerInfo?.country)
+        setCardError(friendly)
+        onError(friendly)
         try {
           sessionStorage.removeItem('falco_pending_checkout')
         } catch {
@@ -231,7 +282,7 @@ export default function PaymentForm({
       }
       /* Klarna may redirect the browser — sessionStorage keeps pending order until return */
     } catch (error: any) {
-      const errorMessage = error.message || 'Payment failed. Please try again.'
+      const errorMessage = friendlyStripeErrorMessage(error?.message, customerInfo?.country)
       setCardError(errorMessage)
       onError(errorMessage)
       toast.error(errorMessage)
@@ -449,14 +500,7 @@ export default function PaymentForm({
                   {stripeIncludesKlarna ? 'Card or Klarna' : 'Card'}
                 </h4>
               </div>
-              {stripeIncludesKlarna ? (
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  <strong className="text-gray-300">Klarna</strong> only appears when the customer’s country matches
-                  your Stripe rules (e.g. Sweden, Norway, Germany, UK — not the United States if US isn’t listed
-                  there). Set <strong className="text-gray-300">Country</strong> in shipping to a supported country,
-                  then reload payment if needed. Amount must stay within your Klarna min/max in SEK.
-                </p>
-              ) : (
+              {stripeIncludesKlarna ? null : (
                 <p className="text-xs text-amber-200/90 leading-relaxed rounded-lg bg-amber-500/10 border border-amber-500/25 px-3 py-2">
                   Klarna isn’t on this PaymentIntent (enable it in{' '}
                   <strong>Stripe → Settings → Payment methods</strong>, match currency/country/amount rules, and check

@@ -67,19 +67,24 @@ export async function POST(request: NextRequest) {
       customerCountry: customerInfo.country,
     }
 
-    /** Klarna often needs shipping + a 2-letter country (same as checkout form), not VPN/IP */
+    /** Klarna / confirm: if we attach shipping, Stripe requires line1, city, postal_code, country (+ state for US). */
     const country = typeof customerInfo.country === 'string' ? customerInfo.country.trim().toUpperCase() : ''
-    const hasAddress = Boolean(customerInfo.address && customerInfo.city && country)
+    const line1 = typeof customerInfo.address === 'string' ? customerInfo.address.trim() : ''
+    const city = typeof customerInfo.city === 'string' ? customerInfo.city.trim() : ''
+    const postal = typeof customerInfo.zipCode === 'string' ? customerInfo.zipCode.trim() : ''
+    const stateStr = typeof customerInfo.state === 'string' ? customerInfo.state.trim() : ''
+    const hasCoreAddress = Boolean(line1 && city && postal && country.length === 2)
+    const usOk = country !== 'US' || Boolean(stateStr)
     const shipping =
-      hasAddress && country.length === 2
+      hasCoreAddress && usOk
         ? {
             name: fullName,
             address: {
-              line1: String(customerInfo.address),
-              city: String(customerInfo.city),
-              state: customerInfo.state ? String(customerInfo.state) : undefined,
-              postal_code: customerInfo.zipCode ? String(customerInfo.zipCode) : undefined,
+              line1,
+              city,
+              postal_code: postal,
               country,
+              ...(country === 'US' || stateStr ? { state: stateStr || undefined } : {}),
             },
           }
         : undefined
@@ -96,6 +101,9 @@ export async function POST(request: NextRequest) {
     }
 
     /**
+     * Klarna uses the same Stripe account/mode as STRIPE_SECRET_KEY (test vs live). Enable Klarna in
+     * Dashboard → Payment methods for that mode; there is no separate Klarna env var in this app.
+     *
      * Prefer explicit `card` + `klarna` so the intent actually lists `klarna` when Stripe accepts it.
      * Try without Klarna options first (some accounts reject optional fields); then with `preferred_locale`.
      * If both fail, automatic PMs may succeed but often omit Klarna from the session — do not advertise Klarna in UI unless `payment_method_types` includes it.

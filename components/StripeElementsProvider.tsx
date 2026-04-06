@@ -52,7 +52,8 @@ export default function StripeElementsProvider({ children, clientSecret }: Strip
     return (
       <>
         {blockedNotice}
-        <Elements stripe={getStripeJs()} options={{ clientSecret, appearance }}>
+        {/* New PaymentIntent = new clientSecret; remount avoids "clientSecret is not a mutable property" */}
+        <Elements key={clientSecret} stripe={getStripeJs()} options={{ clientSecret, appearance }}>
           {children}
         </Elements>
       </>
