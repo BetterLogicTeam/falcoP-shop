@@ -582,15 +582,15 @@ export default function PaymentForm({
               </div>
               {cardError && (
                 <div
-                  className="rounded-xl border-2 border-red-400/90 bg-red-500/20 px-4 py-3 shadow-[0_0_0_1px_rgba(248,113,113,0.55),0_8px_24px_rgba(127,29,29,0.25)]"
+                  className="rounded-xl border-2 border-red-300 bg-gradient-to-br from-red-700/90 to-red-800/90 px-4 py-3 shadow-[0_0_0_1px_rgba(254,202,202,0.35),0_10px_28px_rgba(69,10,10,0.45)]"
                   role="alert"
                   aria-live="assertive"
                 >
                   <div className="flex items-start gap-3">
-                    <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-200" />
+                    <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" />
                     <div>
-                      <p className="text-sm font-bold uppercase tracking-wide text-red-100">Payment issue</p>
-                      <p className="mt-1 text-base font-semibold leading-6 text-red-50">{cardError}</p>
+                      <p className="text-sm font-extrabold uppercase tracking-wide text-amber-100">Payment issue</p>
+                      <p className="mt-1 text-base font-semibold leading-6 text-white">{cardError}</p>
                     </div>
                   </div>
                 </div>
