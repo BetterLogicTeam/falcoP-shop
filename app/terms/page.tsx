@@ -56,7 +56,7 @@ export default function TermsAndConditions() {
               <h3 className="text-xl font-bold text-falco-accent mb-4">1. Company Information</h3>
               <div className="mb-8">
                 <p>FALCO PEAK</p>
-                <p>vårfrugatan 2</p>
+                <p>Sandeslätt 26</p>
                 <p>Organisationsnummer: 200011024494</p>
                 <p>Email: falcoswoop@gmail.com</p>
               </div>
@@ -131,7 +131,7 @@ export default function TermsAndConditions() {
                 <p>For questions about these Terms, please contact us at:</p>
                 <p className="mt-4">
                   FALCO PEAK<br />
-                  vårfrugatan 2<br />
+                  Sandeslätt 26<br />
                   Email: falcoswoop@gmail.com
                 </p>
               </div>
@@ -168,3 +168,5 @@ export default function TermsAndConditions() {
     </div>
   )
 }
+
+

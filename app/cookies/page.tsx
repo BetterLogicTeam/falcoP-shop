@@ -214,9 +214,9 @@ export default function CookiePolicy() {
                 <p className="mb-4">If you have any questions about our use of cookies, please contact us at:</p>
                 <div className="bg-gray-800/50 rounded-lg p-4">
                   <p><span className="text-falco-gold font-semibold">FALCO PEAK</span></p>
-                  <p>vårfrugatan 2</p>
+                  <p>Sandeslätt 26</p>
                   <p>Organisationsnummer: 200011024494</p>
-                  <p><span className="text-falco-gold font-semibold">Email:</span> privacy@falcop.com</p>
+                  <p><span className="text-falco-gold font-semibold">Email:</span> falcoswoop@gmail.com</p>
                 </div>
               </div>
 
@@ -255,3 +255,5 @@ export default function CookiePolicy() {
     </div>
   )
 }
+
+

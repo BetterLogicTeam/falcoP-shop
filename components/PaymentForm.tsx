@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useStripe, useElements, PaymentElement, PaymentRequestButtonElement } from '@stripe/react-stripe-js'
-import { CreditCard, Lock, Smartphone, Shield, CheckCircle, Zap } from 'lucide-react'
+import { AlertTriangle, CreditCard, Lock, Smartphone, Shield, CheckCircle, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { formatPrice, sekToOre } from '../lib/currency'
 
@@ -581,8 +581,18 @@ export default function PaymentForm({
                 )}
               </div>
               {cardError && (
-                <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
-                  <p className="text-red-200 text-sm">{cardError}</p>
+                <div
+                  className="rounded-xl border-2 border-red-400/90 bg-red-500/20 px-4 py-3 shadow-[0_0_0_1px_rgba(248,113,113,0.55),0_8px_24px_rgba(127,29,29,0.25)]"
+                  role="alert"
+                  aria-live="assertive"
+                >
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-200" />
+                    <div>
+                      <p className="text-sm font-bold uppercase tracking-wide text-red-100">Payment issue</p>
+                      <p className="mt-1 text-base font-semibold leading-6 text-red-50">{cardError}</p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

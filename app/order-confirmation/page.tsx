@@ -51,6 +51,7 @@ function OrderConfirmationContent() {
   const [lookupSubmitting, setLookupSubmitting] = useState(false)
 
   const paymentIsConfirmed = order?.paymentStatus === 'paid'
+  const hasOrder = Boolean(order?.orderNumber)
 
   // After Klarna (or other redirect) Stripe sends user here with ?payment_intent=&redirect_status=succeeded
   useEffect(() => {
@@ -267,19 +268,30 @@ function OrderConfirmationContent() {
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              {paymentIsConfirmed ? 'Order Confirmed!' : 'Order Received'}
+              {paymentIsConfirmed
+                ? 'Order Confirmed!'
+                : hasOrder
+                ? 'Order Received'
+                : 'Payment Not Completed'}
             </h1>
             <p className="text-xl text-gray-600 mb-2">
-              {paymentIsConfirmed ? 'Thank you for your purchase' : 'Payment pending or canceled'}
+              {paymentIsConfirmed
+                ? 'Thank you for your purchase'
+                : hasOrder
+                ? 'Payment pending or canceled'
+                : 'Your payment was canceled or failed'}
             </p>
             <p className="text-lg text-gray-500">
               {paymentIsConfirmed
                 ? `Your order #${order?.orderNumber || 'N/A'} has been successfully placed`
-                : `We saved order #${order?.orderNumber || 'N/A'}, but payment is not confirmed yet.`}
+                : hasOrder
+                ? `We saved order #${order?.orderNumber || 'N/A'}, but payment is not confirmed yet.`
+                : 'No order was created because payment was not completed.'}
             </p>
           </div>
 
           {/* Order Details Card */}
+          {hasOrder ? (
           <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 mb-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Order Summary */}
@@ -447,6 +459,20 @@ function OrderConfirmationContent() {
               </div>
             </div>
           </div>
+          ) : (
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Payment was not completed</h2>
+            <p className="text-gray-700 mb-6">
+              We did not create an order because the payment was canceled or failed. Please return to checkout and try again.
+            </p>
+            <Link
+              href="/checkout"
+              className="inline-flex items-center rounded-xl bg-gradient-to-r from-falco-accent to-falco-gold px-6 py-3 font-semibold text-black border border-gray-900/20 hover:opacity-95 transition-opacity"
+            >
+              Return to Checkout
+            </Link>
+          </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

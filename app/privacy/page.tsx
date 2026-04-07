@@ -58,9 +58,9 @@ export default function PrivacyPolicy() {
                 <p>The data controller responsible for your personal data is:</p>
                 <div className="mt-4 bg-gray-800/50 rounded-lg p-4">
                   <p>FALCO PEAK</p>
-                  <p>vårfrugatan 2</p>
+                  <p>Sandeslätt 26</p>
                   <p>Organisationsnummer: 200011024494</p>
-                  <p>Email: privacy@falcop.com</p>
+                  <p>Email: falcoswoop@gmail.com</p>
                 </div>
               </div>
 
@@ -152,7 +152,7 @@ export default function PrivacyPolicy() {
 
               <h3 className="text-xl font-bold text-falco-accent mb-4">7. Your Data Protection Rights</h3>
               <p className="mb-4">
-                Under GDPR, you have the following rights. To exercise any of these rights, please contact us at privacy@falcop.com.
+                Under GDPR, you have the following rights. To exercise any of these rights, please contact us at falcoswoop@gmail.com.
               </p>
               <ul className="mb-6 space-y-3">
                 <li>• <span className="text-falco-gold font-semibold">Right of Access (Insynsrätt):</span> You have the right to request a copy of the personal data we hold about you.</li>
@@ -190,8 +190,8 @@ export default function PrivacyPolicy() {
               <div className="mb-8">
                 <p className="mb-4">For any questions regarding this Privacy Policy or your personal data, please contact our Data Protection team at:</p>
                 <div className="bg-gray-800/50 rounded-lg p-4">
-                  <p><span className="text-falco-gold font-semibold">Email:</span> privacy@falcop.com</p>
-                  <p><span className="text-falco-gold font-semibold">Post:</span> FALCO PEAK, Attn: Data Protection, vårfrugatan 2</p>
+                  <p><span className="text-falco-gold font-semibold">Email:</span> falcoswoop@gmail.com</p>
+                  <p><span className="text-falco-gold font-semibold">Post:</span> FALCO PEAK, Attn: Data Protection, Sandeslätt 26</p>
                 </div>
               </div>
 
@@ -227,3 +227,5 @@ export default function PrivacyPolicy() {
     </div>
   )
 }
+
+

@@ -12,7 +12,6 @@ import {
   Globe,
   Heart
 } from 'lucide-react'
-import Image from 'next/image'
 import { useClientTranslation } from '../hooks/useClientTranslation'
 
 export default function Features() {
@@ -20,14 +19,7 @@ export default function Features() {
   const [activeFeature, setActiveFeature] = useState(0)
   const [scrollY, setScrollY] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
   const featuresRef = useRef<HTMLDivElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  // Video array - single video
-  const videos = [
-    '/videos/4.mp4'
-  ]
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,19 +36,6 @@ export default function Features() {
     handleScroll() // Initial check
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
-  // Video cycling effect
-  useEffect(() => {
-    const handleVideoEnd = () => {
-      setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videos.length)
-    }
-
-    const video = videoRef.current
-    if (video) {
-      video.addEventListener('ended', handleVideoEnd)
-      return () => video.removeEventListener('ended', handleVideoEnd)
-    }
-  }, [currentVideoIndex, videos.length])
 
   const features = [
     {
@@ -181,7 +160,7 @@ export default function Features() {
 
         {/* Active Feature Details */}
         <div ref={featuresRef} className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 sm:p-8 lg:p-12 border border-white/10 mb-8 sm:mb-12 lg:mb-16 overflow-hidden mx-4 sm:mx-6 lg:mx-0">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+          <div className="grid grid-cols-1 gap-8 sm:gap-12 items-center">
             <div>
               <div className={`w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br ${features[activeFeature].color} rounded-2xl flex items-center justify-center mb-4 sm:mb-6`}>
                 {(() => {
@@ -211,52 +190,6 @@ export default function Features() {
               </div>
             </div>
             
-            {/* 3D Video Showcase */}
-            <div className="relative h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px] flex items-center justify-center">
-              <div className="relative">
-                {/* 3D Video Container */}
-                <div className="relative w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] md:w-[350px] md:h-[350px] lg:w-[400px] lg:h-[400px] rounded-2xl overflow-hidden shadow-2xl">
-                  {/* 3D Border Effects */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                  
-                  {/* Top and Left Border (Light) */}
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
-                  <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/60 to-transparent"></div>
-                  
-                  {/* Bottom and Right Border (Dark) */}
-                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-black/60 to-transparent"></div>
-                  <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-transparent via-black/60 to-transparent"></div>
-                  
-                  {/* Inner 3D Shadow */}
-                  <div className="absolute inset-1 rounded-xl bg-gradient-to-br from-black/30 to-transparent"></div>
-                  
-                  {/* Video Element */}
-                  <video
-                    ref={videoRef}
-                    key={currentVideoIndex}
-                    src={videos[currentVideoIndex]}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    controls
-                    className="w-full h-full object-cover rounded-2xl"
-                  />
-                  
-                  {/* Video Info Badge */}
-                  <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-1 border border-white/20">
-                    <span className="text-white text-sm font-medium">WING P</span>
-                  </div>
-                  
-                  {/* Video Counter */}
-                  <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-1 border border-white/20">
-                    <span className="text-white text-sm font-medium">
-                      {currentVideoIndex + 1} / {videos.length}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
