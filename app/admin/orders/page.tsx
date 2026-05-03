@@ -21,8 +21,10 @@ interface Order {
   email: string
   firstName: string
   lastName: string
+  phone?: string | null
   status: string
   paymentStatus: string
+  paymentIntentId?: string | null
   total: number
   subtotal: number
   shippingCost?: number
@@ -30,6 +32,7 @@ interface Order {
   items: OrderItem[]
   createdAt: string
   shippingLine1?: string
+  shippingLine2?: string | null
   shippingCity?: string
   shippingState?: string
   shippingPostal?: string
@@ -110,9 +113,15 @@ export default function AdminOrdersPage() {
     }
   }
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredOrders = orders.filter((order) => {
+    const term = searchTerm.toLowerCase().trim()
+    const fullName = `${order.firstName || ''} ${order.lastName || ''}`.toLowerCase().trim()
+    const matchesSearch =
+      !term ||
+      order.orderNumber.toLowerCase().includes(term) ||
+      order.email.toLowerCase().includes(term) ||
+      fullName.includes(term) ||
+      (order.phone && String(order.phone).toLowerCase().includes(term))
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter
     return matchesSearch && matchesStatus
   })
@@ -197,7 +206,7 @@ export default function AdminOrdersPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by order number or email..."
+              placeholder="Search order #, email, name, or phone…"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-falco-accent focus:border-transparent bg-white text-gray-900"
@@ -245,19 +254,35 @@ export default function AdminOrdersPage() {
                 {filteredOrders.map((order) => {
                   const StatusIcon = statusIcons[order.status] || Clock
                   return (
-                    <tr key={order.id} className="hover:bg-gray-50">
-                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{order.orderNumber}</div>
-                        {/* Show customer on mobile */}
-                        <div className="md:hidden text-xs text-gray-500 truncate max-w-[100px]">
-                          {order.firstName} {order.lastName}
+                    <tr
+                      key={order.id}
+                      className="hover:bg-gray-50 cursor-pointer"
+                      onClick={() => setSelectedOrder(order)}
+                    >
+                      <td className="px-4 sm:px-6 py-4 align-top min-w-0 max-w-[min(100vw,14rem)] sm:max-w-none">
+                        <div className="text-sm font-medium text-gray-900 break-all">{order.orderNumber}</div>
+                        {/* Buyer summary on small screens (full table hides Customer column until md) */}
+                        <div className="md:hidden mt-2 space-y-1 text-xs">
+                          <div className="font-medium text-gray-900">
+                            {order.firstName} {order.lastName}
+                          </div>
+                          <div className="text-gray-600 break-all">{order.email}</div>
+                          {order.phone ? (
+                            <div className="text-gray-500">{order.phone}</div>
+                          ) : null}
+                          <p className="text-[10px] uppercase tracking-wide text-falco-accent pt-0.5">
+                            Tap row for full buyer and shipping
+                          </p>
                         </div>
                       </td>
-                      <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{order.email}</div>
-                        <div className="text-xs text-gray-500">
+                      <td className="hidden md:table-cell px-6 py-4 min-w-0 max-w-[14rem] lg:max-w-xs">
+                        <div className="text-sm text-gray-900 break-all">{order.email}</div>
+                        <div className="mt-0.5 text-xs text-gray-600">
                           {order.firstName} {order.lastName}
                         </div>
+                        {order.phone ? (
+                          <div className="mt-0.5 text-xs text-gray-500">{order.phone}</div>
+                        ) : null}
                       </td>
                       <td className="hidden xl:table-cell px-6 py-4">
                         <div className="text-sm text-gray-900 max-w-[200px]">
@@ -293,18 +318,21 @@ export default function AdminOrdersPage() {
                         {new Date(order.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center space-x-2">
+                        <div className="flex flex-wrap items-center gap-2" onClick={(e) => e.stopPropagation()}>
                           <button
+                            type="button"
                             onClick={() => setSelectedOrder(order)}
-                            className="text-falco-accent hover:text-falco-gold"
+                            className="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-xs font-medium text-gray-800 shadow-sm hover:bg-gray-50 hover:border-falco-accent/50"
+                            title="Buyer, contact, shipping, line items"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4 text-falco-accent shrink-0" />
+                            <span>Details</span>
                           </button>
                           <select
                             value={order.status}
                             onChange={(e) => updateOrderStatus(order.id, e.target.value)}
                             disabled={updatingOrder === order.id}
-                            className="text-xs px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-falco-accent disabled:opacity-50 bg-white text-gray-900"
+                            className="text-xs px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-falco-accent disabled:opacity-50 bg-white text-gray-900 min-w-[6.5rem]"
                           >
                             <option value="pending">Pending</option>
                             <option value="processing">Processing</option>
@@ -328,24 +356,102 @@ export default function AdminOrdersPage() {
 
       {/* Order Detail Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-900">Order {selectedOrder.orderNumber}</h2>
-              <button onClick={() => setSelectedOrder(null)}>
-                <X className="w-6 h-6 text-gray-400 hover:text-gray-600" />
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4"
+          onClick={() => setSelectedOrder(null)}
+        >
+          <div
+            className="flex max-h-[92dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-xl sm:rounded-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-gray-200 p-4 sm:p-6">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 sm:text-xl">Order {selectedOrder.orderNumber}</h2>
+                <p className="mt-1 text-xs text-gray-500 sm:text-sm">Buyer, contact, shipping address, and items</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedOrder(null)}
+                className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                aria-label="Close"
+              >
+                <X className="h-6 w-6" />
               </button>
             </div>
-            <div className="p-6 space-y-6">
-              {/* Customer Info */}
+            <div className="min-h-0 flex-1 space-y-6 overflow-y-auto p-4 sm:p-6">
+              {/* Buyer & contact */}
+              <div className="rounded-xl border border-gray-200 bg-gray-50/80 p-4">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700">Buyer</h3>
+                <p className="mt-2 text-base font-semibold text-gray-900">
+                  {selectedOrder.firstName} {selectedOrder.lastName}
+                </p>
+                <dl className="mt-3 space-y-2 text-sm">
+                  <div>
+                    <dt className="text-xs font-medium text-gray-500">Email</dt>
+                    <dd>
+                      <a
+                        href={`mailto:${selectedOrder.email}`}
+                        className="break-all text-falco-accent underline-offset-2 hover:underline"
+                      >
+                        {selectedOrder.email}
+                      </a>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-medium text-gray-500">Phone</dt>
+                    <dd className="text-gray-900">
+                      {selectedOrder.phone ? (
+                        <a href={`tel:${String(selectedOrder.phone).replace(/\s/g, '')}`} className="text-falco-accent hover:underline">
+                          {selectedOrder.phone}
+                        </a>
+                      ) : (
+                        <span className="text-gray-400">Not provided</span>
+                      )}
+                    </dd>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <span
+                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        selectedOrder.paymentStatus === 'paid'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-amber-100 text-amber-900'
+                      }`}
+                    >
+                      Payment: {selectedOrder.paymentStatus || 'unknown'}
+                    </span>
+                    <span
+                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[selectedOrder.status] || 'bg-gray-100 text-gray-800'}`}
+                    >
+                      Order: {selectedOrder.status}
+                    </span>
+                  </div>
+                  {selectedOrder.paymentIntentId ? (
+                    <p className="text-xs text-gray-500">
+                      Stripe payment: <code className="rounded bg-gray-200 px-1 py-0.5">{selectedOrder.paymentIntentId}</code>
+                    </p>
+                  ) : null}
+                </dl>
+              </div>
+
+              {/* Shipping */}
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Customer</h3>
-                <p className="text-sm text-gray-600">{selectedOrder.email}</p>
-                <div className="text-sm text-gray-600 mt-1">
-                  {selectedOrder.firstName} {selectedOrder.lastName}<br />
-                  {selectedOrder.shippingLine1 && <>{selectedOrder.shippingLine1}<br /></>}
-                  {selectedOrder.shippingCity && (
-                    <>{selectedOrder.shippingCity}, {selectedOrder.shippingState} {selectedOrder.shippingPostal}</>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700">Shipping address</h3>
+                <div className="mt-2 rounded-xl border border-gray-200 bg-white p-4 text-sm leading-relaxed text-gray-800">
+                  {selectedOrder.shippingLine1 || selectedOrder.shippingCity ? (
+                    <>
+                      {selectedOrder.shippingLine1 ? <p>{selectedOrder.shippingLine1}</p> : null}
+                      {selectedOrder.shippingLine2 ? <p>{selectedOrder.shippingLine2}</p> : null}
+                      <p>
+                        {[selectedOrder.shippingCity, selectedOrder.shippingState, selectedOrder.shippingPostal]
+                          .filter(Boolean)
+                          .join(', ')}
+                      </p>
+                      {selectedOrder.shippingCountry ? (
+                        <p className="font-medium text-gray-900">{selectedOrder.shippingCountry}</p>
+                      ) : null}
+                    </>
+                  ) : (
+                    <p className="text-gray-400 italic">No shipping address on file</p>
                   )}
                 </div>
               </div>
