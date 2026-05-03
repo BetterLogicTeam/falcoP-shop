@@ -155,15 +155,6 @@ export default function AdminLogin() {
               )}
             </button>
           </form>
-
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-blue-500/20 border border-blue-500/30 rounded-xl">
-            <h3 className="text-blue-300 font-semibold mb-2">Demo Credentials:</h3>
-            <div className="text-sm text-blue-200 space-y-1">
-              <p><strong>Email:</strong> admin@falcop.com</p>
-              <p><strong>Password:</strong> admin123</p>
-            </div>
-          </div>
         </div>
 
         {/* Back to Site */}
