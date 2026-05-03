@@ -3,8 +3,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  /// Pooled URL (e.g. Supabase :6543 + pgbouncer) — fine for the app at runtime.
+  url       = env("DATABASE_URL")
+  /// Direct Postgres URL (e.g. Supabase :5432). Required for `prisma db push` / migrate — pooler :6543 often hangs or fails on DDL.
+  directUrl = env("DIRECT_URL")
 }
 
 model Admin {
@@ -66,8 +69,10 @@ model Product {
   originalPrice   Float?
   rating          Float          @default(0)
   reviewCount     Int            @default(0)
+  /// Primary/cover image URL (shop cards, cart). Should match first entry in `images` when possible.
   image           String
-  images          String[]
+  /// Full gallery: same order as storefront — [0] is cover, rest are extra angles for slider/zoom.
+  images          String[]       @default([])
   badge           String?
   colors          String[]
   sizes           String[]

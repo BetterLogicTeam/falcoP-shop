@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { requireAdmin } from '@/lib/require-admin'
+import { normalizeProductGallery } from '@/lib/normalizeProductGallery'
 
 // Helper function to generate slug
 function generateSlug(name: string): string {
@@ -36,7 +37,7 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(product)
+    return NextResponse.json(normalizeProductGallery(product))
   } catch (error) {
     console.error('Error fetching product:', error)
     return NextResponse.json(
@@ -94,6 +95,28 @@ export async function PUT(
       }
     }
 
+    let imageUpdate: { image?: string; images?: string[] } = {}
+    if (body.images !== undefined && Array.isArray(body.images)) {
+      const trimmed = body.images
+        .filter((u: unknown) => typeof u === 'string' && String(u).trim())
+        .map((u: string) => u.trim())
+        .slice(0, 15)
+      const primary =
+        typeof body.image === 'string' && body.image.trim()
+          ? body.image.trim()
+          : trimmed[0] || existingProduct.image
+      const seen = new Set<string>()
+      const gallery: string[] = []
+      for (const u of [primary, ...trimmed]) {
+        if (!u || seen.has(u)) continue
+        seen.add(u)
+        gallery.push(u)
+      }
+      imageUpdate = { image: gallery[0] || existingProduct.image, images: gallery }
+    } else if (body.image !== undefined && typeof body.image === 'string' && body.image.trim()) {
+      imageUpdate = { image: body.image.trim() }
+    }
+
     // Update product
     const product = await prisma.product.update({
       where: { id },
@@ -108,8 +131,7 @@ export async function PUT(
         }),
         ...(body.rating !== undefined && { rating: parseFloat(body.rating) }),
         ...(body.reviews !== undefined && { reviewCount: body.reviews }),
-        ...(body.image && { image: body.image }),
-        ...(body.images && { images: body.images }),
+        ...imageUpdate,
         ...(body.badge !== undefined && { badge: body.badge || null }),
         ...(body.colors && { colors: body.colors }),
         ...(body.sizes && { sizes: body.sizes }),
@@ -123,7 +145,7 @@ export async function PUT(
       },
     })
 
-    return NextResponse.json(product)
+    return NextResponse.json(normalizeProductGallery(product))
   } catch (error) {
     console.error('Error updating product:', error)
     return NextResponse.json(

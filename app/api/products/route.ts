@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { requireAdmin } from '@/lib/require-admin'
+import { normalizeProductGallery } from '@/lib/normalizeProductGallery'
 
 // Helper function to generate slug
 function generateSlug(name: string): string {
@@ -78,7 +79,7 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json({
-      products,
+      products: products.map((p) => normalizeProductGallery(p)),
       pagination: {
         page,
         limit,
@@ -126,6 +127,24 @@ export async function POST(request: NextRequest) {
       counter++
     }
 
+    const rawImages = Array.isArray(body.images) ? body.images : []
+    const trimmed = rawImages
+      .filter((u: unknown) => typeof u === 'string' && String(u).trim())
+      .map((u: string) => u.trim())
+      .slice(0, 15)
+    const fallback = '/images/placeholder-product.jpg'
+    const primary =
+      typeof body.image === 'string' && body.image.trim()
+        ? body.image.trim()
+        : trimmed[0] || fallback
+    const seen = new Set<string>()
+    const gallery: string[] = []
+    for (const u of [primary, ...trimmed]) {
+      if (!u || seen.has(u)) continue
+      seen.add(u)
+      gallery.push(u)
+    }
+
     // Create product
     const product = await prisma.product.create({
       data: {
@@ -138,8 +157,8 @@ export async function POST(request: NextRequest) {
         originalPrice: body.originalPrice ? parseFloat(body.originalPrice) : null,
         rating: body.rating ? parseFloat(body.rating) : 0,
         reviewCount: body.reviews || 0,
-        image: body.image || '/images/products/placeholder.jpg',
-        images: body.images || [],
+        image: gallery[0] || fallback,
+        images: gallery,
         badge: body.badge || null,
         colors: body.colors || [],
         sizes: body.sizes || [],
@@ -153,7 +172,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(product, { status: 201 })
+    return NextResponse.json(normalizeProductGallery(product), { status: 201 })
   } catch (error) {
     console.error('Error creating product:', error)
     return NextResponse.json(

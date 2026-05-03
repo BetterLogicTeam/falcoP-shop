@@ -40,26 +40,9 @@ export const FOOTWEAR_SIZE_GUIDE_BLOCKS: FootwearSizeGuideBlock[] = [
   },
 ]
 
-export const FOOTWEAR_CHART_IMAGES = {
-  primary: '/images/size1.jpeg',
-  alternate: '/images/size2.jpeg',
-} as const
-
-/** Extra reference images below the chart */
-export const FOOTWEAR_CHART_SECTIONS = [
-  {
-    title: 'Chart image 1',
-    caption: 'Visual reference — compare with the EU / US / UK / cm chart above.',
-    src: FOOTWEAR_CHART_IMAGES.primary,
-    alt: 'Falco P footwear size chart image — US, UK, EU reference',
-  },
-  {
-    title: 'Chart image 2',
-    caption: 'Foot length and sizing reference — use together with the chart above.',
-    src: FOOTWEAR_CHART_IMAGES.alternate,
-    alt: 'Falco P footwear size chart image — foot length reference',
-  },
-] as const
+/** Shown on footwear size guide (PDP + /size-guide) — no extra chart photos. */
+export const FOOTWEAR_FITTING_ADVICE =
+  'Advice: Falco P footwear tends to run large compared to many other brands. We recommend choosing one EU / US size smaller than you usually wear elsewhere, then checking your foot length (cm) in the chart above.'
 
 export const FOOT_MEASURE_STEPS = [
   'Tape a piece of paper to a hard, flat surface, ensuring the paper does not slip.',
@@ -67,7 +50,7 @@ export const FOOT_MEASURE_STEPS = [
   'With a pen or pencil pointed straight down, have someone help you mark the tip of the big toe and the outermost part of the heel.',
   'Step off the paper and measure the distance between the two marks. That is your foot length.',
   'Repeat with the other foot. Many people have one foot slightly longer — use the longer measurement.',
-  'Match your foot length (cm) to the chart above with EU, US, and UK. If you are between sizes, we recommend sizing up.',
+  'Match your foot length (cm) to the chart above with EU and US. If you are between sizes, prefer the smaller size unless the cm measurement clearly fits the larger row.',
 ] as const
 
 export const APPAREL_ROWS = [

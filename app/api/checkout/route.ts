@@ -6,6 +6,7 @@ import prisma from '@/lib/prisma'
 import { getShippingCostBySubtotal, sekToOre } from '@/lib/currency'
 import { calculateCouponDiscount } from '@/lib/coupons'
 import Stripe from 'stripe'
+import { sendOrderReceiptEmail } from '@/lib/sendOrderReceiptEmail'
 
 const MAX_LINE_ITEMS = 50
 const MAX_LINE_QTY = 99
@@ -230,6 +231,12 @@ export async function POST(request: NextRequest) {
 
       return createdOrder
     })
+
+    if (order.paymentStatus === 'paid' && order.email) {
+      void sendOrderReceiptEmail(order).catch((err) => {
+        console.error('[checkout] purchase thank-you email failed:', err)
+      })
+    }
 
     return NextResponse.json({
       success: true,

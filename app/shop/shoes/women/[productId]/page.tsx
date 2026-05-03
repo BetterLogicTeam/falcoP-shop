@@ -12,6 +12,8 @@ import CartButton from '../../../../../components/CartButton'
 import SizeGuide from '@/components/SizeGuide'
 import { formatPrice, SHIPPING_COST_SEK } from '@/lib/currency'
 import { shoeDisplayColors } from '@/lib/shoeDisplayColors'
+import ProductImageGallery from '@/components/ProductImageGallery'
+import { productGalleryUrls } from '@/lib/productGalleryUrls'
 
 const ProductDetailPage = () => {
   const params = useParams()
@@ -23,7 +25,6 @@ const ProductDetailPage = () => {
   const [wishlistLoading, setWishlistLoading] = useState(false)
   const [selectedColor, setSelectedColor] = useState('')
   const [quantity, setQuantity] = useState(1)
-  const [activeImageIndex, setActiveImageIndex] = useState(0)
 
   const product = products.find(p => p.id === productId)
 
@@ -111,20 +112,7 @@ const ProductDetailPage = () => {
       <div className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div className="space-y-6">
-              <div className="aspect-square bg-gray-800 rounded-2xl overflow-hidden">
-                <img src={product.images[activeImageIndex] || product.image} alt={product.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/images/placeholder-product.jpg' }} />
-              </div>
-              {product.images.length > 1 && (
-                <div className="flex space-x-4 overflow-x-auto">
-                  {product.images.map((img, index) => (
-                    <button key={index} onClick={() => setActiveImageIndex(index)} className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors duration-300 ${activeImageIndex === index ? 'border-falco-accent' : 'border-gray-600'}`}>
-                      <img src={img} alt={`${product.name} ${index + 1}`} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/images/placeholder-product.jpg' }} />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <ProductImageGallery urls={productGalleryUrls(product)} alt={product.name} />
 
             <div className="space-y-8">
               <div>

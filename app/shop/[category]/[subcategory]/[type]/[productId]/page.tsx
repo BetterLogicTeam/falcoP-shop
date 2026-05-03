@@ -13,6 +13,8 @@ import CartButton from '../../../../../../components/CartButton'
 import SizeGuide from '@/components/SizeGuide'
 import { formatPrice, SHIPPING_COST_SEK } from '@/lib/currency'
 import { shoeDisplayColors } from '@/lib/shoeDisplayColors'
+import ProductImageGallery from '@/components/ProductImageGallery'
+import { productGalleryUrls } from '@/lib/productGalleryUrls'
 
 interface ProductDetailPageProps {
   params: {
@@ -30,7 +32,6 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
   const [selectedSize, setSelectedSize] = useState('')
   const [selectedColor, setSelectedColor] = useState('')
   const [quantity, setQuantity] = useState(1)
-  const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [wishlistLoading, setWishlistLoading] = useState(false)
 
   // Find the product by ID
@@ -152,50 +153,7 @@ const ProductDetailPage = ({ params }: ProductDetailPageProps) => {
       <div className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Product Images */}
-            <div className="space-y-6">
-              {/* Main Image */}
-              <div className="aspect-square bg-gray-800 rounded-2xl overflow-hidden">
-                <Image
-                  src={product.images[activeImageIndex] || product.image}
-                  alt={product.name}
-                  width={600}
-                  height={600}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = '/images/placeholder-product.jpg'
-                  }}
-                />
-              </div>
-              
-              {/* Thumbnail Images */}
-              {product.images.length > 1 && (
-                <div className="flex space-x-4 overflow-x-auto">
-                  {product.images.map((img, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setActiveImageIndex(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors duration-300 ${
-                        activeImageIndex === index ? 'border-falco-accent' : 'border-gray-600'
-                      }`}
-                    >
-                      <Image
-                        src={img}
-                        alt={`${product.name} ${index + 1}`}
-                        width={80}
-                        height={80}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.src = '/images/placeholder-product.jpg'
-                        }}
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <ProductImageGallery urls={productGalleryUrls(product)} alt={product.name} />
 
             {/* Product Info */}
             <div className="space-y-8">

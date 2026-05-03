@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react'
 import { X, Plus, Minus } from 'lucide-react'
-import Image from 'next/image'
 import { Product } from '../data/products'
 import { useCart } from '../contexts/CartContext'
 import toast from 'react-hot-toast'
 import { formatPrice } from '../lib/currency'
 import { shoeDisplayColors } from '@/lib/shoeDisplayColors'
+import ProductImageGallery from '@/components/ProductImageGallery'
+import { productGalleryUrls } from '@/lib/productGalleryUrls'
 
 interface ProductSelectionModalProps {
   product: Product | null
@@ -20,8 +21,6 @@ export default function ProductSelectionModal({ product, isOpen, onClose }: Prod
   const [selectedSize, setSelectedSize] = useState<string>('')
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [quantity, setQuantity] = useState(1)
-  const [activeImageIndex, setActiveImageIndex] = useState(0)
-  const [isZoomOpen, setIsZoomOpen] = useState(false)
 
   const modalColorOptions =
     product && product.subcategory === 'shoes' ? shoeDisplayColors(product.colors) : product?.colors ?? []
@@ -65,9 +64,6 @@ export default function ProductSelectionModal({ product, isOpen, onClose }: Prod
 
   if (!isOpen || !product) return null
 
-  const images = (product.images && product.images.length > 0) ? product.images : [product.image]
-  const activeImage = images[Math.min(activeImageIndex, images.length - 1)]
-
   return (
     <>
       {/* Backdrop */}
@@ -100,48 +96,13 @@ export default function ProductSelectionModal({ product, isOpen, onClose }: Prod
           </div>
 
           <div className="p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-6 pb-8 sm:pb-5 md:pb-6">
-            {/* Product Image + Gallery */}
-            <div className="space-y-3 rounded-xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-2.5 sm:p-3">
-              {/* Main image */}
-              <div
-                className="relative w-full h-40 min-h-[10rem] sm:h-48 sm:min-h-[12rem] md:h-52 rounded-xl overflow-hidden shadow-md border-2 border-gray-200 cursor-zoom-in"
-                onClick={() => setIsZoomOpen(true)}
-              >
-                <Image
-                  src={activeImage}
-                  alt={product.name}
-                  fill
-                  className="object-cover transition-transform duration-300 hover:scale-105"
-                />
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full">
-                  <span className="text-xs font-semibold text-gray-700">
-                    Preview {images.length > 1 ? `(${activeImageIndex + 1}/${images.length})` : ''}
-                  </span>
-                </div>
-              </div>
-
-              {/* Thumbnails */}
-              {images.length > 1 && (
-                <div className="flex items-center justify-center gap-2 overflow-x-auto pb-1">
-                  {images.map((img, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => setActiveImageIndex(index)}
-                      className={`relative w-14 h-14 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                        index === activeImageIndex ? 'border-falco-accent shadow-md' : 'border-gray-200 hover:border-gray-400'
-                      }`}
-                    >
-                      <Image
-                        src={img}
-                        alt={`${product.name} angle ${index + 1}`}
-                        fill
-                        className="object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
+            <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-white to-gray-50 p-2.5 sm:p-3">
+              <ProductImageGallery
+                key={product.id}
+                urls={productGalleryUrls(product)}
+                alt={product.name}
+                compact
+              />
             </div>
 
             {/* Product Info */}
@@ -268,55 +229,6 @@ export default function ProductSelectionModal({ product, isOpen, onClose }: Prod
       </div>
 
       {/* Fullscreen zoom viewer */}
-      {isZoomOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/70 z-[60]"
-            onClick={() => setIsZoomOpen(false)}
-            aria-hidden
-          />
-          <div className="fixed inset-0 z-[61] flex items-center justify-center p-4">
-            <div className="relative w-full max-w-3xl h-[70vh] bg-black rounded-2xl overflow-hidden flex items-center justify-center">
-              <Image
-                src={activeImage}
-                alt={product.name}
-                fill
-                className="object-contain"
-              />
-              {/* Close */}
-              <button
-                type="button"
-                onClick={() => setIsZoomOpen(false)}
-                className="absolute top-3 right-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
-                aria-label="Close image zoom"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              {/* Prev / Next */}
-              {images.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length)}
-                    className="absolute left-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
-                    aria-label="Previous image"
-                  >
-                    ‹
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveImageIndex((prev) => (prev + 1) % images.length)}
-                    className="absolute right-3 p-2 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
-                    aria-label="Next image"
-                  >
-                    ›
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </>
-      )}
     </>
   )
 }

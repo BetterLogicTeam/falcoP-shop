@@ -57,6 +57,13 @@ export async function POST(request: NextRequest) {
     }
 
     const fullName = `${customerInfo.firstName || ''} ${customerInfo.lastName || ''}`.trim() || 'Customer'
+    const customerEmailRaw =
+      typeof customerInfo?.email === 'string' ? customerInfo.email.trim() : ''
+    const receiptEmail =
+      customerEmailRaw && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmailRaw)
+        ? customerEmailRaw
+        : undefined
+
     const metadata = {
       customerEmail: customerInfo.email,
       customerName: fullName,
@@ -98,6 +105,7 @@ export async function POST(request: NextRequest) {
       currency,
       metadata,
       ...(shipping ? { shipping } : {}),
+      ...(receiptEmail ? { receipt_email: receiptEmail } : {}),
     }
 
     /**

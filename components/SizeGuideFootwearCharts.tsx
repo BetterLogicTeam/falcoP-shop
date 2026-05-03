@@ -1,8 +1,7 @@
 'use client'
 
-import Image from 'next/image'
 import {
-  FOOTWEAR_CHART_SECTIONS,
+  FOOTWEAR_FITTING_ADVICE,
   FOOTWEAR_SIZE_GUIDE_BLOCKS,
   FOOT_MEASURE_STEPS,
   type FootwearSizeGuideBlock,
@@ -99,46 +98,33 @@ export default function SizeGuideFootwearCharts({ dense }: SizeGuideFootwearChar
         </ol>
       </section>
 
-      <section className={dense ? 'space-y-8 pt-4' : 'space-y-6 border-t border-gray-800 pt-6'}>
-        <div>
-          <h2
-            className={
-              dense ? 'text-lg font-semibold text-white' : 'text-sm font-semibold text-white'
-            }
-          >
-            Chart images
-          </h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Scroll horizontally if needed. Use together with the EU / US / cm chart above.
-          </p>
-        </div>
-        <div className="space-y-8">
-          {FOOTWEAR_CHART_SECTIONS.map((section) => (
-            <div key={section.src} className="space-y-3">
-              <div>
-                <h3
-                  className={
-                    dense ? 'text-base font-semibold text-white' : 'text-sm font-semibold text-white'
-                  }
-                >
-                  {section.title}
-                </h3>
-                <p className="mt-1 text-sm text-gray-500">{section.caption}</p>
-              </div>
-              <div className="overflow-x-auto rounded-xl border border-gray-700 bg-black/30 shadow-inner">
-                <Image
-                  src={section.src}
-                  alt={section.alt}
-                  width={1400}
-                  height={900}
-                  className="h-auto min-w-[min(100%,720px)] w-full max-w-full object-contain object-left-top"
-                  sizes="(max-width: 768px) 100vw, 900px"
-                  unoptimized
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+      <section
+        className={
+          dense
+            ? 'rounded-2xl border border-falco-accent/40 bg-gradient-to-br from-falco-accent/15 to-black/40 p-5 sm:p-6'
+            : 'rounded-xl border border-falco-accent/35 bg-gradient-to-br from-falco-accent/12 to-black/50 p-4 sm:p-5'
+        }
+        aria-labelledby="footwear-fitting-advice-heading"
+      >
+        <h2
+          id="footwear-fitting-advice-heading"
+          className={
+            dense
+              ? 'text-lg font-bold tracking-tight text-falco-accent'
+              : 'text-sm font-bold uppercase tracking-wide text-falco-accent'
+          }
+        >
+          Fitting advice
+        </h2>
+        <p
+          className={
+            dense
+              ? 'mt-3 text-base leading-relaxed text-gray-100'
+              : 'mt-2 text-sm leading-relaxed text-gray-200'
+          }
+        >
+          {FOOTWEAR_FITTING_ADVICE}
+        </p>
       </section>
     </div>
   )

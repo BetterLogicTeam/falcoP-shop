@@ -64,6 +64,7 @@ Subscriber discount code: ${discountCode}
 Subscriber joined from the main newsletter section on ${window.location.href}`
       }
 
+      let didEmailFail = false
       try {
         const response = await emailjs.send(
           EMAILJS_CONFIG.SERVICE_ID,
@@ -73,9 +74,11 @@ Subscriber joined from the main newsletter section on ${window.location.href}`
         )
         if (response.status !== 200) {
           console.warn('EmailJS returned non-200:', response.status)
+          didEmailFail = true
         }
       } catch (emailErr) {
         console.warn('EmailJS notification failed (subscriber still saved):', emailErr)
+        didEmailFail = true
       }
 
       setStatus('success')
@@ -84,8 +87,11 @@ Subscriber joined from the main newsletter section on ${window.location.href}`
         'newsletter.subscriber_code_line',
         'Use code {{code}} at checkout for 10% off (one use per email).'
       ).replace(/\{\{code\}\}/g, discountCode)
+      const deliveryLine = didEmailFail
+        ? '\n\nNote: We saved your subscription, but the confirmation email could not be delivered right now. Please try again later or contact support.'
+        : ''
       setMessage(
-        `${t('newsletter.success_message', '🚀 Successfully subscribed! Welcome to the Falco P family.')}\n\n${codeLine}`
+        `${t('newsletter.success_message', '🚀 Successfully subscribed! Welcome to the Falco P family.')}\n\n${codeLine}${deliveryLine}`
       )
       setEmail('')
     } catch (error) {

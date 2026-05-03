@@ -288,6 +288,13 @@ function OrderConfirmationContent() {
                 ? `We saved order #${order?.orderNumber || 'N/A'}, but payment is not confirmed yet.`
                 : 'No order was created because payment was not completed.'}
             </p>
+            {paymentIsConfirmed && order?.email ? (
+              <p className="mt-3 text-base text-gray-600">
+                A purchase confirmation and receipt summary are being sent to{' '}
+                <span className="font-semibold text-gray-800">{order.email}</span>. Check your spam
+                folder if they do not arrive within a few minutes.
+              </p>
+            ) : null}
           </div>
 
           {/* Order Details Card */}

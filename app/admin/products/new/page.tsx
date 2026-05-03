@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, Upload, X, Save, Loader2 } from 'lucide-react'
+import { ArrowLeft, Upload, X, Save, Loader2, ChevronUp, ChevronDown, Star } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
+
+const MAX_GALLERY_IMAGES = 12
 
 const ProductForm = () => {
   const router = useRouter()
@@ -23,7 +25,7 @@ const ProductForm = () => {
     stock: 'In Stock'
   })
 
-  const [imagePreview, setImagePreview] = useState('')
+  const [galleryUrls, setGalleryUrls] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
 
@@ -55,74 +57,90 @@ const ProductForm = () => {
     }))
   }
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('Image change triggered', e.target.files)
-    const file = e.target.files?.[0]
-    if (file) {
-      console.log('File selected:', file.name, file.type, file.size)
+  const uploadOneToCloudinary = async (file: File): Promise<string> => {
+    const fd = new FormData()
+    fd.append('file', file)
+    const response = await fetch('/api/upload', { method: 'POST', body: fd })
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}))
+      throw new Error(error.error || 'Failed to upload image')
+    }
+    const result = await response.json()
+    return result.url as string
+  }
 
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file')
-        return
-      }
+  const handleGalleryFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    e.target.value = ''
+    if (!files.length) return
 
-      // Validate file size (max 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error('File size must be less than 10MB')
-        return
-      }
+    const remaining = MAX_GALLERY_IMAGES - galleryUrls.length
+    if (remaining <= 0) {
+      toast.error(`Maximum ${MAX_GALLERY_IMAGES} images per product`)
+      return
+    }
+    const toUpload = files.slice(0, remaining)
+    if (files.length > remaining) {
+      toast(`Only the first ${remaining} file(s) were queued (max ${MAX_GALLERY_IMAGES} images).`)
+    }
 
-      // Show local preview immediately
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
-
-      // Upload to Cloudinary
-      setIsUploading(true)
-      try {
-        const formData = new FormData()
-        formData.append('file', file)
-
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        })
-
-        if (!response.ok) {
-          const error = await response.json()
-          throw new Error(error.error || 'Failed to upload image')
+    setIsUploading(true)
+    const uploaded: string[] = []
+    try {
+      for (const file of toUpload) {
+        if (!file.type.startsWith('image/')) {
+          toast.error(`${file.name} is not an image file`)
+          continue
         }
-
-        const result = await response.json()
-        console.log('Image uploaded successfully:', result.url)
-
-        setFormData(prev => ({
-          ...prev,
-          image: result.url
-        }))
-
-        toast.success('Image uploaded successfully!')
-      } catch (error) {
-        console.error('Error uploading image:', error)
-        toast.error(error instanceof Error ? error.message : 'Failed to upload image')
-        setImagePreview('')
-      } finally {
-        setIsUploading(false)
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`${file.name} must be under 10MB`)
+          continue
+        }
+        uploaded.push(await uploadOneToCloudinary(file))
       }
-    } else {
-      console.log('No file selected')
+      if (uploaded.length > 0) {
+        setGalleryUrls((prev) => {
+          const next = [...prev, ...uploaded].slice(0, MAX_GALLERY_IMAGES)
+          setFormData((f) => ({ ...f, image: next[0] || '' }))
+          return next
+        })
+        toast.success(`${uploaded.length} image(s) uploaded`)
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to upload image(s)')
+    } finally {
+      setIsUploading(false)
     }
   }
 
-  const removeImage = () => {
-    setImagePreview('')
-    setFormData(prev => ({
-      ...prev,
-      image: ''
-    }))
+  const removeGalleryAt = (index: number) => {
+    setGalleryUrls((prev) => {
+      const next = prev.filter((_, i) => i !== index)
+      setFormData((f) => ({ ...f, image: next[0] || '' }))
+      return next
+    })
+  }
+
+  const moveGallery = (index: number, direction: -1 | 1) => {
+    setGalleryUrls((prev) => {
+      const next = [...prev]
+      const to = index + direction
+      if (to < 0 || to >= next.length) return prev
+      ;[next[index], next[to]] = [next[to], next[index]]
+      setFormData((f) => ({ ...f, image: next[0] || '' }))
+      return next
+    })
+  }
+
+  const setCoverAt = (index: number) => {
+    if (index === 0) return
+    setGalleryUrls((prev) => {
+      const next = [...prev]
+      const [item] = next.splice(index, 1)
+      next.unshift(item)
+      setFormData((f) => ({ ...f, image: next[0] || '' }))
+      return next
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -141,8 +159,12 @@ const ProductForm = () => {
         price: parseFloat(formData.price),
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
         description: formData.description,
-        image: formData.image || '/images/placeholder-product.jpg',
-        images: [formData.image || '/images/placeholder-product.jpg'],
+        image:
+          (galleryUrls[0] || formData.image || '/images/placeholder-product.jpg'),
+        images:
+          galleryUrls.length > 0
+            ? galleryUrls
+            : [formData.image || '/images/placeholder-product.jpg'],
         badge: formData.badge || undefined,
         rating: parseFloat(formData.rating),
         reviews: parseInt(formData.reviews),
@@ -348,77 +370,97 @@ const ProductForm = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Image Upload */}
+            {/* Image gallery upload */}
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Product Image</h2>
-              
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Product preview"
-                    className={`w-full h-48 object-cover rounded-lg ${isUploading ? 'opacity-50' : ''}`}
-                  />
-                  {isUploading && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="bg-black/70 rounded-lg px-4 py-2 flex items-center space-x-2">
-                        <Loader2 className="w-5 h-5 text-white animate-spin" />
-                        <span className="text-white text-sm">Uploading...</span>
+              <h2 className="text-xl font-semibold text-gray-900 mb-1">Product images</h2>
+              <p className="text-sm text-gray-600 mb-4">
+                Add several photos (storefront gallery + zoom). First image is the main cover.
+              </p>
+
+              {galleryUrls.length > 0 && (
+                <ul className="grid grid-cols-2 gap-3 mb-4">
+                  {galleryUrls.map((url, index) => (
+                    <li
+                      key={`${url}-${index}`}
+                      className="relative group rounded-lg border border-gray-200 overflow-hidden bg-gray-50"
+                    >
+                      <img src={url} alt="" className="w-full h-28 object-cover" />
+                      {index === 0 && (
+                        <span className="absolute top-1 left-1 flex items-center gap-0.5 rounded bg-falco-accent text-black text-[10px] font-bold px-1.5 py-0.5">
+                          <Star className="w-3 h-3 fill-current" /> Cover
+                        </span>
+                      )}
+                      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between gap-1 bg-black/60 p-1">
+                        <div className="flex gap-0.5">
+                          <button
+                            type="button"
+                            disabled={index === 0 || isUploading}
+                            onClick={() => moveGallery(index, -1)}
+                            className="p-1 rounded bg-white/90 hover:bg-white disabled:opacity-40"
+                            aria-label="Move up"
+                          >
+                            <ChevronUp className="w-4 h-4 text-gray-800" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={index === galleryUrls.length - 1 || isUploading}
+                            onClick={() => moveGallery(index, 1)}
+                            className="p-1 rounded bg-white/90 hover:bg-white disabled:opacity-40"
+                            aria-label="Move down"
+                          >
+                            <ChevronDown className="w-4 h-4 text-gray-800" />
+                          </button>
+                        </div>
+                        {index !== 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setCoverAt(index)}
+                            className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-falco-accent/90 hover:bg-falco-accent text-black"
+                          >
+                            Cover
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removeGalleryAt(index)}
+                          className="p-1 rounded bg-red-500 text-white hover:bg-red-600"
+                          aria-label="Remove"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
-                    </div>
-                  )}
-                  {!isUploading && (
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
-                  <div className="absolute bottom-2 left-2 right-2">
-                    <label className={`cursor-pointer bg-black/50 text-white px-3 py-1 rounded text-sm hover:bg-black/70 transition-colors ${isUploading ? 'pointer-events-none opacity-50' : ''}`}>
-                      Change Image
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="hidden"
-                        disabled={isUploading}
-                      />
-                    </label>
-                  </div>
-                </div>
-              ) : (
-                <div 
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-falco-accent hover:bg-falco-accent/5 transition-all cursor-pointer"
-                  onClick={() => document.getElementById('image-upload')?.click()}
-                >
-                  <Upload className="mx-auto h-12 w-12 text-gray-400 group-hover:text-falco-accent" />
-                  <div className="mt-4">
-                    <div className="text-sm font-medium text-gray-900 group-hover:text-falco-accent">
-                      Click to upload an image
-                    </div>
-                    <input
-                      id="image-upload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
-                    <p className="mt-1 text-xs text-gray-500">
-                      PNG, JPG up to 10MB
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => document.getElementById('image-upload')?.click()}
-                      className="mt-2 px-3 py-1 bg-falco-accent text-black text-xs rounded hover:bg-falco-gold transition-colors"
-                    >
-                      Browse Files
-                    </button>
-                  </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {isUploading && (
+                <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Uploading…
                 </div>
               )}
+
+              <label
+                className={`flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-colors cursor-pointer hover:border-falco-accent hover:bg-falco-accent/5 ${
+                  isUploading ? 'pointer-events-none opacity-50' : ''
+                }`}
+              >
+                <Upload className="mx-auto h-10 w-10 text-gray-400" />
+                <span className="mt-2 text-sm font-medium text-gray-900">Add photos</span>
+                <span className="text-xs text-gray-500 mt-1">
+                  PNG, JPG up to 10MB each — max {MAX_GALLERY_IMAGES} images ({galleryUrls.length} / {MAX_GALLERY_IMAGES})
+                </span>
+                <input
+                  id="gallery-upload"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  disabled={isUploading || galleryUrls.length >= MAX_GALLERY_IMAGES}
+                  onChange={handleGalleryFiles}
+                />
+              </label>
             </div>
 
             {/* Product Details */}

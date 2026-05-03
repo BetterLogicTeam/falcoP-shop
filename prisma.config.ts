@@ -9,5 +9,7 @@ export default defineConfig({
   },
   datasource: {
     url: env("DATABASE_URL"),
+    // Used by CLI (`db push`, migrate) for DDL — must not be only the :6543 pooler URL.
+    directUrl: env("DIRECT_URL"),
   },
 });
