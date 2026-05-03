@@ -37,8 +37,11 @@ export default function ProductImageGallery({
   const urlKey = urls.join('|')
   const [activeIndex, setActiveIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
-  const [zoomIdx, setZoomIdx] = useState(2)
+  /** Lightbox opens at 100% (index 0 in ZOOM_LEVELS). */
+  const [zoomIdx, setZoomIdx] = useState(0)
   const zoom = ZOOM_LEVELS[Math.min(zoomIdx, ZOOM_LEVELS.length - 1)]
+  /** Prev/next “pills” in lightbox: tap image area to hide/show (e.g. clean screenshot on mobile). */
+  const [lightboxNavVisible, setLightboxNavVisible] = useState(true)
 
   const [hoverZoom, setHoverZoom] = useState(false)
   const [origin, setOrigin] = useState({ x: '50%', y: '50%' })
@@ -99,10 +102,11 @@ export default function ProductImageGallery({
   const zoomIn = () =>
     setZoomIdx((i) => Math.min(i + 1, ZOOM_LEVELS.length - 1))
   const zoomOut = () => setZoomIdx((i) => Math.max(i - 1, 0))
-  const zoomReset = () => setZoomIdx(2)
+  const zoomReset = () => setZoomIdx(0)
 
   const openLightbox = () => {
-    zoomReset()
+    setZoomIdx(0)
+    setLightboxNavVisible(true)
     setLightboxOpen(true)
   }
 
@@ -238,7 +242,10 @@ export default function ProductImageGallery({
           aria-modal="true"
           aria-label="Product image viewer"
         >
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 sm:px-4">
+          <div
+            className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 sm:px-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <span className="text-sm text-white/90">
               {safeIndex + 1} / {urls.length}
             </span>
@@ -281,7 +288,11 @@ export default function ProductImageGallery({
             </div>
           </div>
 
-          <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-auto p-4">
+          <div
+            className="relative flex min-h-0 flex-1 cursor-default items-center justify-center overflow-auto p-4"
+            onClick={() => setLightboxNavVisible((v) => !v)}
+            role="presentation"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element -- dynamic zoom transform */}
             <img
               src={currentSrc}
@@ -300,16 +311,26 @@ export default function ProductImageGallery({
               <>
                 <button
                   type="button"
-                  onClick={goPrev}
-                  className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/20 bg-black/60 p-2 text-white hover:bg-black/80 sm:left-4"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    goPrev()
+                  }}
+                  className={`absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/20 bg-black/60 p-2 text-white transition-opacity duration-200 hover:bg-black/80 sm:left-4 ${
+                    lightboxNavVisible ? 'opacity-100' : 'pointer-events-none opacity-0'
+                  }`}
                   aria-label="Previous"
                 >
                   <ChevronLeft className="h-8 w-8" />
                 </button>
                 <button
                   type="button"
-                  onClick={goNext}
-                  className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/20 bg-black/60 p-2 text-white hover:bg-black/80 sm:right-4"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    goNext()
+                  }}
+                  className={`absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border border-white/20 bg-black/60 p-2 text-white transition-opacity duration-200 hover:bg-black/80 sm:right-4 ${
+                    lightboxNavVisible ? 'opacity-100' : 'pointer-events-none opacity-0'
+                  }`}
                   aria-label="Next"
                 >
                   <ChevronRight className="h-8 w-8" />
