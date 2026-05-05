@@ -10,7 +10,7 @@ import { useCart } from '../../../../../contexts/CartContext'
 import toast from 'react-hot-toast'
 import CartButton from '../../../../../components/CartButton'
 import SizeGuide from '@/components/SizeGuide'
-import { formatPrice, SHIPPING_COST_SEK } from '@/lib/currency'
+import { formatPrice } from '@/lib/currency'
 import ProductImageGallery from '@/components/ProductImageGallery'
 import { productGalleryUrls } from '@/lib/productGalleryUrls'
 
@@ -154,7 +154,7 @@ const ProductDetailPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4 pt-8 border-t border-gray-800">
-                <div className="flex items-center space-x-3"><Truck className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Shipping</p><p className="text-gray-400 text-sm">Flat fee {formatPrice(SHIPPING_COST_SEK)}</p></div></div>
+                <div className="flex items-center space-x-3"><Truck className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Shipping</p><p className="text-gray-400 text-sm">Free shipping</p></div></div>
                 <div className="flex items-center space-x-3"><Shield className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Warranty</p><p className="text-gray-400 text-sm">1 year guarantee</p></div></div>
                 <div className="flex items-center space-x-3"><RotateCcw className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Easy Returns</p><p className="text-gray-400 text-sm">14 day return policy</p></div></div>
                 <div className="flex items-center space-x-3"><Award className="w-6 h-6 text-falco-accent" /><div><p className="text-white font-semibold">Premium Quality</p><p className="text-gray-400 text-sm">Certified materials</p></div></div>

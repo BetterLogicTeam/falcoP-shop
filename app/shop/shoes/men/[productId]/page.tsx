@@ -10,7 +10,7 @@ import { useCart } from '../../../../../contexts/CartContext'
 import toast from 'react-hot-toast'
 import CartButton from '../../../../../components/CartButton'
 import SizeGuide from '@/components/SizeGuide'
-import { formatPrice, SHIPPING_COST_SEK } from '@/lib/currency'
+import { formatPrice } from '@/lib/currency'
 import { shoeDisplayColors } from '@/lib/shoeDisplayColors'
 import ProductImageGallery from '@/components/ProductImageGallery'
 import { productGalleryUrls } from '@/lib/productGalleryUrls'
@@ -294,7 +294,7 @@ const ProductDetailPage = () => {
                   <Truck className="w-6 h-6 text-falco-accent" />
                   <div>
                     <p className="text-white font-semibold">Shipping</p>
-                    <p className="text-gray-400 text-sm">Flat fee {formatPrice(SHIPPING_COST_SEK)}</p>
+                    <p className="text-gray-400 text-sm">Free shipping</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">

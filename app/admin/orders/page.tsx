@@ -481,7 +481,11 @@ export default function AdminOrdersPage() {
                 </div>
                 <div className="flex justify-between text-sm mb-1">
                   <span>Shipping</span>
-                  <span>{formatPrice(selectedOrder.shippingCost ?? 0)}</span>
+                  <span>
+                    {(selectedOrder.shippingCost ?? 0) > 0
+                      ? formatPrice(selectedOrder.shippingCost!)
+                      : 'Free'}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm mb-1">
                   <span>Tax</span>

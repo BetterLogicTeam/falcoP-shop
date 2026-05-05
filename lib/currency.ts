@@ -6,15 +6,16 @@
 export const CURRENCY = 'SEK' as const
 export const CURRENCY_SYMBOL = 'kr'
 
-/** Flat shipping fee in SEK */
-export const SHIPPING_COST_SEK = 59
-export const FREE_SHIPPING_SUBTOTAL_SEK = 1998
+/** Legacy constant; shipping is not charged (always 0). */
+export const SHIPPING_COST_SEK = 0
+/** @deprecated No threshold; shipping is always free. */
+export const FREE_SHIPPING_SUBTOTAL_SEK = 0
 
 /**
- * Shipping is free when subtotal reaches FREE_SHIPPING_SUBTOTAL_SEK.
+ * Shipping is included at no extra charge.
  */
-export function getShippingCostBySubtotal(subtotal: number): number {
-  return subtotal >= FREE_SHIPPING_SUBTOTAL_SEK ? 0 : SHIPPING_COST_SEK
+export function getShippingCostBySubtotal(_subtotal: number): number {
+  return 0
 }
 
 /**

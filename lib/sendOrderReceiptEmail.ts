@@ -59,7 +59,7 @@ export async function sendOrderReceiptEmail(order: OrderWithItems): Promise<{ ok
     order_number: order.orderNumber,
     order_total: formatPrice(order.total),
     subtotal: formatPrice(order.subtotal),
-    shipping: formatPrice(order.shippingCost),
+    shipping: order.shippingCost > 0 ? formatPrice(order.shippingCost) : 'Free',
     discount: order.discount > 0 ? formatPrice(order.discount) : '—',
     items_summary: buildItemsSummary(order.items),
     shipping_address: buildShippingAddress(order) || '—',

@@ -282,7 +282,11 @@ export default function CustomerOrdersPage() {
                           </div>
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Shipping</span>
-                            <span>{formatPrice(order.shippingCost ?? 0)}</span>
+                            <span>
+                              {(order.shippingCost ?? 0) > 0
+                                ? formatPrice(order.shippingCost!)
+                                : 'Free'}
+                            </span>
                           </div>
                           {(order.discount ?? 0) > 0 && (
                             <div className="flex justify-between text-sm">

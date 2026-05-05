@@ -11,13 +11,7 @@ import { useClientTranslation } from '../../hooks/useClientTranslation'
 import StripeElementsProvider from '../../components/StripeElementsProvider'
 import PaymentForm from '../../components/PaymentForm'
 import toast from 'react-hot-toast'
-import {
-  formatPrice,
-  SHIPPING_COST_SEK,
-  FREE_SHIPPING_SUBTOTAL_SEK,
-  getShippingCostBySubtotal,
-  sekToOre,
-} from '@/lib/currency'
+import { formatPrice, getShippingCostBySubtotal, sekToOre } from '@/lib/currency'
 import { SHIPPING_COUNTRY_GROUPS } from '@/lib/shippingCountries'
 import { rememberOrderLookupEmail } from '@/lib/order-lookup'
 
@@ -609,9 +603,7 @@ export default function CheckoutPage() {
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                   <Check className="w-4 h-4 text-white" />
                 </div>
-                <span>
-                  Shipping {formatPrice(SHIPPING_COST_SEK)} (free on orders {formatPrice(FREE_SHIPPING_SUBTOTAL_SEK)} and above)
-                </span>
+                <span>Free shipping on all orders</span>
               </div>
               <div className="flex items-center space-x-3 text-sm text-gray-300">
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
