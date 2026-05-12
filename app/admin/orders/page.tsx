@@ -270,7 +270,7 @@ export default function AdminOrdersPage() {
                           {order.phone ? (
                             <div className="text-gray-500">{order.phone}</div>
                           ) : null}
-                          <p className="text-[10px] uppercase tracking-wide text-falco-accent pt-0.5">
+                          <p className="text-[10px] uppercase tracking-wide text-gray-500 pt-0.5">
                             Tap row for full buyer and shipping
                           </p>
                         </div>
@@ -325,7 +325,7 @@ export default function AdminOrdersPage() {
                             className="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-white px-2 py-1.5 text-xs font-medium text-gray-800 shadow-sm hover:bg-gray-50 hover:border-falco-accent/50"
                             title="Buyer, contact, shipping, line items"
                           >
-                            <Eye className="h-4 w-4 text-falco-accent shrink-0" />
+                            <Eye className="h-4 w-4 text-gray-600 shrink-0" />
                             <span>Details</span>
                           </button>
                           <select
@@ -391,7 +391,7 @@ export default function AdminOrdersPage() {
                     <dd>
                       <a
                         href={`mailto:${selectedOrder.email}`}
-                        className="break-all text-falco-accent underline-offset-2 hover:underline"
+                        className="break-all text-gray-900 underline decoration-gray-400 underline-offset-2 hover:text-blue-800 hover:decoration-blue-800"
                       >
                         {selectedOrder.email}
                       </a>
@@ -401,7 +401,10 @@ export default function AdminOrdersPage() {
                     <dt className="text-xs font-medium text-gray-500">Phone</dt>
                     <dd className="text-gray-900">
                       {selectedOrder.phone ? (
-                        <a href={`tel:${String(selectedOrder.phone).replace(/\s/g, '')}`} className="text-falco-accent hover:underline">
+                        <a
+                          href={`tel:${String(selectedOrder.phone).replace(/\s/g, '')}`}
+                          className="text-gray-900 underline decoration-gray-400 underline-offset-2 hover:text-blue-800 hover:decoration-blue-800"
+                        >
                           {selectedOrder.phone}
                         </a>
                       ) : (
