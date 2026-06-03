@@ -52,3 +52,41 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to load checkout audit' }, { status: 500 })
   }
 }
+
+/** POST — insert one diagnostic row (admin only). Verifies DB table + write path without a real checkout. */
+export async function POST() {
+  const admin = await requireAdmin()
+  if (!admin.ok) return admin.response
+
+  try {
+    const row = await prisma.checkoutAuditLog.create({
+      data: {
+        outcome: 'admin_manual_test',
+        adminNotes: 'Inserted from Admin → Checkout log (test button). Safe to ignore.',
+      },
+    })
+    return NextResponse.json({ ok: true, id: row.id })
+  } catch (e) {
+    console.error('[admin/checkout-audit POST]', e)
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2021') {
+      return NextResponse.json(
+        {
+          error:
+            'CheckoutAuditLog table is missing on this database. Run: npx prisma db push (then redeploy if needed).',
+        },
+        { status: 503 }
+      )
+    }
+    const msg = e instanceof Error ? e.message : ''
+    if (/CheckoutAuditLog|does not exist/i.test(msg)) {
+      return NextResponse.json(
+        {
+          error:
+            'Checkout audit storage is not on this database yet. Run: npx prisma db push against the same DATABASE_URL as production.',
+        },
+        { status: 503 }
+      )
+    }
+    return NextResponse.json({ error: 'Failed to write test audit row' }, { status: 500 })
+  }
+}

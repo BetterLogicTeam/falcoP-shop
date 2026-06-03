@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useEffect, useState, useCallback } from 'react'
-import { Activity, Loader2, RefreshCw } from 'lucide-react'
+import { Activity, Loader2, RefreshCw, FlaskConical } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 type AuditRow = {
   id: string
@@ -26,6 +27,7 @@ export default function AdminCheckoutAuditPage() {
   const [outcomeInput, setOutcomeInput] = useState('')
   const [appliedPi, setAppliedPi] = useState('')
   const [appliedOutcome, setAppliedOutcome] = useState('')
+  const [testPosting, setTestPosting] = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -68,6 +70,28 @@ export default function AdminCheckoutAuditPage() {
     setAppliedOutcome(outcomeInput)
   }
 
+  const insertTestAuditRow = async () => {
+    setTestPosting(true)
+    try {
+      const res = await fetch('/api/admin/checkout-audit', {
+        method: 'POST',
+        credentials: 'include',
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        const msg =
+          typeof data.error === 'string' ? data.error : res.status === 401 ? 'Unauthorized' : `HTTP ${res.status}`
+        throw new Error(msg)
+      }
+      toast.success('Test audit row saved — check the table below.')
+      await load()
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Write failed')
+    } finally {
+      setTestPosting(false)
+    }
+  }
+
   return (
     <div>
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -81,15 +105,27 @@ export default function AdminCheckoutAuditPage() {
             fragment or outcome.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => void load()}
-          disabled={loading}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 disabled:opacity-60"
-        >
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-          Refresh
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => void insertTestAuditRow()}
+            disabled={testPosting || loading}
+            className="inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-900 hover:bg-amber-100 disabled:opacity-60"
+            title="Writes one admin_manual_test row — verifies DB table exists"
+          >
+            {testPosting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FlaskConical className="w-4 h-4" />}
+            Insert test row
+          </button>
+          <button
+            type="button"
+            onClick={() => void load()}
+            disabled={loading}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 disabled:opacity-60"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            Refresh
+          </button>
+        </div>
       </div>
 
       <div className="mb-6 flex flex-wrap gap-3 rounded-xl border border-gray-200 bg-white p-4">
@@ -144,7 +180,7 @@ export default function AdminCheckoutAuditPage() {
               {logs.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-4 py-8 text-center text-gray-500">
-                    No rows yet. Complete a checkout or Klarna return after deploy + `prisma db push`.
+                    No rows yet. Click Insert test row above (requires prisma db push on this DB), or complete a checkout or Klarna return.
                   </td>
                 </tr>
               ) : (
