@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 import prisma from '@/lib/prisma'
 import { requireAdmin } from '@/lib/require-admin'
+
+export const dynamic = 'force-dynamic'
 
 /** GET — recent `CheckoutAuditLog` rows (admin only). Query: paymentIntentId, outcome, limit (max 500). */
 export async function GET(request: NextRequest) {
@@ -27,6 +30,25 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ logs })
   } catch (e) {
     console.error('[admin/checkout-audit]', e)
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2021') {
+      return NextResponse.json(
+        {
+          error:
+            'CheckoutAuditLog table is missing on this database. Run: npx prisma db push (then redeploy if needed).',
+        },
+        { status: 503 }
+      )
+    }
+    const msg = e instanceof Error ? e.message : ''
+    if (/CheckoutAuditLog|does not exist/i.test(msg)) {
+      return NextResponse.json(
+        {
+          error:
+            'Checkout audit storage is not on this database yet. Run: npx prisma db push against the same DATABASE_URL as production.',
+        },
+        { status: 503 }
+      )
+    }
     return NextResponse.json({ error: 'Failed to load checkout audit' }, { status: 500 })
   }
 }

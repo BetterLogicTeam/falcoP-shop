@@ -35,10 +35,14 @@ export default function AdminCheckoutAuditPage() {
       if (appliedPi.trim()) q.set('paymentIntentId', appliedPi.trim())
       if (appliedOutcome.trim()) q.set('outcome', appliedOutcome.trim())
       q.set('limit', '200')
-      const res = await fetch(`/api/admin/checkout-audit?${q.toString()}`)
+      const res = await fetch(`/api/admin/checkout-audit?${q.toString()}`, {
+        credentials: 'include',
+      })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        throw new Error(typeof data.error === 'string' ? data.error : 'Failed to load')
+        const msg =
+          typeof data.error === 'string' ? data.error : res.status === 401 ? 'Unauthorized (sign in again)' : `HTTP ${res.status}`
+        throw new Error(msg)
       }
       const raw = Array.isArray(data.logs) ? data.logs : []
       setLogs(
