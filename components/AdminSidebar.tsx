@@ -12,7 +12,8 @@ import {
   Menu,
   X,
   LogOut,
-  User
+  User,
+  Activity,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -44,6 +45,7 @@ const AdminSidebar = () => {
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Products', href: '/admin/products', icon: Package },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
+    { name: 'Checkout log', href: '/admin/checkout-audit', icon: Activity },
     { name: 'Coupons', href: '/admin/coupons', icon: Tag },
     { name: 'Customers', href: '/admin/customers', icon: Users },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
