@@ -40,7 +40,12 @@ export function parseFraktjaktWebhook(rawBody: string): WebhookPayload {
       String(j.reference ?? ''),
       String(j.orderNumber ?? ''),
       String(j.order_number ?? ''),
-      String(j.merchant_reference ?? '')
+      String(j.merchant_reference ?? ''),
+      String(j.consignor_reference ?? ''),
+      String(j.sender_reference ?? ''),
+      String(j.your_reference ?? ''),
+      String(j.order_ref ?? ''),
+      String(j.shipment_reference ?? '')
     )
     const trackingNumber = pickFirst(
       String(j.trackingNumber ?? ''),
@@ -66,7 +71,12 @@ export function parseFraktjaktWebhook(rawBody: string): WebhookPayload {
     readXmlTag(raw, 'reference'),
     readXmlTag(raw, 'order_number'),
     readXmlTag(raw, 'ordernumber'),
-    readXmlTag(raw, 'merchant_reference')
+    readXmlTag(raw, 'merchant_reference'),
+    readXmlTag(raw, 'consignor_reference'),
+    readXmlTag(raw, 'sender_reference'),
+    readXmlTag(raw, 'your_reference'),
+    readXmlTag(raw, 'shipment_reference'),
+    readXmlTag(raw, 'order_ref')
   )
   const trackingNumber = pickFirst(
     readXmlTag(raw, 'tracking_number'),

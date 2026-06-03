@@ -12,14 +12,29 @@ import {
  * Configure in Fraktjakt:
  *   URL: https://www.falcop.com/api/webhooks/fraktjakt
  *   Header: x-fraktjakt-token: <FRAKTJAKT_WEBHOOK_TOKEN> (recommended)
- *   Fallback for test tools without headers:
+ *   Or: Authorization: Bearer <FRAKTJAKT_WEBHOOK_TOKEN>
+ *   Fallback for test tools:
  *   https://www.falcop.com/api/webhooks/fraktjakt?token=<FRAKTJAKT_WEBHOOK_TOKEN>
+ *
+ * When booking in Fraktjakt / order import, use the shop **order number** (e.g. FP-…) as the
+ * reference so we can match webhooks to `Order.orderNumber` (or Stripe `paymentIntentId` if used).
  */
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    service: 'falco-fraktjakt-webhook',
+    hint: 'POST XML or JSON shipment callbacks here; optional auth via x-fraktjakt-token or Bearer',
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
     const headerToken = request.headers.get('x-fraktjakt-token')
+    const auth = request.headers.get('authorization')
+    const bearer =
+      auth && auth.toLowerCase().startsWith('bearer ') ? auth.slice(7).trim() : null
     const queryToken = request.nextUrl.searchParams.get('token')
-    const suppliedToken = headerToken || queryToken
+    const suppliedToken = headerToken || bearer || queryToken
     if (!isValidFraktjaktWebhookToken(suppliedToken)) {
       return NextResponse.json({ error: 'Unauthorized webhook token' }, { status: 401 })
     }

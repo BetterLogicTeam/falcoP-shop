@@ -43,6 +43,8 @@ function OrderConfirmationContent() {
   const { data: session } = useSession()
   const { clearCart } = useCart()
   const klarnaReturnHandled = useRef(false)
+  const klarnaLandingTelemetrySent = useRef(false)
+  const klarnaPostCheckoutTelemetrySent = useRef(false)
   const [order, setOrder] = useState<Order | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -57,11 +59,27 @@ function OrderConfirmationContent() {
   useEffect(() => {
     const pi = searchParams?.get('payment_intent')
     const rs = searchParams?.get('redirect_status')
-    if (!pi || rs !== 'succeeded' || klarnaReturnHandled.current) return
+    if (!pi || rs !== 'succeeded') return
 
     const raw = typeof window !== 'undefined' ? sessionStorage.getItem('falco_pending_checkout') : null
+    const hasPendingCheckout = Boolean(raw)
+
+    if (!klarnaLandingTelemetrySent.current) {
+      klarnaLandingTelemetrySent.current = true
+      void fetch('/api/checkout-telemetry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          paymentIntentId: pi,
+          hasPendingCheckout,
+          redirectStatus: rs,
+        }),
+      }).catch(() => {})
+    }
+
     if (!raw) return
 
+    if (klarnaReturnHandled.current) return
     klarnaReturnHandled.current = true
     let pending: {
       customerInfo: Record<string, string>
@@ -97,6 +115,20 @@ function OrderConfirmationContent() {
     })
       .then(async (r) => {
         const data = await r.json().catch(() => ({}))
+        if (!klarnaPostCheckoutTelemetrySent.current) {
+          klarnaPostCheckoutTelemetrySent.current = true
+          void fetch('/api/checkout-telemetry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              paymentIntentId: pi,
+              hasPendingCheckout: true,
+              redirectStatus: rs,
+              checkoutHttpOk: r.ok,
+              checkoutError: !r.ok && typeof data.error === 'string' ? data.error : undefined,
+            }),
+          }).catch(() => {})
+        }
         if (!r.ok) {
           console.error('Order create after redirect:', data)
           klarnaReturnHandled.current = false

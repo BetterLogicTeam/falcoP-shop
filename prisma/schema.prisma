@@ -91,6 +91,25 @@ model Product {
   wishlistItems   WishlistItem[]
 }
 
+/// Server-side checkout attempts (survives short-lived host logs; no PII beyond optional paymentIntentId).
+model CheckoutAuditLog {
+  id                  String   @id @default(cuid())
+  createdAt           DateTime @default(now())
+  paymentIntentId     String?
+  outcome             String
+  httpStatus          Int?
+  errorCode           String?
+  serverTotalOre      Int?
+  stripeAmountOre     Int?
+  stripeStatus        String?
+  itemCount           Int?
+  orderNumber         String?
+  adminNotes          String?
+
+  @@index([paymentIntentId])
+  @@index([createdAt])
+}
+
 model Order {
   id                String      @id @default(cuid())
   orderNumber       String      @unique

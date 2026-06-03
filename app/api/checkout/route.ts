@@ -7,6 +7,7 @@ import { getShippingCostBySubtotal, sekToOre } from '@/lib/currency'
 import { calculateCouponDiscount } from '@/lib/coupons'
 import Stripe from 'stripe'
 import { sendOrderReceiptEmail } from '@/lib/sendOrderReceiptEmail'
+import { writeCheckoutAudit } from '@/lib/checkoutAuditLog'
 
 const MAX_LINE_ITEMS = 50
 const MAX_LINE_QTY = 99
@@ -22,6 +23,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { customerInfo, items, paymentIntentId, couponCode } = body
 
+    void writeCheckoutAudit({
+      outcome: 'request_received',
+      paymentIntentId: typeof paymentIntentId === 'string' ? paymentIntentId : null,
+      itemCount: Array.isArray(items) ? items.length : 0,
+    })
+
     // Get logged-in user session
     const session = await getServerSession(authOptions)
 
@@ -30,6 +37,12 @@ export async function POST(request: NextRequest) {
     const orderEmail =
       typeof orderEmailRaw === 'string' ? orderEmailRaw.trim().toLowerCase() : ''
     if (!orderEmail || !orderEmail.includes('@')) {
+      void writeCheckoutAudit({
+        outcome: 'validation_failed',
+        httpStatus: 400,
+        errorCode: 'invalid_email',
+        paymentIntentId: typeof paymentIntentId === 'string' ? paymentIntentId : null,
+      })
       return NextResponse.json({ error: 'A valid email is required' }, { status: 400 })
     }
 
@@ -44,6 +57,12 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!customerInfo || !items || items.length === 0) {
+      void writeCheckoutAudit({
+        outcome: 'validation_failed',
+        httpStatus: 400,
+        errorCode: 'missing_order_info',
+        paymentIntentId: typeof paymentIntentId === 'string' ? paymentIntentId : null,
+      })
       return NextResponse.json(
         { error: 'Missing required order information' },
         { status: 400 }
@@ -51,6 +70,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (!Array.isArray(items) || items.length > MAX_LINE_ITEMS) {
+      void writeCheckoutAudit({
+        outcome: 'validation_failed',
+        httpStatus: 400,
+        errorCode: 'invalid_cart',
+        paymentIntentId: typeof paymentIntentId === 'string' ? paymentIntentId : null,
+      })
       return NextResponse.json({ error: 'Invalid cart' }, { status: 400 })
     }
 
@@ -146,6 +171,8 @@ export async function POST(request: NextRequest) {
 
     // Verify Stripe payment before creating paid orders.
     let resolvedPaymentStatus: 'pending' | 'paid' = 'pending'
+    /** Send receipt when PI passed validation (includes `processing`, e.g. Klarna) — not only when DB paymentStatus is `paid`. */
+    let shouldSendPurchaseReceiptEmail = false
     if (paymentIntentId) {
       const stripe = getStripe()
       if (!stripe) {
@@ -158,6 +185,15 @@ export async function POST(request: NextRequest) {
       const intent = await stripe.paymentIntents.retrieve(String(paymentIntentId))
       const okStatuses = new Set<Stripe.PaymentIntent.Status>(['succeeded', 'processing', 'requires_capture'])
       if (!okStatuses.has(intent.status)) {
+        void writeCheckoutAudit({
+          outcome: 'stripe_payment_incomplete',
+          httpStatus: 400,
+          errorCode: 'payment_intent_status',
+          paymentIntentId: typeof paymentIntentId === 'string' ? paymentIntentId : null,
+          stripeStatus: intent.status,
+          serverTotalOre: sekToOre(total),
+          stripeAmountOre: typeof intent.amount === 'number' ? intent.amount : null,
+        })
         return NextResponse.json(
           { error: `Payment not completed (status: ${intent.status}). Order not created.` },
           { status: 400 }
@@ -166,6 +202,15 @@ export async function POST(request: NextRequest) {
 
       const expectedOre = sekToOre(total)
       if (typeof intent.amount === 'number' && intent.amount !== expectedOre) {
+        void writeCheckoutAudit({
+          outcome: 'amount_mismatch',
+          httpStatus: 400,
+          errorCode: 'payment_amount_mismatch',
+          paymentIntentId: typeof paymentIntentId === 'string' ? paymentIntentId : null,
+          serverTotalOre: expectedOre,
+          stripeAmountOre: intent.amount,
+          stripeStatus: intent.status,
+        })
         return NextResponse.json(
           { error: 'Payment amount does not match order total.' },
           { status: 400 }
@@ -173,10 +218,17 @@ export async function POST(request: NextRequest) {
       }
       const cur = typeof intent.currency === 'string' ? intent.currency.toLowerCase() : ''
       if (cur && cur !== 'sek') {
+        void writeCheckoutAudit({
+          outcome: 'validation_failed',
+          httpStatus: 400,
+          errorCode: 'invalid_currency',
+          paymentIntentId: typeof paymentIntentId === 'string' ? paymentIntentId : null,
+        })
         return NextResponse.json({ error: 'Invalid payment currency.' }, { status: 400 })
       }
 
       resolvedPaymentStatus = intent.status === 'succeeded' || intent.status === 'requires_capture' ? 'paid' : 'pending'
+      shouldSendPurchaseReceiptEmail = true
     }
 
     // Create order with items
@@ -232,11 +284,26 @@ export async function POST(request: NextRequest) {
       return createdOrder
     })
 
-    if (order.paymentStatus === 'paid' && order.email) {
-      void sendOrderReceiptEmail(order).catch((err) => {
-        console.error('[checkout] purchase thank-you email failed:', err)
-      })
+    if (order.email && shouldSendPurchaseReceiptEmail) {
+      void sendOrderReceiptEmail(order)
+        .then((r) => {
+          if (!r.ok) {
+            console.warn('[checkout] purchase thank-you email:', r.skipped || 'failed')
+          }
+        })
+        .catch((err) => {
+          console.error('[checkout] purchase thank-you email failed:', err)
+        })
     }
+
+    void writeCheckoutAudit({
+      outcome: 'order_created',
+      httpStatus: 201,
+      paymentIntentId: typeof paymentIntentId === 'string' ? paymentIntentId : null,
+      orderNumber: order.orderNumber,
+      serverTotalOre: sekToOre(total),
+      itemCount: resolvedLines.length,
+    })
 
     return NextResponse.json({
       success: true,
@@ -250,6 +317,11 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Checkout error:', error)
+    void writeCheckoutAudit({
+      outcome: 'server_exception',
+      httpStatus: 500,
+      errorCode: 'checkout_exception',
+    })
     return NextResponse.json(
       { error: 'Failed to create order' },
       { status: 500 }
