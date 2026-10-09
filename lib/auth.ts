@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         const admin = await prisma.admin.findUnique({
-          where: { email: credentials.email }
+          where: { email: credentials.email.toLowerCase().trim() }
         })
 
         if (!admin) {
@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         const customer = await prisma.customer.findUnique({
-          where: { email: credentials.email }
+          where: { email: credentials.email.toLowerCase().trim() }
         })
 
         if (!customer || !customer.password) {
