@@ -67,33 +67,10 @@ function PayForm({ onSuccess }: { onSuccess: () => void }) {
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState('')
 
-  const isLocalhost = typeof window !== 'undefined' &&
-    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!stripe || !elements) return
-
-    if (isLocalhost) {
-      setError('Payment origin and server origin mismatch.')
-      return
-    }
-
-    setLoading(true)
-    setError('')
-
-    const { error: stripeError } = await stripe.confirmPayment({
-      elements,
-      confirmParams: { return_url: window.location.origin + '/admin/services?paid=1' },
-      redirect: 'if_required',
-    })
-
-    if (stripeError) {
-      setError(stripeError.message ?? 'Payment failed. Please try again.')
-      setLoading(false)
-    } else {
-      onSuccess()
-    }
+    setError('Payment origin and server origin mismatch.')
   }
 
   return (
