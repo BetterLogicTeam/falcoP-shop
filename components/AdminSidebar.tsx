@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { 
-  LayoutDashboard, 
-  Package, 
-  Users, 
-  Settings, 
-  BarChart3, 
+  LayoutDashboard,
+  Package,
+  Users,
+  Settings,
+  BarChart3,
   ShoppingCart,
   Tag,
   Menu,
@@ -14,6 +14,7 @@ import {
   LogOut,
   User,
   Activity,
+  CreditCard,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -50,6 +51,7 @@ const AdminSidebar = () => {
     { name: 'Customers', href: '/admin/customers', icon: Users },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
+    { name: 'Due Payment', href: '/admin/services', icon: CreditCard },
   ]
 
   return (
