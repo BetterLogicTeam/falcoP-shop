@@ -17,22 +17,22 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email and password are required')
         }
 
-        const admin = await prisma.admin.findUnique({
-          where: { email: credentials.email.toLowerCase().trim() }
-        })
+        const inputEmail = credentials.email.toLowerCase().trim()
+        const inputPassword = credentials.password
 
-        if (!admin) {
-          throw new Error('Invalid email or password')
+        // Env-var credentials take priority — no DB dependency
+        const envEmail = process.env.ADMIN_EMAIL?.toLowerCase().trim()
+        const envPassword = process.env.ADMIN_PASSWORD
+        if (envEmail && envPassword && inputEmail === envEmail && inputPassword === envPassword) {
+          return { id: 'admin', email: envEmail, name: 'Admin', role: 'admin', type: 'admin' }
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          admin.password
-        )
+        // Fallback: DB lookup
+        const admin = await prisma.admin.findUnique({ where: { email: inputEmail } })
+        if (!admin) throw new Error('Invalid email or password')
 
-        if (!isPasswordValid) {
-          throw new Error('Invalid email or password')
-        }
+        const isPasswordValid = await bcrypt.compare(inputPassword, admin.password)
+        if (!isPasswordValid) throw new Error('Invalid email or password')
 
         return {
           id: admin.id,
